@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container col-9">
+    <br><br><br><br><br><br><br>
+    <div class="container col-10 mr-3">
+        <div class="container col -10" >
+            <div class="row">
+                
+                <div class="col">
+                    <img style="mix-blend-mode: multiply;" src="{% static 'images/party_default_img2.png' %}" width="500" height="500" alt="">
+                </div>
+
+                <div class="col m-2">
+                    <br><br><br>
+                    <center><h3><img src="static/img/logo/logo3.png" alt="billing-software">MultiUser Billing Software</h3></center><br>
+                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aut quo, sit quaerat consectetur doloribus molestias dicta. Deserunt officia libero fugiat accusamus. Repellat aperiam, ipsa ad sed eum dolorem corrupti ipsam.</p>
+                    <center><a href="{% url 'parties_add_page' %}" class="btn btn-primary">Add a party</a></center>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

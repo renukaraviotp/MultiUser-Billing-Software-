@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container col-9">
+    <br><br><br><br><br><br><br>
+    <div class="container col-10 mr-3">
+        <div class="container col -10" >
+            <div class="row">
+                
+                <div class="col">
+                    <img style="mix-blend-mode: multiply;" src="{% static 'images/credit/11.webp' %}" width="500" height="500" alt="">
+                </div>
+
+                <div class="col m-2">
+                    <br><br><br>
+                    <center><h3><img src="static/img/logo/logo3.png" alt="billing-software">MultiUser Billing Software</h3></center><br>
+                    <p>Welcome to MultiUser Billing Software.Our platform offers a range of features.You can manage all your credit actions here.</p>
+                    <center><a href="{% url "credit_add" %}" class="btn btn-primary">Add Your First Creditnote Here</a></center>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
