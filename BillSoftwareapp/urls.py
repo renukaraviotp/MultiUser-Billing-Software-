@@ -32,7 +32,9 @@ urlpatterns = [
     path('parties_add_page',views.parties_add_page,name='parties_add_page'),
     path('credit_default',views.credit_default,name='credit_default'),
     path('credit_add',views.credit_add,name='credit_add'),
-    
+    path('transactiontable',views.transactiontable,name='transactiontable'),
+    path('party_autocomplete/',views.party_autocomplete,name='party_autocomplete'),
+    path('get_available_balance/', views.get_available_balance, name='get_available_balance'),
    
 
 ]

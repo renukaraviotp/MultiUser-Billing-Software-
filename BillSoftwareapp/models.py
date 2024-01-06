@@ -85,17 +85,52 @@ class ItemModel(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     company = models.ForeignKey(company,on_delete= models.CASCADE,null=True,blank=True)
     staff = models.ForeignKey(staff_details,on_delete= models.CASCADE,null=True,blank=True)
-    item_name = models.CharField(max_length=255)
+    item_name = models.CharField(max_length=255,null=True)
     item_hsn = models.PositiveIntegerField(null=True)
-    item_unit = models.CharField(max_length=255)
-    item_taxable = models.CharField(max_length=255)
+    item_unit = models.CharField(max_length=255,null=True)
+    item_type = models.CharField(max_length=255,null=True)
+    item_taxable = models.CharField(max_length=255,null=True)
     item_gst = models.CharField(max_length=255,null=True)
     item_igst = models.CharField(max_length=255,null=True)
-    item_sale_price = models.PositiveIntegerField()
+    item_sale_price = models.PositiveIntegerField(null=True)
+    item_current_stock = models.PositiveBigIntegerField(default=0)
     item_purchase_price = models.PositiveBigIntegerField()
     item_stock_in_hand = models.PositiveBigIntegerField(default=0)
     item_at_price = models.PositiveBigIntegerField(default=0)
-    item_date = models.DateField()
+    item_date = models.DateField(null=True)
+
+
+class ItemUnitModel(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(company,on_delete= models.CASCADE,null=True,blank=True)
+    unit_name = models.CharField(max_length=255,null=True)
+
+
+class ItemTransactionModel(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(company,on_delete= models.CASCADE,null=True,blank=True)
+    staff = models.ForeignKey(staff_details,on_delete= models.CASCADE,null=True,blank=True)
+    item = models.ForeignKey(ItemModel,on_delete=models.CASCADE,null=True,blank=True)
+    trans_type = models.CharField(max_length=255,null=True)
+    trans_invoice = models.PositiveBigIntegerField(null=True,blank=True)
+    trans_user_name = models.CharField(max_length=255,null=True)
+    trans_date = models.DateTimeField(null=True)
+    trans_qty = models.PositiveBigIntegerField(default=0)
+    trans_current_qty = models.PositiveBigIntegerField(default=0)
+    trans_adjusted_qty = models.PositiveBigIntegerField(default=0)
+    trans_price = models.PositiveBigIntegerField(default=0)
+    trans_status = models.CharField(max_length=255,null=True)
+    trans_created_date = models.DateTimeField(auto_now_add=True,null=True)
+
+
+
+class ItemTransactionHistory(models.Model):
+    staff = models.ForeignKey(staff_details,on_delete=models.CASCADE,blank=True,null=True)
+    company = models.ForeignKey(company,on_delete=models.CASCADE,blank=True,null=True)
+    item = models.ForeignKey(ItemModel,on_delete=models.CASCADE,blank=True,null=True)
+    date = models.DateField(auto_now_add=True,null=True)
+    action = models.CharField(max_length=255,null=True)
+    done_by_name = models.CharField(max_length=255,null=True)
 
 class SalesInvoiceItem(models.Model):
     company = models.ForeignKey(company, on_delete=models.CASCADE,null=True,blank=True)

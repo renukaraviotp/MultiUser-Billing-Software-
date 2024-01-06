@@ -74,6 +74,17 @@
         -ms-transform: translateX(26px);
         transform: translateX(26px);
       }
+      .search-box{
+        width:100px;
+        background:#fff;
+        margin:200px auto 0;
+        border-radius:5px;
+      }
+      th{
+        color:black;
+        font-weight:bold;
+      }
+      
         
       
       
@@ -87,173 +98,179 @@
     <br><br><br><br><br>    
     <form action="" class="col-10 container" method="post" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
         {% csrf_token %}
-    <div class="container col-md-10">
-        <h2>Add Credit Note</h2><br>
-        {% for m in messages %}
-        <h5 style="background-color: rgba(255, 0, 0, 0.4);color: red;font-size: larger;padding: 10px;border-radius: 10px;text-align: center;">{{m}}</h5>
-        {% endfor %}
-
-        <div class='party'>
-            <h3>Party</h3>
-            <label class="toggle-control">
-                <input class='abc' type="checkbox" name="abc" id="partyCheckbox" checked>
-                <span class="control"></span>
-              </label>
-        </div>
-        
-
-        <div class="form-group row" id="partyForm">
-            <div class="col-md-3"><label for=""> Party Name:</label><input id="input" type="text" name="partyname" class="form-control" placeholder="Party Name"></div>
-            <div class="col-md-1"><label for=""> Add</label><button type="button" id="" class="btn btn-primary form-control" data-toggle="modal" data-target="#exampleModal">
-                <i class="fa-solid fa-square-plus" style="width: 1em; vertical-align: middle; margin-right: 10px;"></i>
-              </button>
-            </div>
-            <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <form action="" class="col-10 container" method="post" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
-
-    <div class="modal-dialog container col-md-10" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title" id="exampleModalLabel">Add New Party<br>
+        <div class="container col-md-10">
+            <h2>Add Credit Note</h2><br>
             {% for m in messages %}
             <h5 style="background-color: rgba(255, 0, 0, 0.4);color: red;font-size: larger;padding: 10px;border-radius: 10px;text-align: center;">{{m}}</h5>
-            {% endfor %}</h2>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
+            {% endfor %}
+
+            <div class='party'>
+                <h3>Party</h3>
+                <label class="toggle-control">
+                    <input class='abc' type="checkbox" name="abc" id="partyCheckbox" checked>
+                    <span class="control"></span>
+                </label>
+            </div>
+            
+            <div id="partyForm" class="form-group row">
             <div class="form-group row">
-                <div class="col"><label for=""> Party Name:</label><input id="input" type="text" name="partyname" class="form-control" placeholder="Party Name" required></div>
-                <div class="col"><label for=""> Phone Number:</label><input id="input" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" required></div>
-                <div class="col"><label for=""> GSTIN:</label><input id="input" type="text" name="gstin" class="form-control" placeholder="GSTIN" id="gstinInput" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}"> <small>#27ABCDE1234F1Z5</small></div>
+                <div class="col-md-3">
+                    <label for=""> Party Name:</label>
+                    <div class="input-group">
+                        <input id="partyNameSearch input availablebalance" type="text" name="term" class="form-control party-autocomplete" placeholder="Party Name" required>
+                        <a href="{% url 'parties_add_page' %}" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn col-md-1" ><i class="fa-solid fa-plus"></i></a>
+                    </div>
+                    <small>Available Balance</small>
+                </div>
+                <div class="col-md-4"><label for=""> Phone Number:</label><input id="input" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number"></div>
+                <div class="col-md-4"><label for=""> GSTIN:</label><input id="input" type="text" name="gstin" class="form-control" placeholder="GSTIN" id="gstinInput" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}"> <small>#27ABCDE1234F1Z5</small></div>
+                
+            </div><br>
+            <div class="row form-group">
+                <div class="col">
+                    <label for="">Billing Address</label>
+                    <textarea name="address" id="" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
+                </div>
+            </div>
+        </div>
+
+            <div class="form-group row">
+                <div class="col"><label for=""> Return No.</label><input id="input" type="number" name="returnno" class="form-control" placeholder="Return Number" ></div>
+                <div class="col"><label for=""> Bill No.</label><input id="input" type="text" name="billno" class="form-control" placeholder="Bill Number" ></div>
+                <div class="col"><label for=""> Bill Date</label><input id="input" type="text" name="billdate" class="form-control" placeholder="Bill Date"> </div>
                 
             </div>
-            <div class="row form-group">
-
-            <div class="col-md">
-                <label for="">GST Type:</label>
-                    <select name="gstintype" class="form-control">
-                        <option value="">--Select GST type--</option>
-                        <option value="Unregistered/Consumers">Unregistered/Consumers</option>
-                        <option value="Registered Buisness - Regular">Registered Buisness - Regular</option>
-                        <option value="Registered Buisness - Composition">Registered Buisness - Composition</option>
-                    </select>
-            </div>
-            <div class="col-md">
-                <label for="">State</label>
-                    <select name="state" class="form-control">
-                        <option value="">--Select State--</option>
-                        <option value="Andhra Pradesh">Andhra Pradesh</option>
-                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                        <option value="Assam">Assam</option>
-                        <option value="Bihar">Bihar</option>
-                        <option value="Chhattisgarh">Chhattisgarh</option>
-                        <option value="Goa">Goa</option>
-                        <option value="Gujarat">Gujarat</option>
-                        <option value="Haryana">Haryana</option>
-                        <option value="Himachal Pradesh">Himachal Pradesh</option>
-                        <option value="Jharkhand">Jharkhand</option>
-                        <option value="Karnataka">Karnataka</option>
-                        <option value="Kerala">Kerala</option>
-                        <option value="Madhya Pradesh">Madhya Pradesh</option>
-                        <option value="Maharashtra">Maharashtra</option>
-                        <option value="Manipur">Manipur</option>
-                        <option value="Meghalaya">Meghalaya</option>
-                        <option value="Mizoram">`Mizoram</option>
-                        <option value="Nagaland">Nagaland</option>
-                        <option value="Odisha">Odisha</option>
-                        <option value="Punjab">Punjab</option>
-                        <option value="Rajasthan">Rajasthan</option>
-                        <option value="Sikkim">Sikkim</option>
-                        <option value="Tamil Nadu">Tamil Nadu</option>
-                        <option value="Telangana">Telangana</option>
-                        <option value="Tripura">Tripura</option>
-                        <option value="Uttar Pradesh">Uttar Pradesh</option>
-                        <option value="Uttarakhand">Uttarakhand</option>
-                        <option value="West Bengal">West Bengal</option>
-                        
-                    </select>
-            </div>
-
-            <div class="col-md"><label for="">Email:</label><input id="input" type="email" name="email" class="form-control" placeholder="Email" ></div>
-            <div class="col-md"><label for="">Date</label><input id="input" type="date" name="date" class="form-control" value="{{todaydate}}"  ></div>
- 
-        </div><br>
-        <div class="row form-group">
-            <div class="col-md-6">
-                <label for="">Billing Address</label>
-                <textarea name="address" id="" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
-            </div>
-        </div>
-        <br>
-        <div class="row form-group">
-            <div class="col-md-4">
-                <label for="">Balance</label>
-                <input id="input" type="number" name="balance" class="form-control" placeholder="Balance" min="0">
-            </div>
-        </div>
-        <div class="row form-group radio-buttons ml-1" style="display: none;">
-            
-            <input type="radio" name="pay_recieve" class="col-1" value="pay"><label style="color: black;">To Pay</label>
-            <input type="radio" name="pay_recieve" class="col-1" value="receive"><label style="color: black;">To Receive</label>
-            
-        </div><br>
-        </div>
-        <div class="modal-footer">
-            <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn  " value="new" name="buttonn">Save & New</button> 
-            <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="old" name="buttonn">Save </button> 
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-            <div class="col-md-4"><label for=""> Phone Number:</label><input id="input" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number"></div>
-            <div class="col-md-4"><label for=""> GSTIN:</label><input id="input" type="text" name="gstin" class="form-control" placeholder="GSTIN" id="gstinInput" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}"> <small>#27ABCDE1234F1Z5</small></div>
-            
-        </div>
-
-        <div class="form-group row">
-            <div class="col"><label for=""> Return No.</label><input id="input" type="number" name="returnno" class="form-control" placeholder="Return Number" ></div>
-            <div class="col"><label for=""> Bill No.</label><input id="input" type="text" name="billno" class="form-control" placeholder="Bill Number" ></div>
-            <div class="col"><label for=""> Bill Date</label><input id="input" type="text" name="billdate" class="form-control" placeholder="Bill Date"> </div>
-            
-        </div>
-
         
 
-        <div class="row form-group">
-            <div class="col"><label for="">Date</label><input type="date" name="date" class="form-control"></div>
+            
 
-            <div class="col-md">
-                <label for="">State of Supply:</label>
-                    <select name="gstintype" class="form-control">
-                        <option value="">--Select--</option>
-                        <option value="state">State(GST)</option>
-                        <option value="others">Others(IGST)</option>
-                    </select>
+            <div class="row form-group">
+                <div class="col"><label for="">Date</label><input type="date" name="date" class="form-control"></div>
+
+                <div class="col-md">
+                    <label for="">State of Supply:</label>
+                        <select name="gstintype" class="form-control">
+                            <option value="">--Select--</option>
+                            <option value="state">State(GST)</option>
+                            <option value="others">Others(IGST)</option>
+                        </select>
+                </div>
+    
             </div>
- 
         </div>
-    </div>
 
-    <script>
-        document.getElementById('partyCheckbox').addEventListener('change', function() {
-            var partyForm = document.getElementById('partyForm');
-            partyForm.style.display = this.checked ? 'flex' : 'none';
+        <script>
+            document.getElementById('partyCheckbox').addEventListener('change', function() {
+                var partyForm = document.getElementById('partyForm');
+                partyForm.style.display = this.checked ? 'flex' : 'none';
+            });
+            document.addEventListener('DOMContentLoaded', function() {
+            var dateInput = document.getElementsByName('date')[0];
+            dateInput.value = ''; // Set the default value to an empty string
         });
-        document.addEventListener('DOMContentLoaded', function() {
-        var dateInput = document.getElementsByName('date')[0];
-        dateInput.value = ''; // Set the default value to an empty string
-    });
-    </script>
-</form><br><br><br>
+        </script>
+</form>
 </div>
 
 </div>
+<div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199);min-height: 100vh;"><br><br><br><br><br><br>
+    <div class="col-11 container mr-1">
 
+
+        <div class="row">
+            {% comment %} <!-- ------------party table -------------------> {% endcomment %}
+
+            <div class="col-11 table-responsive" style="background-color: white;padding: 30px;border-radius: 15px;box-shadow: 3px 3px 3px gray;">
+                
+                <div class="row">
+                    
+                        <h3>Item </h3> <div class="dropdown ml-2">
+                            
+                          </div>                  
+                </div>
+                <br>
+                    <!-- party table  -->
+                    <!-- style="max-height: 50vh;overflow-y: scroll;" id="itemTableScroll" -->
+                <div class="row"  >
+                    
+                    <table class="table " id="itemTable" >
+                        
+                        <thead>
+                            <th class="">SL.No</th>
+                            <th class="">PRODUCT </th>
+                            <th class="">HSN</th>
+                            <th class="">QTY</th>
+                            <th class="">PRICE </th>
+                            <th class="">TAX(%)</th>
+                            <th class="">DISCOUNT</th>
+                            <th class="">TOTAL </th>
+                            <th class="">FIELD</th>   
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <input id="productNameSearch input availablebalance" type="text" name="product" class="form-control party-autocomplete" placeholder="Product" required>
+                                        <a href="" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn col-md-1" ><i class="fa-solid fa-plus"></i></a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" name="" id="" style="width:90px;">
+                                </td>
+                                <td>
+                                    <input type="number" name="" id="" style="width:40px;">
+                                </td>
+                                <td>
+                                    <input type="text" name="" id="" style="width:50px;">
+                                </td>
+                                <td>
+                                    <input type="text" name="" id="" style="width:80px;">
+                                </td>
+                                <td>
+                                    <input type="number" name="" id="" style="width:70px;">
+                                </td>
+                                <td>
+                                    <input type="number" name="" id="" style="width:60px;">
+                                </td>
+                                <td>
+                                    <a href=""><i class="fa-solid fa-clone"></i></a><br>
+                                    <a href=""><i class="fa-solid fa-square-minus"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>     
+        </div> 
+    </div><br>
+        <a href="#" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn col-md-1">
+            <i class="fa-solid fa-plus" id="addRowIcon"></i>
+        </a>
+    </div>  <br>
+    <div class="container col-md-6 mr-5" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
+        <form action="" class="col-10 container" method="post" enctype="multipart/form-data" style="background-color: #869deb; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray; display: flex; flex-direction: column;">
+    {% csrf_token %}
+    <div class="form-group" style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; flex-direction: row; align-items: center;"><label for="subtotal" >Sub Total</label><input id="subtotal" type="number" name="subtotal" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
+        <div style="display: flex; flex-direction: row; align-items: center;"><label for="gst">GST</label><input id="gst" type="text" name="gst" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
+        <div style="display: flex; flex-direction: row; align-items: center;"><label for="adjustment">Tax Amount</label><input id="adjustment" type="text" name="adjustment" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
+        <div style="display: flex; flex-direction: row; align-items: center;"><label for="grandtotal">Round Off</label><input id="roundoff" type="text" name="roundoff" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
+        <div style="display: flex; flex-direction: row; align-items: center;"><label for="paidoff">Drand Total</label><input id="grandtotal" type="text" name="grandtotal" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
+        <div style="display: flex; flex-direction: row; align-items: center;"><label for="balance">Description</label><input id="des" type="text" name="des" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
+    </div>
+</form>
+<br><br>
+<div class="ml-auto">
+    <center>
+        <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn  " value="new" name="buttonn">Save & New</button> 
+        <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="old" name="buttonn"><a href="{% url "transactiontable" %}">Save</a> </button> 
+    </center><br><br>
+    </div>
+    </div> 
+    
+</div>
 <script>    
 // ------------------------------------------------------------------------------------------------------------
 
@@ -274,8 +291,56 @@
                 document.getElementById('gstinInput').setCustomValidity('');
             }
         }
+
+        
     
 // ------------------------------------------------------------------------------------------------------------
+$(function() {
+    $(".party-autocomplete").autocomplete({
+        source: "/autocomplete/",  // Replace with your actual autocomplete endpoint
+        minLength: 2,
+        select: function(event, ui) {
+            var selectedParty = ui.item.value;
+            fetchAvailableBalance(selectedParty);
+        }
+    });
+
+    function fetchAvailableBalance(selectedParty) {
+        $.ajax({
+            url: "/get_available_balance/",  //  endpoint
+            data: { party: selectedParty },
+            success: function(data) {
+                // Update the available balance text
+                $("#availableBalanceValue").text(data.available_balance || 'N/A');
+            }
+        });
+    }
+});
+
+// ----------------------------------------------------------------------------------------------------
+
+function addRow() {
+    var table = document.getElementById("itemTable").getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow(table.rows.length);
+    var cells = [];
+
+    for (var i = 0; i < 9; i++) {
+        cells[i] = newRow.insertCell(i);
+    }
+
+    cells[1].innerHTML = '<div class="input-group">' +
+                            '<input type="text" name="product" class="form-control party-autocomplete" placeholder="Product" required>' +
+                            '<a href="#" class="btn col-md-1"><i class="fa-solid fa-plus"></i></a>' +
+                         '</div>';
+    cells[2].innerHTML = '<input type="text" name="" style="width:90px;">';
+    cells[3].innerHTML = '<input type="number" name="" style="width:40px;">';
+    cells[4].innerHTML = '<input type="text" name="" style="width:50px;">';
+    cells[5].innerHTML = '<input type="text" name="" style="width:80px;">';
+    cells[6].innerHTML = '<input type="number" name="" style="width:70px;">';
+    cells[7].innerHTML = '<input type="number" name="" style="width:60px;">';
+    cells[8].innerHTML = '<a href=""><i class="fa-solid fa-clone"></i></a><br>' +
+                         '<a href=""><i class="fa-solid fa-square-minus"></i></a>';
+}
 
 </script>
 

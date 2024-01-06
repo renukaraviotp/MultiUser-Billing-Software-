@@ -13,6 +13,14 @@
     <link href="{% static 'assets/vendor/jqvmap/css/jqvmap.min.css ' %}" rel="stylesheet">
     <link href="{% static 'css/style.css ' %}" rel="stylesheet">
     <script src="https://kit.fontawesome.com/fbe819dd43.js" crossorigin="anonymous"></script>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Include jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-**********" crossorigin="anonymous">
+
     
 
 
@@ -188,7 +196,12 @@
                                 class="icon icon-app-store"></i><span class="nav-text">Sales</span></a>
                         <ul aria-expanded="false">
                             <li><a href="./app-profile.html">Invoice</a></li>
-                            <li><a href="{% url "credit_default" %}">Credit Note</a></li>
+                            <li style="display: flex; align-items: center;">
+                                <a href="{% url "credit_default" %}" style="text-decoration: none;">Credit Note</a>
+                                <a href="{% url "credit_add" %}" id="" style="color: white; font-size: 14px; display: flex; align-items: center; justify-content: center; margin-left: 10px;" class="btn col-md-1">
+                                    <i class="fa-solid fa-plus" id="addRowIcon"></i>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 
@@ -196,7 +209,7 @@
                         class="icon icon-app-store"></i><span class="nav-text">Purchase</span></a>
                 <ul aria-expanded="false">
                     <li><a href="./app-profile.html">Invoice</a></li>
-                    <li><a href="./app-calender.html">Credit Note</a></li>
+                    <li><a href="./app-calender.html">Debit Note</a></li>
                 </ul>
             </li>
 

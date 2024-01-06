@@ -6,6 +6,7 @@ from django.utils.crypto import get_random_string
 from django.contrib.auth.decorators import login_required
 from django.utils.text import capfirst
 from datetime import date
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -333,19 +334,58 @@ def parties_default(request):
 def parties_add_page(request):
   return render(request,'parties_add_page.html')
 
+
+
 def credit_default(request):
   return render(request,'credit_default.html')
 
 def credit_add(request):
   return render(request,'credit_add.html')
 
+def transactiontable(request):
+  return render(request,'transaction_table.html')
+
+def party_autocomplete(request):
+    term = request.GET.get('term', '')
+    party_names = Parties.objects.filter(party_name__icontains=term).values_list('party_name', flat=True)
+    return JsonResponse(list(party_names), safe=False)
+
+def get_available_balance(request):
+    selected_party = request.GET.get('party', '')
+    try:
+        party = Parties.objects.get(party_name=selected_party)
+        available_balance = party.opening_balance
+    except Parties.DoesNotExist:
+        available_balance = None
+    
+    return JsonResponse({'available_balance': available_balance})
+
+def partyy(request):
+  c=Parties.objects.all()
+  s=SalesInvoice.objects.all()
+  return render(request,'credit_add.html',{'party':c,'billno':s}) 
+
 def addcredit(request):
-  if request.method=='POST':
-    partyname=request.POST['partyname']
-    mobilenumber=request.POSt['mobilenumber']
-    gstin=request.POST['gstin']
-    returnno=request.POST['returnno']
-    billno=request.POST['billno']
-    billdate=request.POST['billdate']
-    date=request.POST['date']
-    gstintype=request.POST['gstintype']
+  user=request.user.id
+  p=staff_details.objects.get(user_id=user)
+  c=Parties.objects.all()
+  s=SalesInvoice.objects.all() 
+  
+  
+
+  
+  
+  
+
+# def addcredit(request):
+#   if request.method=='POST':
+#     party=request.POST['partyname']
+#     mobilenumber=request.POST['mobilenumber']
+#     gstin=request.POST['gstin']
+#     returnno=request.POST['returnno']
+#     billno=request.POST['billno']
+#     billdate=request.POST['billdate']
+#     date=request.POST['date']
+#     gstintype=request.POST['gstintype']
+#     address=request.POST['address']
+#     ad=Creditnote(party_id=party,)
