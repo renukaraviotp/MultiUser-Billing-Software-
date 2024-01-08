@@ -3,6 +3,11 @@
 {% load static %}
 <head>
     <script src="https://kit.fontawesome.com/fbe819dd43.js" crossorigin="anonymous"></script>
+    <!-- Add these in the head section of your HTML -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
 </head>
 <style>
     #input,select,textarea{
@@ -96,7 +101,7 @@
 
 <div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199);min-height: 100vh;" >
     <br><br><br><br><br>    
-    <form action="" class="col-10 container" method="post" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
+    <form action="{% url "creditnote_view" %}" class="col-10 container" method="post" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
         {% csrf_token %}
         <div class="container col-md-10">
             <h2>Add Credit Note</h2><br>
@@ -111,13 +116,21 @@
                     <span class="control"></span>
                 </label>
             </div>
-            
             <div id="partyForm" class="form-group row">
             <div class="form-group row">
                 <div class="col-md-3">
                     <label for=""> Party Name:</label>
                     <div class="input-group">
-                        <input id="partyNameSearch input availablebalance" type="text" name="term" class="form-control party-autocomplete" placeholder="Party Name" required>
+                        {% comment %} <input type="text" id="searchInput" class="form-control" placeholder="Search party"> {% endcomment %}
+
+                        <!-- Hidden select element for storing the selected option -->
+                        <select name="party" class="form-control">
+                            {% for p in party %}
+                                <option value="{{p.id}}">{{p.party_name}}</option>
+                            {% endfor %}
+                        </select>
+
+                        {% comment %} <input id="partyNameSearch input availablebalance" type="text" name="term" class="form-control party-autocomplete" placeholder="Party Name" required> {% endcomment %}
                         <a href="{% url 'parties_add_page' %}" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn col-md-1" ><i class="fa-solid fa-plus"></i></a>
                     </div>
                     <small>Available Balance</small>
@@ -171,7 +184,6 @@
         </script>
 </form>
 </div>
-
 </div>
 <div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199);min-height: 100vh;"><br><br><br><br><br><br>
     <div class="col-11 container mr-1">
@@ -315,6 +327,45 @@ $(function() {
             }
         });
     }
+});
+
+
+{% comment %} //---------------------------searchdropdown------------------------------ {% endcomment %}
+
+{% comment %} $(document).ready(function() {
+    // Initialize Select2 for the hidden select element
+    $('#selectedParty').select2();
+
+    // Handle autocomplete for the input field
+    $('#searchInput').on('input', function() {
+        var searchTerm = $(this).val().toLowerCase();
+
+        // Filter options based on the entered value
+        var filteredOptions = $('#selectedParty option').filter(function() {
+            return $(this).text().toLowerCase().includes(searchTerm);
+        });
+
+        // Update the Select2 dropdown with filtered options
+        $('#selectedParty').empty().append(filteredOptions).trigger('change');
+    });
+}); {% endcomment %}
+
+$(document).ready(function () {
+    $('#partySelect').select2({
+        placeholder: 'Search for a party',
+        minimumInputLength: 1, // Minimum characters before triggering a search
+        ajax: {
+            url: '/autocomplete-parties/', // Replace with your actual autocomplete endpoint
+            dataType: 'json',
+            delay: 250,
+            processResults: function (data) {
+                return {
+                    results: data.results
+                };
+            },
+            cache: true
+        }
+    });
 });
 
 // ----------------------------------------------------------------------------------------------------

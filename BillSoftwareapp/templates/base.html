@@ -21,8 +21,10 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-**********" crossorigin="anonymous">
 
-    
-
+    <!-- Add these in the head section of your HTML -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
 </head>
 
@@ -106,7 +108,7 @@
                             {% if staff.img %}
                             <img width="35" height="35" class="rounded-circle" src="{{ staff.img.url }}" alt="">
                             {% else %}
-                            <img src="{% static 'images/profile/user-1.jpg' %}" alt="" width="35" height="35"
+                            <img src="{% static 'images/profile/profile.png' %}" alt="" width="35" height="35"
                             class="rounded-circle">
                             {% endif %}
                         {% endif %}  

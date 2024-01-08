@@ -2,6 +2,7 @@ from . import views
 from django.urls import path,re_path
 from django.conf import settings
 from django.conf.urls.static import static
+# from .views import AutocompletePartiesView
 
 
 urlpatterns = [
@@ -35,6 +36,9 @@ urlpatterns = [
     path('transactiontable',views.transactiontable,name='transactiontable'),
     path('party_autocomplete/',views.party_autocomplete,name='party_autocomplete'),
     path('get_available_balance/', views.get_available_balance, name='get_available_balance'),
+    path('addcredit/<int:pk>',views.addcredit,name='addcredit'),
+    path('creditnote_view',views.creditnote_view,name='creditnote_view'),
+    # path('autocomplete-parties/', AutocompletePartiesView.as_view(), name='autocomplete_parties'),
    
 
 ]

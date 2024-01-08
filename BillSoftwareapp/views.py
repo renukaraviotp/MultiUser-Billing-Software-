@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.text import capfirst
 from datetime import date
 from django.http import JsonResponse
+from django.views import View
 
 # Create your views here.
 
@@ -360,32 +361,32 @@ def get_available_balance(request):
     
     return JsonResponse({'available_balance': available_balance})
 
-def partyy(request):
-  c=Parties.objects.all()
-  s=SalesInvoice.objects.all()
-  return render(request,'credit_add.html',{'party':c,'billno':s}) 
+def creditnote_view(request):
+    party = Parties.objects.all()
+    return render(request, 'credit_add.html', {'party': party})
 
-def addcredit(request):
-  user=request.user.id
-  p=staff_details.objects.get(user_id=user)
-  c=Parties.objects.all()
-  s=SalesInvoice.objects.all() 
-  
-  
+# class AutocompletePartiesView(View):
+#     def get(self, request, *args, **kwargs):
+#         term = request.GET.get('term', '')  # Get the search term from the query parameters
+#         parties = Parties.objects.filter(party_name__icontains=term)  # Adjust the filter based on your model
 
-  
-  
-  
+#         # Format the data as needed
+#         results = [{'id': party.id, 'text': party.party_name} for party in parties]
 
-# def addcredit(request):
-#   if request.method=='POST':
-#     party=request.POST['partyname']
-#     mobilenumber=request.POST['mobilenumber']
-#     gstin=request.POST['gstin']
-#     returnno=request.POST['returnno']
-#     billno=request.POST['billno']
-#     billdate=request.POST['billdate']
-#     date=request.POST['date']
-#     gstintype=request.POST['gstintype']
-#     address=request.POST['address']
-#     ad=Creditnote(party_id=party,)
+#         return JsonResponse({'results': results})
+
+def addcredit(request,pk):
+  if request.method == 'POST':
+    party= request.POST.get('party')
+    returnno = request.POST.get('return_no')
+    billno = request.POST.get('billno')
+    
+
+        # Create a new CreditNote object with the selected party
+    party = Parties.objects.get(party_id=pk)
+    credit_note = Creditnote.objects.create(party=party, returnno=returnno, invoice_no=billno)
+
+    return redirect('transactiontable')
+
+  party = Parties.objects.all()
+  return render(request, 'credit_add.html', {'party': party})

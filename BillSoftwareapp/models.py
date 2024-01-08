@@ -152,6 +152,16 @@ class Creditnote(models.Model):
     staff = models.ForeignKey(staff_details,on_delete=models.CASCADE,default='')
     salesinvoice = models.ForeignKey(SalesInvoice, on_delete=models.CASCADE,null=True,blank=True)
     item = models.ForeignKey(ItemModel, on_delete=models.CASCADE,null=True,blank=True)
+    party_name = models.CharField(max_length=100,null=True,blank=True)
+    contact = models.CharField(max_length=255,null=True,blank=True)
+    address = models.CharField(max_length=255,null=True,blank=True)
+    invoice_no = models.IntegerField(default=0,null=True,blank=True)
+    idate = models.DateField(null=True)
+    state_of_supply = models.CharField(max_length=255,null=True,blank=True)
+    date=models.DateField(null=True)
+    returnno=models.IntegerField(default=0,null=True,blank=True)
+    gstin = models.CharField(max_length =16,null=True)
+    
     
     
 
