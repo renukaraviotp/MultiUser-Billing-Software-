@@ -160,8 +160,27 @@ class Creditnote(models.Model):
     state_of_supply = models.CharField(max_length=255,null=True,blank=True)
     date=models.DateField(null=True)
     returnno=models.IntegerField(default=0,null=True,blank=True)
-    gstin = models.CharField(max_length =16,null=True)
+    gstin = models.CharField(max_length =16,null=True) 
+    subtotal=models.FloatField(default=0,null=True,blank=True)
+    sgst=models.FloatField(default=0,null=True,blank=True)
+    cgst=models.FloatField(default=0,null=True,blank=True)
+    igst=models.FloatField(default=0,null=True,blank=True)
+    taxamount=models.FloatField(default=0,null=True,blank=True)
+    roundoff=models.FloatField(default=0,null=True,blank=True)
+    grandtotal=models.FloatField(default=0,null=True,blank=True)
+    description=models.CharField(max_length =50,null=True) 
     
+class CreditnoteItem(models.Model):
+    credit=models.ForeignKey(Creditnote,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(company, on_delete=models.CASCADE,null=True,blank=True)
+    staff = models.ForeignKey(staff_details,on_delete=models.CASCADE,default='')
+    product=models.CharField(max_length =50,null=True)  
+    hsn=models.CharField(max_length =50,null=True) 
+    qty=models.IntegerField(default=0,null=True,blank=True)
+    price=models.IntegerField(default=0,null=True,blank=True)
+    tax=models.CharField(max_length =50,null=True) 
+    discount=models.FloatField(default=0,null=True,blank=True)
+    total=models.FloatField(default=0,null=True,blank=True)
     
     
 

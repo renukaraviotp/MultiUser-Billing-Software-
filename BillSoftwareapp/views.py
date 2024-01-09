@@ -29,10 +29,10 @@ def service(request):
 def homepage(request):
   sid = request.session.get('staff_id')
   staff =  staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
+  cmpp = company.objects.get(id=staff.company.id)
   context={
    'staff':staff,
-    'cmp':cmp,
+    'cmpp':cmpp,
   }
   return render(request, 'companyhome.html',context)
 
@@ -40,10 +40,10 @@ def homepage(request):
 def staffhome(request):
   sid = request.session.get('staff_id')
   staff =  staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
+  cmpp = company.objects.get(id=staff.company.id)
   context={
    'staff':staff,
-    'cmp':cmp,
+    'cmpp':cmpp,
   }
   return render(request, 'staffhome.html',context)
 
@@ -341,7 +341,68 @@ def credit_default(request):
   return render(request,'credit_default.html')
 
 def credit_add(request):
-  return render(request,'credit_add.html')
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  todaydate = date.today().isoformat() 
+  party = Parties.objects.filter(company_id=cmp.id) 
+  print(party) 
+  return render(request, 'credit_add.html', {'party': party,'todaydate':todaydate}) 
+ 
+
+def credit_save(request):
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  user=cmp.id
+  todaydate = date.today().isoformat()
+  if request.method == 'POST':
+    party=request.POST['party']
+    number=request.POST['number']
+    gstin=request.POST['gstin']
+    address=request.POST['address']
+    returnno=request.POST['returnno']
+    billno=request.POST['billno']
+    billdate=request.POST['billdate']
+    date=request.POST['date']
+    gsttype=request.POST['gsttype']
+    credit=Creditnote(party_name=party,contact=number,gstin=gstin,address=address,returnno=returnno,invoice_no=billno,idate=billdate,state_of_supply=gsttype,date = date,company_id=user,staff_id=staff.id)
+    credit.save()
+    return render(request, 'credit_add.html', {'party': party,'todaydate':todaydate}) 
+  
+
+def creditadd(request):
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  user=cmp.id
+  party = Parties.objects.filter(company_id=cmp.id) 
+  print(party)
+  c=Creditnote.objects.all()
+  pt=Parties.objects.get(id=c.party_id)
+  sl=SalesInvoice.objects.get(slid=c.salesinvoice_id)
+  pname=pt.party_name
+  contact=pt.phone_number
+  gstin=pt.gstin
+  address=pt.billing_address
+  billno=sl.invoice_no
+  billdate=sl.date
+  party=Parties.objects.all()
+  todaydate = date.today().isoformat()
+  if request.method=='POST':
+    date=request.POST['date']
+    gsttype=request.POST['gsttype']
+    credit=Creditnote(state_of_supply=gsttype,date = date)
+    credit.save()
+    context={
+      'pname':pname,'contact':contact,'gstin':gstin,'address':address,'billno':billno,'billdate':billdate,'todaydate':todaydate,'date':date
+    }
+    return render(request, 'credit_add.html',context) 
+  return render(request, 'credit_add.html',context)
+  
+  
+    
+  
 
 def transactiontable(request):
   return render(request,'transaction_table.html')
@@ -361,32 +422,5 @@ def get_available_balance(request):
     
     return JsonResponse({'available_balance': available_balance})
 
-def creditnote_view(request):
-    party = Parties.objects.all()
-    return render(request, 'credit_add.html', {'party': party})
 
-# class AutocompletePartiesView(View):
-#     def get(self, request, *args, **kwargs):
-#         term = request.GET.get('term', '')  # Get the search term from the query parameters
-#         parties = Parties.objects.filter(party_name__icontains=term)  # Adjust the filter based on your model
-
-#         # Format the data as needed
-#         results = [{'id': party.id, 'text': party.party_name} for party in parties]
-
-#         return JsonResponse({'results': results})
-
-def addcredit(request,pk):
-  if request.method == 'POST':
-    party= request.POST.get('party')
-    returnno = request.POST.get('return_no')
-    billno = request.POST.get('billno')
     
-
-        # Create a new CreditNote object with the selected party
-    party = Parties.objects.get(party_id=pk)
-    credit_note = Creditnote.objects.create(party=party, returnno=returnno, invoice_no=billno)
-
-    return redirect('transactiontable')
-
-  party = Parties.objects.all()
-  return render(request, 'credit_add.html', {'party': party})
