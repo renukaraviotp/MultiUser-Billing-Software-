@@ -37,7 +37,7 @@ urlpatterns = [
     path('party_autocomplete/',views.party_autocomplete,name='party_autocomplete'),
     path('get_available_balance/', views.get_available_balance, name='get_available_balance'),
     path('credit_save',views.credit_save,name='credit_save'),
-    
+        
    
 
 ]
