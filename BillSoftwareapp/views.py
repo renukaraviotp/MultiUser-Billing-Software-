@@ -347,24 +347,8 @@ def credit_add(request):
   cmp = company.objects.get(id=staff.company.id)
   todaydate = date.today().isoformat()
   party = Parties.objects.filter(company_id=cmp.id)
-
-  if request.headers.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' and request.method == 'GET':
-        party_name = request.GET.get('party_name', None)
-
-        try:
-            party = get_object_or_404(Parties, party_name=party_name, company_id=cmp.id)
-            data = {
-                'phone_number': party.phone_number,
-                'billing_address': party.billing_address,
-            }
-            return JsonResponse(data)
-        except Parties.DoesNotExist:
-            return JsonResponse({'error': 'Party not found'}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-  else:
-        return render(request, 'credit_add.html', {'party': party, 'todaydate': todaydate})
-  # return render(request, 'credit_add.html', {'party': party,'todaydate':todaydate}) 
+  item=ItemModel.objects.all() 
+  return render(request, 'credit_add.html', {'party': party,'todaydate':todaydate,'item':item}) 
  
 
 
