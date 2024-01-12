@@ -20,7 +20,7 @@
     #input:hover{
         box-shadow: none;
     }
-    #bno,#bdt,#ad,#ph,#ip{
+    #bno,#bdt,#ad,#ph,#ip,#dt{
         box-shadow: 2px 2px 2px gray;
     }
     #bno:hover{
@@ -36,6 +36,9 @@
         box-shadow: none;
     }
     #ip:hover{
+        box-shadow: none;
+    }
+    #dt:hover{
         box-shadow: none;
     }
     
@@ -134,7 +137,7 @@
 
 <div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199);min-height: 100vh;" >
     <br><br><br><br><br>    
-    <form action="{% url "credit_save" %}" class="col-10 container" method="get" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
+    <form action="" class="col-10 container" method="get" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
         {% comment %} {% csrf_token %} {% endcomment %}
         <div class="container col-md-10">
             <h2>Add Credit Note</h2><br>
@@ -151,10 +154,12 @@
             </div>
             <div id="partyForm" class="form-group row">
                     <div class="col-md-4 custom-dropdown">
-                        <label for=""> Party Name:</label>
+                        <label for=""> Party Name</label>
                         <div class="input-group">
-                        <input type="text" class="dropdown-input form-control" id="ip" placeholder='Search Party' oninput="getEmail();">
-                        <a href="{% url 'parties_add_page' %}" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn col-md-1" ><i class="fa-solid fa-plus"></i></a>
+                            <input type="text" class="dropdown-input form-control" id="ip" placeholder='Search Party' oninput="getEmail();">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
                         </div>
 <ul id="employee" class="dropdown-list">
     {% for p in party %}
@@ -179,7 +184,7 @@
                             </small>
                     </div>
                     
-                    <div class="col-md-4"><label for=""> Phone Number:</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
+                    <div class="col-md-4"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
                     <div class="col-md-4"><label for="">Billing Address</label>
                         <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly></textarea></div>
                 
@@ -187,9 +192,9 @@
             
 
             <div class="form-group row">
-                <div class="col"><label for=""> Return No.</label><input id="input" type="number" value="{{i.id}}" name="returnno" class="form-control" placeholder="Return Number" ></div>
-                <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billno" class="form-control" placeholder="Bill Number" ></div>
-                <div class="col"><label for=""> Bill Date</label><input id="bdt" type="text" name="billdate" class="form-control" placeholder="Bill Date"> </div>
+                <div class="col"><label for=""> Return No.</label><input id="input" type="number" value="" name="returnno" class="form-control" placeholder="Return Number" ></div>
+                <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div>
+                <div class="col"><label for=""> Bill Date</label><input id="bdt" type="text" name="billDate" class="form-control" placeholder="Bill Date"> </div>
                 
             </div>
         
@@ -197,10 +202,10 @@
             
 
             <div class="row form-group">
-                <div class="col"><label for="">Date</label><input type="date" id="input" name="date" value="{{todaydate}}" class="form-control"></div>
+                <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{todayDate}}" class="form-control"></div>
 
                 <div class="col-md">
-                    <label for="">State of Supply:</label>
+                    <label for="">State of Supply</label>
                         <select name="gsttype" class="form-control">
                             <option value="">--Select--</option>
                             <option value="state">State(GST)</option>
@@ -210,54 +215,54 @@
     
             </div>
         </div>
-
-        <script>
+{% comment %} creditnote details script {% endcomment %}
+    <script>
             document.getElementById('partyCheckbox').addEventListener('change', function() {
                 var partyForm = document.getElementById('partyForm');
                 partyForm.style.display = this.checked ? 'flex' : 'none';
             });
             document.addEventListener('DOMContentLoaded', function() {
-            var dateInput = document.getElementsByName('date')[0];
-            dateInput.value = ''; // Set the default value to an empty string
-        });
+                var dateInput = document.getElementsByName('date')[0];
+                dateInput.value = ''; // Set the default value to an empty string
+            });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            var input = document.querySelector('.dropdown-input');
-            var dropdownList = document.querySelector('#employee');
-    
-            input.addEventListener('focus', function () {
-                dropdownList.style.display = 'block';
-            });
-    
-            document.addEventListener('mousedown', function (event) {
-                if (!event.target.closest('.custom-dropdown')) {
-                    dropdownList.style.display = 'none';
-                }
-            });
-    
-            dropdownList.addEventListener('click', function (event) {
-                if (event.target.classList.contains('dropdown-item')) {
-                    input.value = event.target.textContent;
-                    dropdownList.style.display = 'none';
-                    fillEmployeeDetails();
-                    clearErrorMessage();
-                }
-            });
-    
-            input.addEventListener('input', function () {
-                var filterValue = input.value.toLowerCase();
-                var items = dropdownList.querySelectorAll('.dropdown-item');
-    
-                items.forEach(function (item) {
-                    var itemText = item.textContent.toLowerCase();
-                    if (itemText.includes(filterValue)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
+            document.addEventListener('DOMContentLoaded', function () {
+                var input = document.querySelector('.dropdown-input');
+                var dropdownList = document.querySelector('#employee');
+        
+                input.addEventListener('focus', function () {
+                    dropdownList.style.display = 'block';
+                });
+        
+                document.addEventListener('mousedown', function (event) {
+                    if (!event.target.closest('.custom-dropdown')) {
+                        dropdownList.style.display = 'none';
                     }
                 });
+        
+                dropdownList.addEventListener('click', function (event) {
+                    if (event.target.classList.contains('dropdown-item')) {
+                        input.value = event.target.textContent;
+                        dropdownList.style.display = 'none';
+                        fillEmployeeDetails();
+                        clearErrorMessage();
+                    }
+                });
+        
+                input.addEventListener('input', function () {
+                    var filterValue = input.value.toLowerCase();
+                    var items = dropdownList.querySelectorAll('.dropdown-item');
+        
+                    items.forEach(function (item) {
+                        var itemText = item.textContent.toLowerCase();
+                        if (itemText.includes(filterValue)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
             });
-        });
 
         // Function to fetch phone number and address based on selected party name
 
@@ -302,12 +307,190 @@
             });
         });
 
-        
+
+        function selectItem(item) {
+            var partyId = item.getAttribute("data-party-id");
+    
+            var url = "/get_sales_invoice_details/" + partyId;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the "Bill No." and "Bill Date" fields with fetched data
+                    document.getElementById("bno").value = data.billNo;
+                    document.getElementById("bdt").value = data.billDate;
+                })
+                .catch(error => console.error("Error fetching sales invoice details:", error));
+        }
 
 
+        document.addEventListener('DOMContentLoaded', function() {
+            (function() {
+              // Get the current date in the format YYYY-MM-DD
+              const todayDate = new Date().toISOString().split('T')[0];
+              
+              // Set the value attribute of the input element with the ID "input"
+              document.getElementById('dt').value = todayDate;
+            })();
+          });
             
-        </script>
+    </script>
 </form>
+{% comment %} -----modal----- {% endcomment %}
+<div class="modal fade" id="partyModal" tabindex="-1" role="dialog" aria-labelledby="partyModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="partyModalLabel">Add New Party</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Your form goes here -->
+                    <form id="form_action" action="{% url 'party_save' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                
+                        <div class="form-group row">
+                            <div class="col"><label id="partyname"> Party Name:</label><input id="input" type="text" name="partyname" class="form-control" placeholder="Party Name" required></div>
+                            <div class="col"><label id="mobilenumber"> Phone Number:</label><input id="input" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" required></div>
+                            <div class="col"><label for=""> GSTIN:</label><input id="input" type="text" name="gstin" class="form-control" placeholder="GSTIN" id="gstinInput" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}"> <small>#27ABCDE1234F1Z5</small></div>
+                            
+                        </div>
+                
+                        
+                
+                        <div class="row form-group">
+                
+                            <div class="col-md">
+                                <label for="">GST Type:</label>
+                                    <select name="gstintype" class="form-control">
+                                        <option value="">--Select GST type--</option>
+                                        <option value="Unregistered/Consumers">Unregistered/Consumers</option>
+                                        <option value="Registered Buisness - Regular">Registered Buisness - Regular</option>
+                                        <option value="Registered Buisness - Composition">Registered Buisness - Composition</option>
+                                    </select>
+                            </div>
+                            <div class="col-md">
+                                <label for="">State</label>
+                                    <select name="state" class="form-control">
+                                        <option value="">--Select State--</option>
+                                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                        <option value="Assam">Assam</option>
+                                        <option value="Bihar">Bihar</option>
+                                        <option value="Chhattisgarh">Chhattisgarh</option>
+                                        <option value="Goa">Goa</option>
+                                        <option value="Gujarat">Gujarat</option>
+                                        <option value="Haryana">Haryana</option>
+                                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                        <option value="Jharkhand">Jharkhand</option>
+                                        <option value="Karnataka">Karnataka</option>
+                                        <option value="Kerala">Kerala</option>
+                                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                        <option value="Manipur">Manipur</option>
+                                        <option value="Meghalaya">Meghalaya</option>
+                                        <option value="Mizoram">`Mizoram</option>
+                                        <option value="Nagaland">Nagaland</option>
+                                        <option value="Odisha">Odisha</option>
+                                        <option value="Punjab">Punjab</option>
+                                        <option value="Rajasthan">Rajasthan</option>
+                                        <option value="Sikkim">Sikkim</option>
+                                        <option value="Tamil Nadu">Tamil Nadu</option>
+                                        <option value="Telangana">Telangana</option>
+                                        <option value="Tripura">Tripura</option>
+                                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                        <option value="Uttarakhand">Uttarakhand</option>
+                                        <option value="West Bengal">West Bengal</option>
+                                        
+                                    </select>
+                            </div>
+                
+                            <div class="col-md"><label for="">Email:</label><input id="input" type="email" name="email" class="form-control" placeholder="Email" ></div>
+                            <div class="col-md"><label for="">Date</label><input id="input" type="date" name="date" class="form-control" value="{{todaydate}}"  ></div>
+                 
+                        </div><br>
+                
+                        <div class="row form-group">
+                            <div class="col-md-6">
+                                <label for="">Billing Address</label>
+                                <textarea name="address" id="" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label for="">Balance</label>
+                                <input id="input" type="number" name="balance" class="form-control" placeholder="Balance" min="0">
+                            </div>
+                        </div>
+                        <div class="row form-group radio-buttons ml-1" style="display: none;">
+                            
+                            <input type="radio" name="pay_recieve" class="col-1" value="pay"><label style="color: black;">To Pay</label>
+                            <input type="radio" name="pay_recieve" class="col-1" value="receive"><label style="color: black;">To Receive</label>
+                            
+                        </div><br>
+                
+                        
+                            <center>
+                                {% comment %} <button id="checkk" style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="new" name="buttonn">Save & New</button>  {% endcomment %}
+                                <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="old" name="buttonn">Save </button> 
+                            </center>
+                
+                </form>
+                </div>
+            </div>
+        </div>
+</div>
+                    <!-- Modal -->
+
+{% comment %} script for modal {% endcomment %}
+<script>
+    // --------------------------------------------------------------------------------------------------
+    // Function to show/hide radio buttons based on the balance value
+    function toggleRadioButtons() {
+        var balanceInput = document.querySelector('[name="balance"]');
+        var radioButtonsContainer = document.querySelector('.radio-buttons');
+
+        if (parseFloat(balanceInput.value) > 0) {
+            radioButtonsContainer.style.display = 'block';
+        } else {
+            radioButtonsContainer.style.display = 'none';
+        }
+    }
+
+    // Initial state on page load
+    toggleRadioButtons();
+
+    // Bind the function to the input's input event
+    document.querySelector('[name="balance"]').addEventListener('input', toggleRadioButtons);
+
+
+    // ------------------------------------------------------------------------------------------------------------
+
+
+        function validateGSTIN() {
+            // Get the input value
+            var gstinInput = document.getElementById('gstinInput').value.trim();
+
+            // Define the GSTIN pattern
+            var gstinPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}$/;
+
+            // Check if the input matches the pattern
+            if (!gstinPattern.test(gstinInput)) {
+                // Set a custom validation message
+                document.getElementById('gstinInput').setCustomValidity('Please enter a valid GSTIN number.');
+            } else {
+                // Clear the custom validation message
+                document.getElementById('gstinInput').setCustomValidity('');
+            }
+        }
+
+// ------------------------------------------------------------------------------------------------------------
+</script>
+
+    
 </div>
 </div>
 <div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
@@ -431,20 +614,10 @@ function addRow() {
         cells[i] = newRow.insertCell(i);
     }
 
-    cells[1].innerHTML = `
-    <div class="col-md-4 dropdown-custom">
-        <div class="input-group">
-            <input type="text" name="product" class="form-control dropdown-ip" placeholder="Product" required oninput="getProduct();">
-            <a href="#" class="btn col-md-1"><i class="fa-solid fa-plus"></i></a>
-        </div>
-        <ul id="product" class="dropdown-list">
-            {% for i in item %}
-                <li class="dropdown-prd" data-value="{{ i.item_name }}" data-item-id="{{ i.id }}" data-hsn="{{ i.item_hsn }}" data-price="{{ i.item_sale_price }}" onclick="selectItem(this);">
-                    {{ i.item_name }}
-                </li>
-            {% endfor %}
-        </ul>
-    </div>`;
+    cells[1].innerHTML = '<td><div class="input-group">'+
+                         '<input type="text" name="product[]" id="product" class="form-control" placeholder="Product">'+
+                         '<a href="" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn col-md-1"><i class="fa-solid fa-plus"></i></a>'+
+                         '</div></td>';
     cells[2].innerHTML = '<input type="text" id="hsn" name="" style="width:90px;">';
     cells[3].innerHTML = '<input type="number" id="qty" name="" style="width:40px;">';
     cells[4].innerHTML = '<input type="text" name="" id="price" style="width:50px;">';
@@ -455,51 +628,6 @@ function addRow() {
                          '<a href=""><i class="fa-solid fa-square-minus"></i></a>';
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const input = document.querySelector('.dropdown-ip');
-    const dropdownList = document.querySelector('#product');
-
-    input.addEventListener('focus', function () {
-        dropdownList.style.display = 'block';
-    });
-
-    document.addEventListener('mousedown', function (event) {
-        if (!event.target.closest('.dropdown-custom')) {
-            dropdownList.style.display = 'none';
-        }
-    });
-
-    dropdownList.addEventListener('click', function (event) {
-        if (event.target.classList.contains('dropdown-prd')) {
-            input.value = event.target.textContent;
-            dropdownList.style.display = 'none';
-            fillEmployeeDetails();
-            clearErrorMessage();
-        }
-    });
-
-    input.addEventListener('input', function () {
-        const filterValue = input.value.toLowerCase();
-        const items = dropdownList.querySelectorAll('.dropdown-prd');
-
-        items.forEach(function (item) {
-            const itemText = item.textContent.toLowerCase();
-            item.style.display = itemText.includes(filterValue) ? 'block' : 'none';
-        });
-    });
-});
-
-function getProduct() {
-    const selectedElement = document.querySelector(".dropdown-prd.selected");
-    
-    if (selectedElement) {
-        const item_hsn = selectedElement.getAttribute("data-hsn");
-        const item_sale_price = selectedElement.getAttribute("data-price");
-
-        document.getElementById("hsn").value = item_hsn;
-        document.getElementById("price").value = item_sale_price;
-    }
-}
 </script>
 
 

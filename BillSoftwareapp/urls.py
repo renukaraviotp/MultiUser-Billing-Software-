@@ -34,9 +34,9 @@ urlpatterns = [
     path('credit_default',views.credit_default,name='credit_default'),
     path('credit_add',views.credit_add,name='credit_add'),
     path('transactiontable',views.transactiontable,name='transactiontable'),
-    path('party_autocomplete/',views.party_autocomplete,name='party_autocomplete'),
-    path('get_available_balance/', views.get_available_balance, name='get_available_balance'),
-    path('credit_save',views.credit_save,name='credit_save'),
+    # path('credit_save',views.credit_save,name='credit_save'),
+    path('get_sales_invoice_details/<int:party_id>/', views.get_sales_invoice_details, name='get_sales_invoice_details'),
+    path('party_save',views.party_save,name='party_save'),
         
    
 

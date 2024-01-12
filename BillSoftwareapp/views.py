@@ -349,59 +349,104 @@ def credit_add(request):
   party = Parties.objects.filter(company_id=cmp.id)
   item=ItemModel.objects.all() 
   return render(request, 'credit_add.html', {'party': party,'todaydate':todaydate,'item':item}) 
+
+
+def get_sales_invoice_details(request, party_id):
+    try:
+        sales_invoice = SalesInvoice.objects.get(party_id=party_id)
+        data = {
+            'billNo': sales_invoice.invoice_no,
+            'billDate': sales_invoice.date.strftime('%Y-%m-%d'),  # Format the date as needed
+        }
+        return JsonResponse(data)
+    except SalesInvoice.DoesNotExist:
+        return JsonResponse({'error': 'Sales invoice not found'}, status=404)
+      
+
+
+def party_save(request):
+    
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    user = cmp.id
+    
+    if request.method == 'POST':
+        partyname = request.POST['partyname'].capitalize()
+        mobilenumber = request.POST['mobilenumber']
+        gstin = request.POST['gstin']
+        gstintype = request.POST['gstintype']
+        state = request.POST['state']
+        email = request.POST['email']
+        Date = request.POST['date']
+        address = request.POST['address']
+        balance = request.POST['balance']
+        buttonn = request.POST['buttonn']
+        if balance == '' or balance == '0' :
+                 
+              party = Parties(party_name = partyname,phone_number = mobilenumber, gstin = gstin,
+                              gst_type = gstintype, billing_address = address, state = state,
+                              email = email, date = Date,company_id=user,staff_id=staff.id)
+              party.save()
+
+              history = History(company_id=user,party_id=party.id,staff_id=staff.id,action='CREATED')
+              history.save()
+              
+        else:
+              if request.POST['pay_recieve'] != '':
+                  pay_recieve = request.POST['pay_recieve']
+
+                  if pay_recieve == 'receive':
+                      party = Parties(party_name = partyname,phone_number = mobilenumber, gstin = gstin,
+                                      gst_type = gstintype, billing_address = address, state = state,
+                                      email = email, date = Date,opening_balance = balance,to_recieve = True,
+                                      company_id=user,staff_id=staff.id)
+                      party.save()
+                      history = History(company_id=user,party_id=party.id,staff_id=staff.id,action='CREATED')
+                      history.save()
+
+                  elif pay_recieve == 'pay':
+                      neg_balance = -int(balance)
+                      party = Parties(party_name = partyname,phone_number = mobilenumber, gstin = gstin,
+                                      gst_type = gstintype, billing_address = address, state = state,
+                                      email = email, date = Date,opening_balance = neg_balance,to_pay = True,
+                                      company_id=user,staff_id=staff.id)
+                      party.save()
+                      history = History(company_id=user,party_id=party.id,staff_id=staff.id,action='CREATED')
+                      history.save()
+                  else:
+                      party = Parties(party_name = partyname,phone_number = mobilenumber, gstin = gstin,
+                                      gst_type = gstintype, billing_address = address, state = state,
+                                      email = email, date = Date,staff_id=staff.id,company_id=user)
+                      party.save()
+                      history = History(company_id=user,party_id=party.id,staff_id=staff.id,action='CREATED')
+                      history.save()
+
+        if buttonn == 'new':
+              return redirect('credit_add')
+        elif buttonn == 'old':
+              return redirect('credit_add') 
+        
+
+          
  
 
 
 
-def credit_save(request):
-  sid = request.session.get('staff_id')
-  staff = staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
-  user=cmp.id
-  todaydate = date.today().isoformat()
-  if request.method == 'POST':
-    party=request.POST['party']
-    number=request.POST['number']
-    gstin=request.POST['gstin']
-    address=request.POST['address']
-    returnno=request.POST['returnno']
-    billno=request.POST['billno']
-    billdate=request.POST['billdate']
-    date=request.POST['date']
-    gsttype=request.POST['gsttype']
-    credit=Creditnote(party_name=party,contact=number,gstin=gstin,address=address,returnno=returnno,invoice_no=billno,idate=billdate,state_of_supply=gsttype,date = date,company_id=user,staff_id=staff.id)
-    credit.save()
-    return render(request, 'credit_add.html', {'party': party,'todaydate':todaydate}) 
+# def credit_save(request):
+#   sid = request.session.get('staff_id')
+#   staff = staff_details.objects.get(id=sid)
+#   cmp = company.objects.get(id=staff.company.id)
+#   user=cmp.id
+#   party = Parties.objects.filter(company_id=cmp.id)
+#   if request.method == 'GET':
+#     date=request.GET['date']
+#     gsttype=request.GET['gsttype']
+#     credit=Creditnote(state_of_supply=gsttype,date = date,company_id=user,staff_id=staff.id) 
+#     credit.save()
+#     returnno=credit.id
+#     return render(request, 'credit_add.html', {'party': party,'returnno':returnno}) 
   
-
-def creditadd(request):
-  sid = request.session.get('staff_id')
-  staff = staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
-  user=cmp.id
-  party = Parties.objects.filter(company_id=cmp.id) 
-  print(party)
-  c=Creditnote.objects.all()
-  pt=Parties.objects.get(id=c.party_id)
-  sl=SalesInvoice.objects.get(slid=c.salesinvoice_id)
-  pname=pt.party_name
-  contact=pt.phone_number
-  gstin=pt.gstin
-  address=pt.billing_address
-  billno=sl.invoice_no
-  billdate=sl.date
-  party=Parties.objects.all()
-  todaydate = date.today().isoformat()
-  if request.method=='POST':
-    date=request.POST['date']
-    gsttype=request.POST['gsttype']
-    credit=Creditnote(state_of_supply=gsttype,date = date)
-    credit.save()
-    context={
-      'pname':pname,'contact':contact,'gstin':gstin,'address':address,'billno':billno,'billdate':billdate,'todaydate':todaydate,'date':date
-    }
-    return render(request, 'credit_add.html',context) 
-  return render(request, 'credit_add.html',context)
   
   
     
@@ -410,20 +455,7 @@ def creditadd(request):
 def transactiontable(request):
   return render(request,'transaction_table.html')
 
-def party_autocomplete(request):
-    term = request.GET.get('term', '')
-    party_names = Parties.objects.filter(party_name__icontains=term).values_list('party_name', flat=True)
-    return JsonResponse(list(party_names), safe=False)
 
-def get_available_balance(request):
-    selected_party = request.GET.get('party', '')
-    try:
-        party = Parties.objects.get(party_name=selected_party)
-        available_balance = party.opening_balance
-    except Parties.DoesNotExist:
-        available_balance = None
-    
-    return JsonResponse({'available_balance': available_balance})
 
 
     
