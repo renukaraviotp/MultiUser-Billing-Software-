@@ -505,39 +505,22 @@
                 </div>
                 <br>
                 <div class="row">
-                    <table class="table table-bordered">
+                    <table class="table mt-3" id="dynamicadd">
                         <thead>
                             <tr>
-                                <th class="">SL.No</th>
-                                <th class="">PRODUCT </th>
-                                <th class="">HSN</th>
-                                <th class="">QTY</th>
-                                <th class="">PRICE </th>
-                                <th class="">TAX(%)</th>
-                                <th class="">DISCOUNT</th>
-                                <th class="">TOTAL </th>
-                                <th class="">FIELD</th>
+                                <th>SL.No</th>
+                                <th>Product</th>
+                                <th>HSN</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Tax</th>
+                                <th>Discount</th>
+                                <th>Total</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id='dynamicadd'>
-                            <tr>
-                                {% comment %} <td></td>
-                                <td>
-                                    <div class="input-group">
-                                        <input type="text" name="product[]" id="product" class="form-control" placeholder="Product">
-                                        <a href="" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn col-md-1"><i class="fa-solid fa-plus"></i></a>
-                                    </div>
-                                </td>
-                                <td><input type="text" name="hsn[]" id="hsn" class='form-control' style="width:90px;"></td>
-                                <td><input type="number" name="qty[]" id="qty" class='form-control' style="width:40px;"></td>
-                                <td><input type="text" name="price[]" id="price" class='form-control' style="width:50px;"></td>
-                                <td><input type="text" name="tax[]" id="tax" class='form-control' style="width:80px;"></td>
-                                <td><input type="number" name="discount[]" id="discount" class='form-control' style="width:70px;"></td>
-                                <td><input type="number" name="total[]" id="total" class='form-control' style="width:60px;"></td>
-                                <td>
-                                    <button type='button' class='btn btn-danger'><i class="fa-solid fa-square-minus"></i></button>
-                                </td> {% endcomment %}
-                            </tr>
+                        <tbody>
+                            <!-- Rows will be dynamically added here -->
                         </tbody>
                     </table>
                     <button type='button' id='add' class='btn btn-success'>+</button>
@@ -547,34 +530,92 @@
     </div><br>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type='text/javascript'>
+        var modalCounter = 0;
+
         $(document).ready(function () {
             var i = 1;
-    
+        
             // Initial SL.No
             updateSerialNumbers();
-    
+        
             $('#add').click(function () {
                 i++;
-                $('#dynamicadd').append('<tr id="row' + i + '"><td class="serial-no" style="color:black;"></td><td><div class="input-group"><input type="text" name="product[]" id="product" class="form-control"><a href="" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor=\'#480ceb\'" onmouseout="this.style.backgroundColor=\'#3d4465\'" class="btn col-md-1"><i class="fa-solid fa-plus"></i></a></div></td><td><input type="text" name="hsn[]" id="hsn" class="form-control" style="width:90px;"></td><td><input type="number" name="qty[]" id="qty" class="form-control" style="width:40px;"></td><td><input type="text" name="price[]" id="price" class="form-control" style="width:50px;"></td><td><input type="text" name="tax[]" id="tax" class="form-control" style="width:80px;"></td><td><input type="number" name="discount[]" id="discount" class="form-control" style="width:70px;"></td><td><input type="number" name="total[]" id="total" class="form-control" style="width:60px;"></td><td><button type="button" id="' + i + '" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td></tr>');
-    
+                var modalId = 'exampleModal' + modalCounter++;
+                var newRow = '<tr id="row' + i + '">' +
+                    '<td class="serial-no"></td>' +
+                    '<td><div class="input-group">' +
+                    '<input type="text" name="product[]" class="form-control">' +
+                    '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#' + modalId + '"><i class="fa-solid fa-plus"></i></button>' +
+                    '</div></td>' +
+                    '<td><input type="text" name="hsn[]" class="form-control" style="width:90px;"></td>' +
+                    '<td><input type="number" name="qty[]" class="form-control" style="width:40px;"></td>' +
+                    '<td><input type="text" name="price[]" class="form-control" style="width:50px;"></td>' +
+                    '<td><input type="text" name="tax[]" class="form-control" style="width:80px;"></td>' +
+                    '<td><input type="number" name="discount[]" class="form-control" style="width:70px;"></td>' +
+                    '<td><input type="number" name="total[]" class="form-control" style="width:60px;"></td>' +
+                    '<td><button type="button" id="btnRemove_' + i + '" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>' +
+                    '</tr>';
+        
+                var modalHtml = '<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">' +
+                    '<div class="modal-dialog" role="document">' +
+                    '<div class="modal-content">' +
+                    '<div class="modal-header">' +
+                    '<h5 class="modal-title" id="exampleModalLabel">Add Item</h5>' +
+                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+                    '<span aria-hidden="true">&times;</span>' +
+                    '</button>' +
+                    '</div>' +
+                    '<div class="modal-body">' +
+                    '<form id="form_action" action="{% url "item_save" %}" method="post" enctype="multipart/form-data">' +
+                    '{% csrf_token %}' +
+        
+                    '<div class="form-group row">' +
+                    '<div class="col"><label id="itemname"> Item Name:</label><input id="input" type="text" name="itemname" class="form-control" placeholder="Item Name" required></div>' +
+                    '<div class="col"><label id="hsn"> Item HSN:</label><input id="input" type="text" name="hsn" class="form-control" placeholder="Item HSN" required></div>' +
+                    '<div class="col"><label id="unit"> Item Unit:</label><input id="input" type="text" name="unit" class="form-control" placeholder="Item Unit"></div>' +
+        
+                    '</div>' +
+                    '<div class="form-group row">'+
+                        '<div class="col"><label></label>Taxable<input id="" type="radio" name="taxable" style="color:black;"></div>'+
+                        '<div class="col"><label></label>Non Taxable<input id="" type="radio" name="nontaxable"></div>'+
+                        '<div class="col"><label id="saleprice"> Sale Price</label><input id="input" type="text" name="saleprice" class="form-control" placeholder="Sale Price"></div>'+
+                        '<div class="col"><label id="purchaseprice">Purchase Price</label><input id="input" type="text" name="purchaseprice" class="form-control" placeholder="Purchase Price"></div>'+
+                    '</div>'+
+        
+                    '<center>' +
+                    '<button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor=\'#480ceb\'" onmouseout="this.style.backgroundColor=\'#3d4465\'" class="btn " value="old" name="buttonn">Save </button> ' +
+                    '</center>' +
+        
+                    '</form>' +
+                    '</div>' +
+                    '<div class="modal-footer">' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+        
+                $('#dynamicadd tbody').append(newRow);
+                $('body').append(modalHtml);
+        
                 // Update SL.No after adding a new row
                 updateSerialNumbers();
             });
-    
+        
             $(document).on('click', '.remove_row', function () {
-                var row_id = $(this).attr("id");
-                $('#row' + row_id + '').remove();
-    
+                var row_id = $(this).attr("id").split('_')[1];
+                $('#row' + row_id).remove();
+        
                 // Update SL.No after removing a row
                 updateSerialNumbers();
             });
-    
+        
             function updateSerialNumbers() {
-                $('.serial-no').each(function (index) {
-                    $(this).text(index + 1);
+                $('.serial-no').text(function (index) {
+                    return index + 1;
                 });
             }
         });
+        
     </script>
     
 </div>
@@ -605,6 +646,8 @@
 
 // ----------------------------------------------------------------------------------------------------
 
+var modalCounter = 0; // Unique counter for modal IDs
+
 function addRow() {
     var table = document.getElementById("itemTable").getElementsByTagName('tbody')[0];
     var newRow = table.insertRow(table.rows.length);
@@ -614,10 +657,55 @@ function addRow() {
         cells[i] = newRow.insertCell(i);
     }
 
-    cells[1].innerHTML = '<td><div class="input-group">'+
-                         '<input type="text" name="product[]" id="product" class="form-control" placeholder="Product">'+
-                         '<a href="" id="input" style="background-color: #3d4465;color: white; font-size: 14px; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn col-md-1"><i class="fa-solid fa-plus"></i></a>'+
-                         '</div></td>';
+    var modalId = 'exampleModal' + modalCounter++;
+
+    cells[1].innerHTML = '<div class="input-group">' +
+        '<input type="text" name="product[]" id="product" class="form-control" placeholder="Product">' +
+        '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#' + modalId + '"><i class="fa-solid fa-plus"></i></button>' +
+        '</div>';
+
+    // Add the modal outside of the input-group div
+    var modalHtml = '<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">' +
+        '<div class="modal-dialog" role="document">' +
+        '<div class="modal-content">' +
+        '<div class="modal-header">' +
+        '<h5 class="modal-title" id="exampleModalLabel">Add Item</h5>' +
+        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+        '<span aria-hidden="true">&times;</span>' +
+        '</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+            '<form id="form_action" action="" method="post" enctype="multipart/form-data">'+
+                '{% csrf_token %}'+
+        
+                '<div class="form-group row">'+
+                    '<div class="col"><label id="itemname"> Item name:</label><input id="input" type="text" name="itemname" class="form-control" placeholder="Item Name" required></div>'+
+                    '<div class="col"><label id="hsn">Item HSN:</label><input id="input" type="text" name="hsn" class="form-control"  placeholder="Item HSN" required></div>'+
+                    '<div class="col"><label id="unit"> Item Unit:</label><input id="input" type="text" name="unit" class="form-control" placeholder="Item Unit"></div>'+ 
+                '</div>'+
+                '<div class="form-group row">'+
+                    '<div class="col"><label id="taxable">Taxable</label><input id="" type="radio" name="taxable" class="form-control"required></div>'+
+                    '<div class="col"><label id="nontaxable">Non Taxable</label><input id="" type="radio" name="nontaxable" class="form-control"></div>'+ 
+                '</div>'+
+        
+                    '<center>'+
+                        '<button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor=\'#480ceb\'" onmouseout="this.style.backgroundColor=\'#3d4465\'" class="btn " value="old" name="buttonn">Save </button> '+
+                    '</center>'+
+        
+            '</form>' +
+        '</div>' +
+        '<div class="modal-footer">' +
+        '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>' +
+        '<button type="button" class="btn btn-primary">Save changes</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+
+    // Append the modal HTML to the document body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // Add the rest of your code for other cells
     cells[2].innerHTML = '<input type="text" id="hsn" name="" style="width:90px;">';
     cells[3].innerHTML = '<input type="number" id="qty" name="" style="width:40px;">';
     cells[4].innerHTML = '<input type="text" name="" id="price" style="width:50px;">';
@@ -625,8 +713,11 @@ function addRow() {
     cells[6].innerHTML = '<input type="number" name="" id="discount" style="width:70px;">';
     cells[7].innerHTML = '<input type="number" name="" id="total" style="width:60px;">';
     cells[8].innerHTML = '<a href=""><i class="fa-solid fa-clone"></i></a><br>' +
-                         '<a href=""><i class="fa-solid fa-square-minus"></i></a>';
+        '<a href=""><i class="fa-solid fa-square-minus"></i></a>';
 }
+
+
+
 
 </script>
 

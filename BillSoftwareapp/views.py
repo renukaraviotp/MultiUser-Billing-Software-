@@ -426,6 +426,23 @@ def party_save(request):
               return redirect('credit_add')
         elif buttonn == 'old':
               return redirect('credit_add') 
+            
+def item_save(request):
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  user = cmp.id
+    
+  if request.method == 'POST':
+    itemname=request.POST['itemname']
+    hsn=request.POST['hsn']
+    unit=request.POST['unit']
+    saleprice=request.POST['saleprice']
+    purchaseprice=request.POST['purchaseprice']
+    item=ItemModel(item_name=itemname,item_hsn=hsn,item_unit=unit,item_sale_price=saleprice,item_purchase_price=purchaseprice)
+    item.save()
+    return redirect('credit_add') 
+  
         
 
           

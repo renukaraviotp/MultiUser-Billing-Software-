@@ -37,6 +37,7 @@ urlpatterns = [
     # path('credit_save',views.credit_save,name='credit_save'),
     path('get_sales_invoice_details/<int:party_id>/', views.get_sales_invoice_details, name='get_sales_invoice_details'),
     path('party_save',views.party_save,name='party_save'),
+    path('item_save',views.item_save,name='item_save'),
         
    
 
