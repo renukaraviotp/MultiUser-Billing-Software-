@@ -38,6 +38,8 @@ urlpatterns = [
     path('get_sales_invoice_details/<int:party_id>/', views.get_sales_invoice_details, name='get_sales_invoice_details'),
     path('party_save',views.party_save,name='party_save'),
     path('item_save',views.item_save,name='item_save'),
+    path('item_details',views.item_details,name='item_details'),
+    path('item_dropdown',views.item_dropdown,name='item_dropdown'),
         
    
 

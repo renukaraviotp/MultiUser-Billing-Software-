@@ -503,22 +503,22 @@
     
 </div>
 </div>
-<div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
+
+<div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199); min-height: 100vh;">
     <br><br><br><br><br><br>
     <div class="col-11 container mr-1">
         <div class="row">
             <!-- party table -->
-            <div class="col-11 table-responsive" style="background-color: white;padding: 30px;border-radius: 15px;box-shadow: 3px 3px 3px gray;">
+            <div class="col-11 table-responsive" style="background-color: white; padding: 30px; border-radius: 15px; box-shadow: 3px 3px 3px gray;">
                 <div class="row">
-                    <h3>Item </h3>
-                    <div class="dropdown ml-2"></div>
+                    <h3>Item</h3>
                 </div>
                 <br>
                 <div class="row">
                     <table class="table mt-3" id="dynamicadd">
                         <thead>
                             <tr>
-                                <th>SL.No</th>
+                                <th>#</th>
                                 <th>Product</th>
                                 <th>HSN</th>
                                 <th>Qty</th>
@@ -526,10 +526,35 @@
                                 <th>Tax</th>
                                 <th>Discount</th>
                                 <th>Total</th>
-                                <th>Actions</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                                <td class='serial-no'></td>
+                                <td>
+                                    <div class="d-flex">
+                                        <select name="product[]" class="form-control product" onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                            <option value="" selected hidden>Select Product</option>
+                                            <!-- Replace this with your actual loop for items -->
+                                            <option value="1">Item 1</option>
+                                            <option value="2">Item 2</option>
+                                            <!-- End of loop -->
+                                        </select>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#newitem">
+                                            <span class="fa fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td><input type="text" name="hsn[]" class="form-control hsn" style="width:90px;"></td>
+                                <td><input type="number" name="qty[]" class="form-control qty" style="width:40px;"></td>
+                                <td><input type="text" name="price[]" class="form-control price" style="width:50px;"></td>
+                                <td><input type="text" name="tax[]" class="form-control tax" style="width:80px;"></td>
+                                <td><input type="number" name="discount[]" class="form-control discount" style="width:70px;"></td>
+                                <td><input type="number" name="total[]" class="form-control total" style="width:60px;"></td>
+                                <td><button type="button" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>
+                            </tr>
                             <!-- Rows will be dynamically added here -->
                         </tbody>
                     </table>
@@ -537,183 +562,392 @@
                 </div>
             </div>
         </div>
-    </div><br>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type='text/javascript'>
+    </div>
+</div>
 
+<!-- New Item Modal -->
+<div class="modal fade" id="newitem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Your form for adding new items goes here -->
+                <!-- Example form: -->
+                <form id="newItemForm">
+                    <div class="form-group">
+                        <label for="itemName">Item Name</label>
+                        <input type="text" class="form-control" id="itemName" name="itemName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemHSN">Item HSN</label>
+                        <input type="text" class="form-control" id="itemHSN" name="itemHSN" required>
+                    </div>
+                    <!-- Add more fields as needed -->
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-        var modalCounter = 0;
+<script type='text/javascript'>
+    $(document).ready(function () {
+        var i = 1;
 
-        $(document).ready(function () {
-            var i = 1;
-        
-            // Initial SL.No
+        // Initial SL.No
+        updateSerialNumbers();
+
+        $('#add').click(function () {
+            i++;
+            var newRow = '<tr>' +
+                '<td class="serial-no"></td>'+
+                '<td>' +
+                    '<div class="d-flex">' +
+                        '<select name="product[]" class="form-control product" onchange="changeprd(this.id)" style="color: black; background-color: white;">' +
+                            '<option value="" selected hidden>Select Product</option>' +
+                            '<option value="1">Item 1</option>' +
+                            '<option value="2">Item 2</option>' +
+                            '</select>' +
+                        '&nbsp;&nbsp;&nbsp;' +
+                        '<button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#newitem">' +
+                            '<span class="fa fa-plus"></span>' +
+                        '</button>' +
+                    '</div>' +
+                '</td>' +
+                '<td><input type="text" name="hsn[]" class="form-control hsn" style="width:90px;"></td>' +
+                '<td><input type="number" name="qty[]" class="form-control qty" style="width:40px;"></td>' +
+                '<td><input type="text" name="price[]" class="form-control price" style="width:50px;"></td>' +
+                '<td><input type="text" name="tax[]" class="form-control tax" style="width:80px;"></td>' +
+                '<td><input type="number" name="discount[]" class="form-control discount" style="width:70px;"></td>' +
+                '<td><input type="number" name="total[]" class="form-control total" style="width:60px;"></td>' +
+                '<td><button type="button" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>' +
+                '</tr>';
+
+            $('#dynamicadd tbody').append(newRow);
+
+            // Update SL.No after adding a new row
             updateSerialNumbers();
-        
-            $('#add').click(function () {
-                i++;
-                var modalId = 'exampleModal' + modalCounter++;
-                var newRow = '<tr id="row' + i + '">' +
-                    '<td class="serial-no"></td>' +
-                    '<td><div class="input-group">' +
-                        
-                        '<div class="product-dropdown"  style="height: 9vh;">'+ 
-                            '<input type="text" class="dropdown-input form-control" id="item_id" placeholder="Select Item" onclick="getDetails();">'+
-                            '<div class="dropdown-list" id="item">'+
-                                '{% for i in item %}'+
-                               
-                                    '<div class="dropdown-item" data-value="{{ i.id }} data-hsn="{{i.item_hsn}}"">{{i.item_name}}</div>'+
-                            
-                                '{% endfor %}'+
-                            '</div>'+
-                        '</div>'+
-                    '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#' + modalId + '"><i class="fa-solid fa-plus"></i></button>' +
-                    '</div></td>' +
-                    '<td><input type="text" name="hsn[]" class="form-control" style="width:90px;"></td>' +
-                    '<td><input type="number" name="qty[]" class="form-control" style="width:40px;"></td>' +
-                    '<td><input type="text" name="price[]" class="form-control" style="width:50px;"></td>' +
-                    '<td><input type="text" name="tax[]" class="form-control" style="width:80px;"></td>' +
-                    '<td><input type="number" name="discount[]" class="form-control" style="width:70px;"></td>' +
-                    '<td><input type="number" name="total[]" class="form-control" style="width:60px;"></td>' +
-                    '<td><button type="button" id="btnRemove_' + i + '" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>' +
-                    '</tr>';
-        
-                var modalHtml = '<div class="modal fade" id="' + modalId + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">' +
-                    '<div class="modal-dialog" role="document">' +
-                    '<div class="modal-content">' +
-                    '<div class="modal-header">' +
-                    '<h5 class="modal-title" id="exampleModalLabel">Add Item</h5>' +
-                    '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
-                    '<span aria-hidden="true">&times;</span>' +
-                    '</button>' +
-                    '</div>' +
-                    '<div class="modal-body">' +
-                    '<form id="form_action" action="{% url "item_save" %}" method="post" enctype="multipart/form-data">' +
-                    '{% csrf_token %}' +
-        
-                    '<div class="form-group row">' +
-                    '<div class="col"><label id="itemname"> Item Name:</label><input id="input" type="text" name="itemname" class="form-control" placeholder="Item Name" required></div>' +
-                    '<div class="col"><label id="hsn"> Item HSN:</label><input id="input" type="text" name="hsn" class="form-control" placeholder="Item HSN" required></div>' +
-                    '<div class="col"><label id="unit"> Item Unit:</label><input id="input" type="text" name="unit" class="form-control" placeholder="Item Unit"></div>' +
-        
-                    '</div>' +
-                    '<div class="form-group row">'+
-                        '<div class="col"><label></label>Taxable<input id="" type="radio" name="taxable" style="color:black;"></div>'+
-                        '<div class="col"><label></label>Non Taxable<input id="" type="radio" name="nontaxable"></div>'+
-                        '<div class="col"><label id="saleprice"> Sale Price</label><input id="input" type="text" name="saleprice" class="form-control" placeholder="Sale Price"></div>'+
-                        '<div class="col"><label id="purchaseprice">Purchase Price</label><input id="input" type="text" name="purchaseprice" class="form-control" placeholder="Purchase Price"></div>'+
-                    '</div>'+
-        
-                    '<center>' +
-                    '<button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor=\'#480ceb\'" onmouseout="this.style.backgroundColor=\'#3d4465\'" class="btn " value="old" name="buttonn">Save </button> ' +
-                    '</center>' +
-        
-                    '</form>' +
-                    '</div>' +
-                    '<div class="modal-footer">' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</div>';
-        
-                $('#dynamicadd tbody').append(newRow);
-                $('body').append(modalHtml);
-        
-                // Update SL.No after adding a new row
-                updateSerialNumbers();
+        });
 
-                // Initialize Select2 for the product dropdown
-                initializeProductDropdown();
-            });
-        
-            $(document).on('click', '.remove_row', function () {
-                var row_id = $(this).attr("id").split('_')[1];
-                $('#row' + row_id).remove();
-        
-                // Update SL.No after removing a row
-                updateSerialNumbers();
-            });
-        
-            function updateSerialNumbers() {
-                $('.serial-no').text(function (index) {
-                    return index + 1;
-                });
-            }
+        $(document).on('click', '.remove_row', function () {
+            $(this).closest('tr').remove();
 
-            function initializeProductDropdown() {
-                $('.dropdown-input').on('focus', function () {
-                    $('.dropdown-list').css('display', 'block');
-                });
-        
-                $(document).on('mousedown', function (event) {
-                    if (!$(event.target).closest('.product-dropdown')) {
-                        $('.dropdown-list').css('display', 'none');
-                    }
-                });
-        
-                $('.dropdown-list').on('click', function (event) {
-                    if ($(event.target).hasClass('dropdown-item')) {
-                        $('.dropdown-input').val(event.target.textContent);
-                        $('.dropdown-list').css('display', 'none');
-                        fillEmployeeDetails();
-                        clearErrorMessage();
-                    }
-                });
-        
-                $('.dropdown-input').on('input', function () {
-                    var filterValue = $('.dropdown-input').val().toLowerCase();
-                    var items = $('.dropdown-list .dropdown-item');
-        
-                    items.each(function () {
-                        var itemText = $(this).text().toLowerCase();
-                        $(this).css('display', itemText.includes(filterValue) ? 'block' : 'none');
+            // Update SL.No after removing a row
+            updateSerialNumbers();
+
+            // Recalculate when a row is removed
+            calc();
+        });
+
+        function updateSerialNumbers() {
+            $('.serial-no').text(function (index) {
+                return index + 1;
+            });
+        }
+
+        // Function to calculate based on changes
+        function calc() {
+            // Loop through each row to perform calculations
+            $('#dynamicadd tbody tr').each(function () {
+                var row = $(this);
+                var qty = parseFloat(row.find('.qty').val()) || 0;
+                var price = parseFloat(row.find('.price').val()) || 0;
+                var tax = parseFloat(row.find('.tax').val()) || 0;
+                var discount = parseFloat(row.find('.discount').val()) || 0;
+
+                var total = qty * price;
+                var taxAmount = (total * tax) / 100;
+                var discountedTotal = total - (total * discount) / 100;
+
+                row.find('.total').val(total.toFixed(2));
+                row.find('.taxamount').val(taxAmount.toFixed(2));
+                row.find('.discountedtotal').val(discountedTotal.toFixed(2));
+            });
+        }
+
+        // Trigger recalculation on change of relevant fields
+        $(document).on('change', '.product, .qty, .price, .tax, .discount', function () {
+            calc();
+        });
+
+        function changeprd(id) {
+            var id_val = id.slice(7);
+            document.getElementById('qty' + id_val).value = 0;
+            document.getElementById('price' + id_val).value = 0;
+            document.getElementById('total' + id_val).value = 0;
+            document.getElementById('tax' + id_val).value = 0;
+            document.getElementById('discount' + id_val).value = 0;
+            document.getElementById('taxamount' + id_val).value = 0;
+
+            // Recalculate after changes
+            calc();
+        }
+
+        $(document).on('change', '.product', function () {
+            var n = $(this).attr("id").slice(7);
+            $.ajax({
+                url: "{% url 'item_details' %}",
+                type: 'GET',
+                data: {
+                    id: $(this).val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    data = response.hsn;
+                    data3 = response.price;
+                    data4 = response.vat;
+
+                    document.getElementById('hsn' + n).value = data;
+                    document.getElementById('unit' + n).value = data3;
+                    document.getElementById('Vat' + n).value = data4;
+                },
+            });
+            calc();
+        });
+
+    });
+</script>
+
+
+
+
+
+
+{% comment %} <div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
+    <br><br><br><br><br><br>
+    <div class="col-11 container mr-1">
+        <div class="row">
+            <!-- party table -->
+            <div class="col-11 table-responsive" style="background-color: white;padding: 30px;border-radius: 15px;box-shadow: 3px 3px 3px gray;">
+                <div class="row">
+                    <h3>Item</h3>
+                </div>
+                <br>
+                <div class="row">
+                    <table class="table mt-3" id="dynamicadd">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Product</th>
+                                <th>HSN</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Tax</th>
+                                <th>Discount</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class='serial-no'></td>
+                                <td>
+                                    <div class="d-flex">
+                                        <select name="product[]" class="form-control product" onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                            <option value="" selected hidden>Select Product</option>
+                                            {% for item in item %}
+                                                <option value="{{ item.id }}">{{ item.item_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                                            <span class="fa fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td><input type="text" name="hsn[]" class="form-control" style="width:90px;"></td>
+                                <td><input type="number" name="qty[]" id="qty" class="form-control" style="width:40px;"></td>
+                                <td><input type="text" name="price[]" id="price" class="form-control" style="width:50px;"></td>
+                                <td><input type="text" name="tax[]" id="tax" class="form-control" style="width:80px;"></td>
+                                <td><input type="number" name="discount[]" id="discount" class="form-control" style="width:70px;"></td>
+                                <td><input type="number" name="total[]" id="total" class="form-control" style="width:60px;"></td>
+                                <td><button type="button" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>
+                            </tr>
+                            <!-- Rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                    <button type='button' id='add' class='btn btn-success'>+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Item Modal -->
+<div class="modal fade" id="newitem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Your form for adding new items goes here -->
+                <!-- Example form: -->
+                <form id="newItemForm" action="{% url "item_save" %}">
+                    <div class="form-group">
+                        <label for="itemName">Item Name</label>
+                        <input type="text" class="form-control" id="itemName" name="itemName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="itemHSN">Item HSN</label>
+                        <input type="text" class="form-control" id="itemHSN" name="itemHSN" required>
+                    </div>
+                    <!-- Add more fields as needed -->
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Add other scripts if needed -->
+
+<script type='text/javascript'>
+    $(document).ready(function () {
+        var i = 1;
+
+        // Initial SL.No
+        updateSerialNumbers();
+
+        $('#add').click(function () {
+            i++;
+            var newRow = '<tr>' +
+                '<td class="serial-no"></td>' +
+                '<td>' +
+                    '<div class="d-flex">' +
+                        '<select name="product[]" class="form-control product" onchange="changeprd(this.id)" style="color: black; background-color: white;">' +
+                            '<option value="" selected hidden>Select Product</option>' +
+                            '{% for item in item %}' +
+                                '<option value="{{ item.id }}">{{ item.item_name }}</option>' +
+                            '{% endfor %}' +
+                        '</select>' +
+                        '&nbsp;&nbsp;&nbsp;' +
+                        '<button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">' +
+                            '<span class="fa fa-plus"></span>' +
+                        '</button>' +
+                    '</div>' +
+                '</td>' +
+                '<td><input type="text" name="hsn[]" class="form-control" style="width:90px;"></td>' +
+                '<td><input type="number" name="qty[]" id="qty" class="form-control" style="width:40px;"></td>' +
+                '<td><input type="text" name="price[]" id="price" class="form-control" style="width:50px;"></td>' +
+                '<td><input type="text" name="tax[]" id="tax" class="form-control" style="width:80px;"></td>' +
+                '<td><input type="number" name="discount[]" id="discount" class="form-control" style="width:70px;"></td>' +
+                '<td><input type="number" name="total[]" id="total" class="form-control" style="width:60px;"></td>' +
+                '<td><button type="button" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>' +
+                '</tr>';
+
+            $('#dynamicadd tbody').append(newRow);
+
+            // Update SL.No after adding a new row
+            updateSerialNumbers();
+        });
+
+        $(document).on('click', '.remove_row', function () {
+            $(this).closest('tr').remove();
+
+            // Update SL.No after removing a row
+            updateSerialNumbers();
+        });
+
+        function updateSerialNumbers() {
+            $('.serial-no').text(function (index) {
+                return index + 1;
+            });
+        }
+    });
+
+    function changeprd(id) {
+        var id_val = id.slice(7);
+    document.getElementById('qty' + id_val).value = 0;
+    document.getElementById('price' + id_val).value = 0;
+    document.getElementById('total' + id_val).value = 0;
+    document.getElementById('tax' + id_val).value = 0;
+    document.getElementById('discount' + id_val).value = 0;
+    document.getElementById('taxamount' + id_val).value = 0;
+
+    // Assuming calc() is defined in your script
+    calc();
+    }
+
+    $(document).on('change', '.product',function(){ 
+        var n = $(this).attr("id").slice(7);
+        $.ajax({
+            url: "{% url 'item_details' %}",
+            type : 'GET',
+            data:{
+                id : $(this).val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+            
+            success: function(response) {
+                data = response.hsn
+                data3 = response.price
+                data4 = response.vat
+                
+                
+                document.getElementById('hsn'+n).value = data;
+                document.getElementById('unit'+n).value = data3;
+                document.getElementById('Vat'+n).value = data4;
+                
+
+                
+                
+            },
+            
+        });
+        calc();
+    });
+    
+    function reloadItem() {
+        $.ajax({
+            url: "{% url 'item_dropdown' %}",
+            type: "GET",
+            dataType: "json",
+            data: $(this).serialize(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+
+            success: function(data) {
+                var table = document.getElementById('tab_logic');
+                var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 1; i <= rows.length; i++) {
+                    itmdropdown = document.getElementById('product'+i)
+                    var selectedIndex = itmdropdown.selectedIndex;
+                    var selectedOption = itmdropdown.options[selectedIndex];
+                    var selectedValue = selectedOption.value;
+                    var selectedText = selectedOption.text;
+                    
+                    var dropdown = $(#product${i});
+                    dropdown.empty();
+                    dropdown.append(<option ${selectedValue} selected hidden>${selectedText}</option>);
+                    $.each(data, function(key, value) {
+                        dropdown.append($('<option></option>').attr('value', key).text(value).val(key));
                     });
-                });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
             }
         });
-        {% comment %} document.addEventListener('DOMContentLoaded', function () {
-            var input = document.querySelector('.dropdown-input');
-            var dropdownList = document.querySelector('#item');
-    
-            input.addEventListener('focus', function () {
-                dropdownList.style.display = 'block';
-            });
-    
-            document.addEventListener('mousedown', function (event) {
-                if (!event.target.closest('.product-dropdown')) {
-                    dropdownList.style.display = 'none';
-                }
-            });
-    
-            dropdownList.addEventListener('click', function (event) {
-                if (event.target.classList.contains('dropdown-item')) {
-                    input.value = event.target.textContent;
-                    dropdownList.style.display = 'none';
-                    fillEmployeeDetails();
-                    clearErrorMessage();
-                }
-            });
-    
-            input.addEventListener('input', function () {
-                var filterValue = input.value.toLowerCase();
-                var items = dropdownList.querySelectorAll('.dropdown-item');
-    
-                items.forEach(function (item) {
-                    var itemText = item.textContent.toLowerCase();
-                    if (itemText.includes(filterValue)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-         }); {% endcomment %}
+    }
 
-        
-    </script>
-    
-</div>
+
+
+</script> {% endcomment %}
+
+
   <br>
     <div class="container col-md-6 mr-5" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
         <form action="" class="col-10 container" method="post" enctype="multipart/form-data" style="background-color: #869deb; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray; display: flex; flex-direction: column;">

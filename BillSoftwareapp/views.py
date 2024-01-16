@@ -361,6 +361,24 @@ def get_sales_invoice_details(request, party_id):
         return JsonResponse(data)
     except SalesInvoice.DoesNotExist:
         return JsonResponse({'error': 'Sales invoice not found'}, status=404)
+
+
+def item_details(request):
+    item_id = request.GET.get('id', None)
+    item=ItemModel.objects.get(id=item_id)
+    hsn=item.item_hsn
+    price=item.item_purchase_price
+    gst=item.item_gst
+    igst=item.item_igst
+    qty=item.item_current_stock
+    return JsonResponse({'hsn':hsn,'price':price,'gst':gst,'igst':igst,'qty':qty})
+  
+def item_dropdown(request):
+    options={}
+    option_objects=ItemModel.objects.all()
+    for option in option_objects:
+      options[option.id]=[option.item_name]
+    return JsonResponse(options)
       
 
 
