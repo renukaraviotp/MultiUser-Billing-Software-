@@ -40,6 +40,8 @@ urlpatterns = [
     path('item_save',views.item_save,name='item_save'),
     path('item_details',views.item_details,name='item_details'),
     path('item_dropdown',views.item_dropdown,name='item_dropdown'),
+    
+    
         
    
 
