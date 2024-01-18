@@ -364,14 +364,16 @@ def get_sales_invoice_details(request, party_id):
 
 
 def item_details(request):
-    item_id = request.GET.get('id', None)
-    item=ItemModel.objects.get(id=item_id)
-    hsn=item.item_hsn
-    price=item.item_purchase_price
-    gst=item.item_gst
-    igst=item.item_igst
-    qty=item.item_current_stock
-    return JsonResponse({'hsn':hsn,'price':price,'gst':gst,'igst':igst,'qty':qty})
+    item_id = request.GET.get('id')
+    item = get_object_or_404(ItemModel, id=item_id)
+
+    hsn = item.item_hsn
+    price = item.item_purchase_price
+    gst = item.item_gst
+    igst = item.item_igst
+    qty = item.item_current_stock
+
+    return JsonResponse({'hsn': hsn, 'price': price, 'gst': gst, 'igst': igst, 'qty': qty})
   
 def item_dropdown(request):
     options={}

@@ -19,6 +19,9 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
   
 
@@ -150,7 +153,7 @@
 
 <div class="container col-md-10 mr-1" style="background-color: rgb(130, 144, 199);min-height: 100vh;" >
     <br><br><br><br><br>    
-    <form action="" class="col-10 container" method="get" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
+    <form action="" class="col-10 container" method="get" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;" onsubmit="return validatecredit()">
         {% comment %} {% csrf_token %} {% endcomment %}
         <div class="container col-md-10">
             <h2>Add Credit Note</h2><br>
@@ -218,12 +221,12 @@
                 <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{todayDate}}" class="form-control"></div>
 
                 <div class="col-md">
-                    <label for="">State of Supply</label>
-                        <select name="gsttype" class="form-control" id="plosu">
-                            <option value="">--Select--</option>
-                            <option value="state">State(GST)</option>
-                            <option value="others">Others(IGST)</option>
-                        </select>
+                    <label class="col-form-label ">Place of Supply</label>
+                        <select type="text" class="form-control border-secondary" id="psu" name="placosupply"  style="color: black;background-color: white;">
+                            <option value="" selected hidden>Select</option>
+                                <option value="State">State</option>
+                                <option value="Other State">Other State</option>
+                        </select> 
                 </div>
     
             </div>
@@ -534,10 +537,10 @@
                         </thead>
                         <tbody id="items-table-body">
                             <tr id='addr01'>
-                                <td class="nnum">1</td>
+                                <td class="nnum" style='width:2%;'>1</td>
                                 <td>
                                     <div class="d-flex">
-                                        <select name="product[]" class="form-control product" onchange="changeprd(this.id)" style="color: black; background-color: white;">
+                                        <select name="product[]" id="product1" class="form-control product" onchange="changeprd(this.id)" style="color: black; background-color: white;">
                                             <option value="" selected hidden>Select Product</option>
                                             {% for item in item %}
                                                 <option value="{{ item.id }}">{{ item.item_name }}</option>
@@ -549,10 +552,10 @@
                                         </button>
                                     </div>
                                 </td>
-                                <td><input type="text" name="hsn[]" class="form-control hsn" style="width:90px;"></td>
-                                <td><input type="number" name="qty[]" class="form-control qty" style="width:40px;"></td>
-                                <td><input type="text" name="price[]" class="form-control price" style="width:50px;"></td>
-                                <td style="width:15%">
+                                <td style='width:10%;'><input type="text" name='hsn[]' id="hsn1" class="form-control HSNCODE" style="color: black; background-color: white;" readonly /></td>
+                                <td style='width:10%;'><input type="number" name='qty[]' id="qty1"  class="form-control qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 /></td>
+                                <td style='width:10%;'><input type="number" name='price[]' id="unit1" class="form-control price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly /></td>
+                                <td style="width:12%">
                                     <input type="text" id="intrataxval1" hidden>
                                     <input type="text" id="intertaxval1" hidden>
                                     <input type="text"  id="select_tax1" placeholder="Tax Rate" class="form-control seltax" readonly style=" background-color: white;">
@@ -575,14 +578,15 @@
                                         <option value="IGST28[28%]">IGST28[28%]</option>
                                     </select>
                                 </td>
-                                <td><input type="number" name="discount[]" class="form-control discount" style="width:70px;"></td>
-                                <td><input type="number" name="total[]" class="form-control total" style="width:60px;"></td>
-                                <td><button type="button" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>
+                                <td style='width:12%;'><input type="number" name='discount[]' id="disc1" value=0 class="form-control discount" step=0 min=0 style="  color: black; background-color: white;"  /></td>
+                                <td style='width:12%;'><input type="number" name='total[]' id="total1" class="form-control total" value=0 readonly style="color: black; background-color: white;"  /></td>
+                                <td hidden><input type="number" name='taxamount1' id="taxamount1" class="taxamount" /></td>
+                                <td style='width:2%;'><button type="button" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>
                             </tr>
                             <!-- Rows will be dynamically added here -->
                         </tbody>
                     </table>
-                    <button type='button' id='add' class='btn btn-success'>+</button>
+                    <td style="border: none;"><a class="btn btn-success ml-1" role="button" id="add" ><span class="fa fa-plus"></span></a></td>
                 </div>
             </div>
         </div>
@@ -602,7 +606,8 @@
             <div class="modal-body">
                 <!-- Your form for adding new items goes here -->
                 <!-- Example form: -->
-                <form id="newItemForm">
+                <form id="newItemForm" method='post' id="modalItem">
+                    {% csrf_token %}
                     <div class="form-group row">
                         <div class="col">
                             <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name" name="item_name" required>
@@ -674,21 +679,110 @@
         </div>
     </div>
 </div>
+<script>
+    function calc() {
+        $('#tab_logic tbody tr').each(function () {
+            var html = $(this).html();
+            if (html !== '') {
+                var qty = parseFloat($(this).find('.qty').val()) || 0;
+                var price = parseFloat($(this).find('.price').val()) || 0;
+                var dis = parseFloat($(this).find('.discount').val()) || 0;
+                var bc = $("#psu").val();
+                var taxval = 0;
+    
+                if (bc === 'State') {
+                    var intraTaxElement = $(this).find('.intra_tax');
+                    if (intraTaxElement.length > 0 && intraTaxElement.val() !== null) {
+                        taxval = parseFloat(intraTaxElement.val().slice(3)) || 0;
+                    }
+                } else {
+                    taxval = parseFloat($(this).find('.inter_tax').val().slice(4)) || 0;
+                }
+    
+                var totalValue = (qty * price) - dis;
+                $(this).find('.total').val(totalValue.toFixed(2));
+                
+                var taxAmount = totalValue * (taxval / 100);
+                $(this).find('.taxamount').val(taxAmount.toFixed(2));
+    
+                calc_total();
+            }
+        });
+    }
+    
+</script>
+<script>
+    function changeprd(id) {
+        var id_val = id.slice(7);
+        document.getElementById('qty' + id_val).value = 0;
+        document.getElementById('total' + id_val).value = 0;
+        document.getElementById('tax1' + id_val).value = ' ';
+        document.getElementById('tax2' + id_val).value = ' ';
+        document.getElementById('disc' + id_val).value = 0;
+        document.getElementById('taxamount' + id_val).value = 0;
+        calc(); // Assuming calc() is another function you've defined
+    }
+</script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<script>
+    function validatecredit() {
+        var customer = document.getElementById('employee').value;
+        var psu = document.getElementById('psu').value;
+
+        if (customer === '') {
+            alert('Please select a customer');
+            return false;
+        } else if(psu === ''){
+            alert('Please select place of supply');
+            return false;
+        }
+        var table = document.getElementById('tab_logic');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 1; i <= rows.length; i++) {
+            var product = document.getElementById('product'+i).value;
+            var qty = document.getElementById('qty'+i).value;
+            if(product === ''){
+                alert('Select a product on row '+ i);
+                return false;
+            }
+            if(qty === '' || qty =='0'){
+                alert('Add quantity in row '+ i);
+                return false;
+            }
+        }
+        return true; 
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#employee').selectize({
+            sortField: 'value',
+            items: [''],
+            render: {
+                item: function (item, escape) {
+                    if (item.value === '') {
+                        return '';
+                    }
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+
+        });
+    });
+</script>
 
 <script>
     $(document).ready(function(){
-    $(document).on("change", "#plosu", function(){
+    $(document).on("change", "#psu", function(){
         var taxes = document.getElementsByClassName('seltax');
         for (var i = 0; i < taxes.length; i++) {
             taxes[i].style.display = 'none';
         }
         var table = document.getElementById("items-table-body");
         var numberOfRows = table.rows.length;
-        var bc = document.getElementById("plosu").value;
+        var bc = document.getElementById("psu").value;
         if (bc == 'State' ) {
             document.getElementById('cgstdiv').style.display = 'flex';
             document.getElementById('sgstdiv').style.display = 'flex';
@@ -748,10 +842,6 @@
                     cost_price : $("#purprice").val(),
                     intra_st : $("#intra_st").val(),
                     inter_st : $("#inter_st").val(),
-                    itmdate : $("#itmdate").val(),
-                    stock : $("#stock").val(),
-                    itmprice : $("#itmprice").val(),
-                    minstock : $("#minstock").val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
             
@@ -858,7 +948,7 @@
                     </td>  
 
                     <td tyle="width:10%">
-                        <input type="number" name='discount[]' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-secondary disc" step=0 min=0 style="color: black; background-color: white;">
+                        <input type="number" name='discount[]' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-secondary discount" step=0 min=0 style="color: black; background-color: white;">
                     </td>
 
                     <td style="width:13%">
@@ -875,56 +965,58 @@
         });
     });
 
-    $(document).on('change', '.product',function(){ 
+    $(document).on('change', '.product', function () {
         var n = $(this).attr("id").slice(7);
+    
         $.ajax({
             url: "{% url 'item_details' %}",
-            type : 'GET',
-            data:{
-                id : $(this).val(),
+            type: 'GET',
+            data: {
+                id: $(this).val(),
                 csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-            
-            success: function(response) {
-                data = response.hsn
-                data2 = response.qty
-                data3 = response.price
-                data4 = response.gst
-                data5 = response.igst
-
-                document.getElementById('hsn'+n).value = data;
-                document.getElementById('unit'+n).value = data3;
-                document.getElementById('intrataxval'+n).value = data4;
-                document.getElementById('intertaxval'+n).value = data5;
-                document.getElementById('select_tax'+n).style.display = 'none';
-                var bc = document.getElementById("plosu").value;
-                if (bc == 'State' ) {
-                    var taxes = document.getElementsByClassName('seltax');
-                    $(#tax2${n}).removeClass('d-flex');
-                    $(#tax2${n}).addClass('d-none');
-                    $(#tax1${n}).removeClass('d-none');
-                    $(#tax1${n}).addClass('d-flex');
-                    if (data4 != ' '){
-                        document.getElementById('tax1'+n).value = data4;
-                    }else{
-                        document.getElementById('tax1'+n).value = ' ';
-                    }
-                            
+            },
+            success: function (response) {
+                console.log('Ajax request successful. Response:', response);
+    
+                // Extracting data from the response
+                var data = response.hsn;
+                var data2 = response.qty;
+                var data3 = response.price;
+                var data4 = response.gst;
+                var data5 = response.igst;
+    
+                // Logging extracted data
+                console.log('Extracted data:', { hsn: data, qty: data2, price: data3, gst: data4, igst: data5 });
+    
+                // Setting values in the DOM using jQuery
+                $('#hsn' + n).val(data);
+                $('#unit' + n).val(data3);
+                $('#intrataxval' + n).val(data4);
+                $('#intertaxval' + n).val(data5);
+                $('#select_tax' + n).hide();
+    
+                // Handling taxes based on the value of 'psu'
+                var bc = $("#psu").val();
+                var tax1Element = $(`#tax1${n}`);
+                var tax2Element = $(`#tax2${n}`);
+    
+                if (bc === 'State') {
+                    tax2Element.removeClass('d-flex').addClass('d-none');
+                    tax1Element.removeClass('d-none').addClass('d-flex');
+                    tax1Element.val(data4 || ' ');
                 } else {
-                    var taxes = document.getElementsByClassName('seltax');
-                    $(#tax1${n}).removeClass('d-flex');
-                    $(#tax1${n}).addClass('d-none');
-                    $(#tax2${n}).removeClass('d-none');
-                    $(#tax2${n}).addClass('d-flex');
-                    if(data5 != ' '){
-                        document.getElementById('tax2'+n).value = data5;
-                    }else{
-                        document.getElementById('tax2'+n).value = ' ';
-                    }
+                    tax1Element.removeClass('d-flex').addClass('d-none');
+                    tax2Element.removeClass('d-none').addClass('d-flex');
+                    tax2Element.val(data5 || ' ');
                 }
+            },
+            error: function (xhr, status, error) {
+                console.error('Ajax request failed. Status:', status, 'Error:', error);
             },
         });
     });
+    
+    
 
     $(document).on('click','.remove_row',function(){
         var row_id = $(this).attr("id");
@@ -938,41 +1030,6 @@
         calc();
     });
         
-    $(document).on('click','.clone_row',function(){
-        var roinc = $("#items-table-body tr").length;
-        var originalRow = $(this).closest('#items-table-body tr'); 
-        var clonedRow = originalRow.clone();
-
-        clonedRow.attr('id', 'addr0' +(roinc+1));
-
-        clonedRow.find('.nnum').text(roinc+1);
-
-        clonedRow.find('[id]').each(function() {
-            var oldId = $(this).attr('id');
-            var newId = oldId.replace(/\d+/, roinc+1);
-            console.log(newId)
-            $(this).attr('id', newId );
-        });
-
-        clonedRow.find('.product').each(function() {
-            $(this).val(originalRow.find('.product').val());
-        });
-        clonedRow.find('.intra_tax').each(function() {
-            $(this).val(originalRow.find('.intra_tax').val());
-        });
-        clonedRow.find('.inter_tax').each(function() {
-            $(this).val(originalRow.find('.inter_tax').val());
-        });
-        originalRow.after(clonedRow);
-
-        var table = document.getElementById('tab_logic');
-        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-        for (var i = 0; i < rows.length; i++) {
-            var cells = rows[i].getElementsByTagName('td');
-            cells[0].innerText = i + 1;
-        }
-        calc();
-    });
 
     $(document).ready(function(){
         $('#items-table-body').on('keyup change', function () {
@@ -984,28 +1041,7 @@
         });
     });
         
-    function calc() {
-        $('#tab_logic tbody tr').each(function () {
-            var html = $(this).html();
-            if (html != '') {
-                var qty = $(this).find('.qty').val();
-                var price = $(this).find('.price').val();
-                var dis = $(this).find('.discount').val();
-                var bc = $("#plosu").val();
-                if(bc=='State'){
-                    taxval = $(this).find('.intra_tax').val().slice(3);
-                    var tax = parseInt(taxval.match(/\d+/)[0], 10);
-                }
-                else{
-                    taxval = $(this).find('.inter_tax').val().slice(4);
-                    var tax = parseInt(taxval.match(/\d+/)[0], 10);
-                }
-                $(this).find('.total').val((parseFloat(qty) *parseFloat(price))-parseFloat(dis));
-                $(this).find('.taxamount').val(((qty * price)-dis) * (tax / 100));
-                calc_total();
-            }
-        });
-    }
+    
 
     function calc_total() {
         total = 0;
@@ -1029,7 +1065,7 @@
     }
 
     function taxfun(){
-        var bc = $("#plosu").val();
+        var bc = $("#psu").val();
         d=0
         if (bc == 'State'  ) {
             gst = taxamount/2
