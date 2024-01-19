@@ -372,7 +372,11 @@ def item_details(request):
     gst = item.item_gst
     igst = item.item_igst
     qty = item.item_current_stock
-
+    print(hsn)
+    print(price)
+    print(gst)
+    print(igst)
+    print(qty)
     return JsonResponse({'hsn': hsn, 'price': price, 'gst': gst, 'igst': igst, 'qty': qty})
   
 def item_dropdown(request):
@@ -464,7 +468,6 @@ def item_save(request):
     return redirect('credit_add') 
   
   
-
 
  
 

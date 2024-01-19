@@ -537,7 +537,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody id="dynamicadd">
+                        <tbody id="items-table-body">
                             <tr id='addr01'>
                                 <td class="nnum" style='width:2%;'>1</td>
                                 <td>
@@ -549,14 +549,14 @@
                                             {% endfor %}
                                         </select>
                                         &nbsp;&nbsp;&nbsp;
-                                        <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#newitem" class="text-capitalize">
+                                        <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#newitem">
                                             <span class="fa fa-plus"></span>
                                         </button>
                                     </div>
                                 </td>
-                                <td style='width:13%;'><input type="text" name='hsn[]' id="hsn1" class="form-control HSNCODE" style="color: black; background-color: white;" readonly /></td>
+                                <td style='width:10%;'><input type="text" name='hsn[]' id="hsn1" class="form-control HSNCODE" style="color: black; background-color: white;" readonly /></td>
                                 <td style='width:10%;'><input type="number" name='qty[]' id="qty1"  class="form-control qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 /></td>
-                                <td style='width:10%;'><input type="text" name='price[]' id="unit1" class="form-control price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly /></td>
+                                <td style='width:10%;'><input type="number" name='price[]' id="unit1" class="form-control price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly /></td>
                                 <td style="width:12%">
                                     <input type="text" id="intrataxval1" hidden>
                                     <input type="text" id="intertaxval1" hidden>
@@ -681,106 +681,7 @@
         </div>
     </div>
 </div>
-
-<!-- Add this script at the end of your HTML body or in the head section -->
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
 <script>
-    $(document).ready(function() {
-
-        // Counter for dynamic row IDs
-        var counter = 1;
-
-        // Function to update row numbers
-        function updateRowNumbers() {
-            $('.nnum').each(function(index) {
-                $(this).text(index + 1);
-            });
-        }
-
-        // Add row
-        $('#add').on('click', function() {
-            var newRow = $('#addr01').clone();
-            newRow.attr('id', 'addr' + counter);
-            newRow.find('.product').attr('id', 'product' + counter);
-            newRow.find('.HSNCODE').attr('id', 'hsn' + counter);
-            newRow.find('.qty').attr('id', 'qty' + counter);
-            newRow.find('.price').attr('id', 'unit' + counter);
-            newRow.find('.seltax').attr('id', 'select_tax' + counter);
-            newRow.find('.intra_tax').attr('id', 'tax1' + counter);
-            newRow.find('.inter_tax').attr('id', 'tax2' + counter);
-            newRow.find('.disc1').attr('id', 'disc' + counter);
-            newRow.find('.total').attr('id', 'total' + counter);
-            newRow.find('.taxamount').attr('id', 'taxamount' + counter);
-
-            newRow.find('.remove_row').on('click', function() {
-                $(this).closest('tr').remove();
-                updateRowNumbers();
-            });
-
-            function changeprd(id) {
-                var id_val = id.slice(7);
-                document.getElementById('qty' + id_val).value = 0;
-                document.getElementById('price' + id_val).value = 0;
-                document.getElementById('total' + id_val).value = 0;
-                document.getElementById('tax' + id_val).value = 0;
-                document.getElementById('discount' + id_val).value = 0;
-                document.getElementById('taxamount' + id_val).value = 0;
-    
-                // Recalculate after changes
-                calc();
-            }
-
-            newRow.find('.product').on('change', function() {
-                // Add your logic to update HSN, Qty, Price, etc. based on the selected product
-                // You can use AJAX to fetch details from the server
-                $(document).on('change', '.product', function () {
-                    var n = $(this).closest('tr').index() + 1;
-                    $.ajax({
-                        url: "{% url 'item_details' %}",
-                        type: 'GET',
-                        data: {
-                            id: $(this).val(),
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
-                        },
-                        success: function (response) {
-                            data = response.hsn;
-                            data3 = response.price;
-                            data4 = response.vat;
-        
-                            document.getElementById('hsn' + n).value = data;
-                            document.getElementById('unit' + n).value = data3;
-                            document.getElementById('Vat' + n).value = data4;
-                        },
-                    });
-                    calc();
-                });
-        
-            });
-
-            newRow.find('.qty, .price, .discount').on('input', function() {
-                // Add your logic to calculate and update Total and Tax amounts
-            });
-
-            $('#dynamicadd').append(newRow);
-            counter++;
-            updateRowNumbers();
-        });
-
-        // Remove row
-        $('.remove_row').on('click', function() {
-            $(this).closest('tr').remove();
-            updateRowNumbers();
-        });
-
-        // Add your additional logic here
-
-    });
-</script>
-
-
-{% comment %} <script>
     function calc() {
         $('#tab_logic tbody tr').each(function () {
             var html = $(this).html();
@@ -1214,7 +1115,7 @@
 });
 
 
-</script> {% endcomment %}
+</script>
 
 
 
@@ -1236,20 +1137,20 @@
         $('#add').click(function () {
             i++;
             var newRow = '<tr>' +
-                '<td class="serial-no"></td>' +
+                '<td class="serial-no"></td>'+
                 '<td>' +
-                '<div class="d-flex">' +
-                '<select name="product[]" class="form-control product" onchange="changeprd(this.id)" style="color: black; background-color: white;">' +
-                '<option value="" selected hidden>Select Product</option>' +
-                '{% for item in item %}' +
-                '<option value="{{ item.id }}">{{ item.item_name }}</option>' +
-                '{% endfor %}' +
-                '</select>' +
-                '&nbsp;&nbsp;&nbsp;' +
-                '<button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#newitem">' +
-                '<span class="fa fa-plus"></span>' +
-                '</button>' +
-                '</div>' +
+                    '<div class="d-flex">' +
+                        '<select name="product[]" class="form-control product" onchange="changeprd(this.id)" style="color: black; background-color: white;">' +
+                            '<option value="" selected hidden>Select Product</option>' +
+                            '{% for item in item %}'+
+                                '<option value="{{ item.id }}">{{ item.item_name }}</option>'+
+                            '{% endfor %}'+
+                            '</select>' +
+                        '&nbsp;&nbsp;&nbsp;' +
+                        '<button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#newitem">' +
+                            '<span class="fa fa-plus"></span>' +
+                        '</button>' +
+                    '</div>' +
                 '</td>' +
                 '<td><input type="text" name="hsn[]" class="form-control hsn" style="width:90px;"></td>' +
                 '<td><input type="number" name="qty[]" class="form-control qty" style="width:40px;"></td>' +
@@ -1260,7 +1161,7 @@
                 '<td><button type="button" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>' +
                 '</tr>';
 
-            $('#dynamicadd').append(newRow);
+            $('#dynamicadd tbody').append(newRow);
 
             // Update SL.No after adding a new row
             updateSerialNumbers();
@@ -1321,7 +1222,7 @@
         }
 
         $(document).on('change', '.product', function () {
-            var n = $(this).closest('tr').index() + 1;
+            var n = $(this).attr("id").slice(7);
             $.ajax({
                 url: "{% url 'item_details' %}",
                 type: 'GET',
@@ -1343,8 +1244,8 @@
         });
 
     });
-</script> {% endcomment %}
 
+</script> {% endcomment %}
 
 
 
