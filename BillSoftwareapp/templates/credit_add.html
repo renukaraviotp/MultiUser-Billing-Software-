@@ -222,7 +222,7 @@
 
                 <div class="col-md">
                     <label class="col-form-label ">Place of Supply</label>
-                        <select type="text" class="form-control border-secondary" id="psu" name="placosupply"  style="color: black;background-color: white;">
+                        <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">
                             <option value="" selected hidden>Select</option>
                                 <option value="State">State</option>
                                 <option value="Other State">Other State</option>
@@ -523,7 +523,7 @@
                 </div>
                 <br>
                 <div class="row">
-                    <table class="table mt-3" id="tab_logic">
+                    <table class="table mt-3" id="tab_logic" onclick="toggleDateInput()">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -557,7 +557,7 @@
                                 <td style='width:13%;'><input type="text" name='hsn[]' id="hsn1" class="form-control HSNCODE" style="color: black; background-color: white;" readonly /></td>
                                 <td style='width:10%;'><input type="number" name='qty[]' id="qty1"  class="form-control qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 /></td>
                                 <td style='width:10%;'><input type="text" name='price[]' id="unit1" class="form-control price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly /></td>
-                                <td style="width:12%">
+                                <td style="width:12%" onclick="toggleDateInput()">
                                     <input type="text" id="intrataxval1" hidden>
                                     <input type="text" id="intertaxval1" hidden>
                                     <input type="text"  id="select_tax1" placeholder="Tax Rate" class="form-control seltax" readonly style=" background-color: white;">
@@ -580,8 +580,8 @@
                                         <option value="IGST28[28%]">IGST28[28%]</option>
                                     </select>
                                 </td>
-                                <td style='width:12%;'><input type="number" name='discount[]' id="disc1" value=0 class="form-control discount" step=0 min=0 style="  color: black; background-color: white;"  /></td>
-                                <td style='width:12%;'><input type="number" name='total[]' id="total1" class="form-control total" value=0 readonly style="color: black; background-color: white;"  /></td>
+                                <td style='width:11%;'><input type="number" name='discount[]' id="disc1" value=0 class="form-control discount" step=0 min=0 style="  color: black; background-color: white;"  /></td>
+                                <td style='width:13%;'><input type="number" name='total[]' id="total1" class="form-control total" value=0 readonly style="color: black; background-color: white;"  /></td>
                                 <td hidden><input type="number" name='taxamount1' id="taxamount1" class="taxamount" /></td>
                                 <td style='width:2%;'><button type="button" class="btn btn-danger remove_row"><i class="fa-solid fa-square-minus"></i></button></td>
                             </tr>
@@ -682,11 +682,117 @@
     </div>
 </div>
 
-<!-- Add this script at the end of your HTML body or in the head section -->
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
 <script>
+    $(document).ready(function() {
+        // Counter for dynamic row IDs
+        var counter = 1;
+
+        // Function to update row numbers
+        function updateRowNumbers() {
+            $('.nnum').each(function(index) {
+                $(this).text(index + 1);
+            });
+        }
+
+        // Function to calculate and update row amounts
+        function calculateRowAmount(row) {
+            var qty = parseFloat(row.find('.qty').val()) || 0;
+            var rate = parseFloat(row.find('.price').val()) || 0;
+            var discount = parseFloat(row.find('.discount').val()) || 0;
+
+            var rowAmount = (qty * rate) - discount;
+            row.find('.total').val(rowAmount.toFixed(2));
+
+            return rowAmount;
+        }
+
+        // Function to handle product change
+        function handleProductChange(row) {
+            var n = row.index() + 1;
+            $.ajax({
+                url: "{% url 'item_details' %}",
+                type: 'GET',
+                data: {
+                    id: row.find('.product').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    data = response.hsn;
+                    data3 = response.price;
+                    data4 = response.gst;
+
+                    row.find('.HSNCODE').val(data);
+                    row.find('.price').val(data3);
+                    // Add logic to handle GST
+                    calculateRowAmount(row);
+                },
+            });
+        }
+
+        // Add row
+        $('#add').on('click', function() {
+            var newRow = $('#addr01').clone();
+            newRow.attr('id', 'addr' + counter);
+            newRow.find('.nnum').text(counter);
+
+            newRow.find('.product').on('change', function() {
+                handleProductChange($(this).closest('tr'));
+            });
+
+            newRow.find('.qty, .price, .discount').on('input', function() {
+                calculateRowAmount($(this).closest('tr'));
+                // Recalculate after changes
+                // ...
+            });
+
+            newRow.find('.remove_row').on('click', function() {
+                $(this).closest('tr').remove();
+                updateRowNumbers();
+            });
+
+            $('#dynamicadd').append(newRow);
+            counter++;
+            updateRowNumbers();
+        });
+
+        // Remove row
+        $(document).on('click', '.remove_row', function() {
+            $(this).closest('tr').remove();
+            updateRowNumbers();
+        });
+        function calculateSubtotal() {
+            var subtotal = 0;
+            $('#tab_logic tbody tr').each(function () {
+              subtotal += calculateRowAmount($(this));
+            });
+            $('#subtotal').val(subtotal.toFixed(2));
+          }
+
+          function toggleDateInput() {
+            var checkbox = document.getElementById("srcofsupply");
+            var vale=checkbox.value;
+            
+            for (var i = 1; i <= rowCount; i++) {
+              var taxElement = $('#tax' + i);
+      
+              if (vale === "State") {
+                  taxElement.find('optgroup[label="GST"]').show();
+                  taxElement.find('optgroup[label="IGST"]').hide();
+              } else {
+                  taxElement.find('optgroup[label="GST"]').hide();
+                  taxElement.find('optgroup[label="IGST"]').show();
+              }
+          }
+        }
+
+        // Add your additional logic here
+    });
+    
+</script>
+
+
+
+{% comment %} <script>
     $(document).ready(function() {
 
         // Counter for dynamic row IDs
@@ -716,7 +822,7 @@
 
             newRow.find('.remove_row').on('click', function() {
                 $(this).closest('tr').remove();
-                updateRowNumbers();
+                updateRowNumbers(); 
             });
 
             function changeprd(id) {
@@ -731,6 +837,7 @@
                 // Recalculate after changes
                 calc();
             }
+
 
             newRow.find('.product').on('change', function() {
                 // Add your logic to update HSN, Qty, Price, etc. based on the selected product
@@ -760,6 +867,21 @@
             });
 
             newRow.find('.qty, .price, .discount').on('input', function() {
+                function calculateRowAmount(row) {
+                    var qty = parseFloat(row.find('.qty').val());
+                    var rate = parseFloat(row.find('.price').val());
+                    var tax = parseFloat(row.find('.tax').val());
+                    var discount = parseFloat(row.find('.discount').val());
+                
+                    var rowAmount = (qty * rate) - discount;
+                    var taxAmount = (rowAmount * tax) / 100;
+                
+                    row.find('.total').val(rowAmount.toFixed(2));
+                    row.find('.taxamount').val(taxAmount.toFixed(2));
+                    
+                    return rowAmount;
+                    calculateTaxAmount();
+                  }
                 // Add your logic to calculate and update Total and Tax amounts
             });
 
@@ -777,7 +899,7 @@
         // Add your additional logic here
 
     });
-</script>
+</script> {% endcomment %}
 
 
 {% comment %} <script>
