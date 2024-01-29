@@ -66,7 +66,7 @@
         
     }
     .party {
-        margin: 20px;
+        margin: 20px; 
       }
   
       .toggle-control {
@@ -560,8 +560,8 @@
                                 <td style='width:10%;'><input type="number" name='qty[]' id="qty1"  class="form-control qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 /></td>
                                 <td style="width:9%;"><input type="text" name="price[]" id="unit1" class="form-control price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly /></td>
                                 <td style="width:15%" onclick="toggleDateInput()">
-                                    <input type="text" id="intrataxval1" hidden>
-                                    <input type="text" id="intertaxval1" hidden>
+                                    <input type="text" class="gst" id="intrataxval1" hidden>
+                                    <input type="text" class="igst" id="intertaxval1" hidden>
                                     <input type="text"  id="select_tax1" placeholder="Tax Rate" class="form-control seltax" readonly style=" background-color: white;">
                                     <select name='tax1[]' id="tax11" class="form-control border-secondary tax intra_tax d-none" style="color: black; background-color: white;">
                                         <option  value=" " selected hidden>Select Tax</option>
@@ -610,7 +610,7 @@
             <div class="modal-body">
                 <!-- Your form for adding new items goes here -->
                 <!-- Example form: -->
-                <form id="newItemForm" method='post' id="modalItem">
+                <form id="newItemForm" action="{% url "save_item" %}" method='post' id="modalItem">
                     {% csrf_token %}
                     <div class="form-group row">
                         <div class="col">
@@ -621,7 +621,7 @@
                             <div class="text-danger m-2" id="warnhsn"></div>
                         </div>
                         <div class="col">
-                            <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="QTY" autocomplete="off" id="item_name" name="item_name" required>
+                            <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="QTY" autocomplete="off" id="qty" name="qty" required>
                         </div>
                     </div>
                     <div id="pricing_template" style="background-color: rgba(144, 211, 117, 0.098);">
@@ -630,33 +630,35 @@
                             <div class="col-sm-12 col-md-10 pb-4">
                                 <div class="text- pt-5">
                                     <label class="fs-4 tb" for="item_tax_1" style=" user-select: none; color: black;">Taxable</label>
-                                    <input class="me-3" name="taxref" type="radio" id="inclusive" value="Taxable" required>
+                                    <input class="me-3" name="taxref" type="radio" id="inclusive" value="Taxable" required onclick="showTaxDropdowns()">
                                     <label class="fs-4 tb" for="item_tax_2" style=" user-select: none; color: black;">Non Taxable</label>
-                                    <input name="taxref" type="radio" value="Non Taxable" id="check" required>
+                                    <input name="taxref" type="radio" value="Non Taxable" id="check" required onclick="hideTaxDropdowns()">
                                 </div>
+                                
                                 <br>
+                                
                                 <div id="taxdiv" style="display: none;">
                                     <div class="d-flex">
                                         <div class="w-50 me-3">
                                             <label class="fw-bold tb fs-3" for="" style="color: black;">GST</label><br>
-                                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary fs-3" id="intra_st" name="intra_st" >
-                                            <option value="GST0[0%]" selected>GST0[0%]</option>
-                                            <option value="GST3[3%]">GST3[3%]</option>
-                                            <option value="GST5[5%]">GST5[5%]</option>
-                                            <option value="GST12[12%]">GST12[12%]</option>
-                                            <option value="GST13[18%]">GST18[18%]</option>
-                                            <option value="GST28[28%]">GST28[28%]</option>
+                                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary fs-3" id="intra_st" name="intra_st">
+                                                <option value="GST0[0%]" selected>GST0[0%]</option>
+                                                <option value="GST3[3%]">GST3[3%]</option>
+                                                <option value="GST5[5%]">GST5[5%]</option>
+                                                <option value="GST12[12%]">GST12[12%]</option>
+                                                <option value="GST18[18%]">GST18[18%]</option>
+                                                <option value="GST28[28%]">GST28[28%]</option>
                                             </select>
                                         </div>
                                         <div class="w-50">
                                             <label class="fw-bold tb fs-3" for="" style="color: black;">IGST</label><br>
-                                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary tb fs-3" id="inter_st" name="inter_st" >
-                                            <option value="IGST0[0%]" selected>IGST0[0%]</option>
-                                            <option value="IGST3[3%]">IGST3[3%]</option>
-                                            <option value="IGST5[5%]">IGST5[5%]</option>
-                                            <option value="IGST12[12%]">IGST12[12%]</option>
-                                            <option value="IGST18[18%]">IGST18[18%]</option>
-                                            <option value="IGST28[28%]">IGST28[28%]</option>
+                                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary tb fs-3" id="inter_st" name="inter_st">
+                                                <option value="IGST0[0%]" selected>IGST0[0%]</option>
+                                                <option value="IGST3[3%]">IGST3[3%]</option>
+                                                <option value="IGST5[5%]">IGST5[5%]</option>
+                                                <option value="IGST12[12%]">IGST12[12%]</option>
+                                                <option value="IGST18[18%]">IGST18[18%]</option>
+                                                <option value="IGST28[28%]">IGST28[28%]</option>
                                             </select>
                                         </div>
                                     </div>
@@ -683,6 +685,16 @@
         </div>
     </div>
 </div>
+
+<script>
+    function showTaxDropdowns() {
+        document.getElementById('taxdiv').style.display = 'block';
+    }
+
+    function hideTaxDropdowns() {
+        document.getElementById('taxdiv').style.display = 'none';
+    }
+</script>
 
 
 <br>
@@ -763,9 +775,17 @@
                     data = response.hsn;
                     data3 = response.price;
                     data4 = response.gst;
+                    var placosupply = response.place_of_supply;
 
                     row.find('.HSNCODE').val(data);
                     row.find('.price').val(data3);
+                    if (placosupply === 'State') {
+                        row.find('.gst').val(data4); // Show GST
+                    } else {
+                        // Assuming you have a separate IGST field in your row, update accordingly
+                        row.find('.igst').val(data4); // Show IGST
+                    }
+
                     // Add logic to handle GST
                     calculateRowAmount(row);
                     calculateSubtotal(); // Call the calculateSubtotal function

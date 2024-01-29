@@ -9,6 +9,7 @@ from datetime import date
 from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 
 # Create your views here.
 
@@ -487,7 +488,37 @@ def item_save(request):
 #     returnno=credit.id
 #     return render(request, 'credit_add.html', {'party': party,'returnno':returnno}) 
   
-  
+def save_item(request):
+    if request.method == 'POST':
+        item_name = request.POST.get('item_name')
+        hsn = request.POST.get('hsn')
+        qty = request.POST.get('qty')
+        tax_ref = request.POST.get('taxref')
+        intra_st = request.POST.get('intra_st')
+        inter_st = request.POST.get('inter_st')
+        sale_price = request.POST.get('saleprice')
+        purchase_price = request.POST.get('purprice')
+
+        # Perform any additional validation or processing here
+
+        # Create an instance of your model and save it to the database
+        item = ItemModel(
+            item_name=item_name,
+            item_hsn=hsn,
+            item_current_stock=qty,
+            item_taxable=tax_ref,
+            item_gst=intra_st,
+            item_igst=inter_st,
+            item_sale_price=sale_price,
+            item_purchase_price=purchase_price
+        )
+        item.save()
+
+        # Redirect to a success page or return a success message
+        return redirect("credit_add")
+
+    # Handle GET requests or any other cases
+    return render(request, 'credit_add.html') 
   
     
   
