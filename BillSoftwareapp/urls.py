@@ -41,6 +41,7 @@ urlpatterns = [
     path('item_details',views.item_details,name='item_details'),
     path('item_dropdown',views.item_dropdown,name='item_dropdown'),
     path('save_item',views.save_item,name='save_item'),
+    path('get_tax_rate/', views.get_tax_rate, name='get_tax_rate'),
     
     
         

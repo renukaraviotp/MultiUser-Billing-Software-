@@ -520,8 +520,29 @@ def save_item(request):
     # Handle GET requests or any other cases
     return render(request, 'credit_add.html') 
   
-    
   
+def get_tax_rate(request):
+    if request.method == 'GET':
+        product_id = request.GET.get('id')
+        credit_note_id = request.GET.get('credit_note_id')
+
+        if product_id and credit_note_id:
+            item = get_object_or_404(ItemModel, id=product_id)
+            credit_note = get_object_or_404(Creditnote, id=credit_note_id)
+
+            # Assuming you have a field named place_of_supply in your CreditNote model
+            place_of_supply = credit_note.place_of_supply
+
+            # Set tax_rate based on place of supply
+            if place_of_supply == 'State':
+                tax_rate = item.item_gst
+            else:
+                tax_rate = item.item_igst
+
+            return JsonResponse({'tax_rate': tax_rate})
+    
+    return JsonResponse({'error': 'Invalid request'})
+
 
 def transactiontable(request):
   return render(request,'transaction_table.html')

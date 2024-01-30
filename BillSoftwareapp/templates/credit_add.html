@@ -559,7 +559,7 @@
                                 <td style='width:13%;'><input type="text" name='hsn[]' id="hsn1" class="form-control HSNCODE" style="color: black; background-color: white;" readonly /></td>
                                 <td style='width:10%;'><input type="number" name='qty[]' id="qty1"  class="form-control qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 /></td>
                                 <td style="width:9%;"><input type="text" name="price[]" id="unit1" class="form-control price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly /></td>
-                                <td style="width:15%" onclick="toggleDateInput()">
+                                <td style="width:15%" onclick="toggleDateInput()" class="tax">
                                     <input type="text" class="gst" id="intrataxval1" hidden>
                                     <input type="text" class="igst" id="intertaxval1" hidden>
                                     <input type="text"  id="select_tax1" placeholder="Tax Rate" class="form-control seltax" readonly style=" background-color: white;">
@@ -707,7 +707,7 @@
     <div style="display: flex; flex-direction: row; align-items: center;"><label for="sgst" hidden>SGST</label><input id="sgstdiv" type="text" name="sgst" class="form-control ml-auto" placeholder="" style="width:200px;" hidden></div>
     <div style="display: flex; flex-direction: row; align-items: center;"><label for="igst" hidden>IGST</label><input id="igstdiv" type="text" name="igst" class="form-control ml-auto" placeholder="" style="width:200px;" hidden></div>
     <div style="display: flex; flex-direction: row; align-items: center;"><label for="adjustment">Tax Amount</label><input id="adjustment" type="text" name="adjustment" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
-    <div style="display: flex; flex-direction: row; align-items: center;"><label for="grandtotal">Round Off</label><input id="roundoff" type="text" name="roundoff" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
+    <div style="display: flex; flex-direction: row; align-items: center;"><label for="roundoff">Round Off</label><input id="roundoff" type="number" name="roundoff" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
     <div style="display: flex; flex-direction: row; align-items: center;"><label for="paidoff">Grand Total</label><input id="grandtotal" type="text" name="grandtotal" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
     <div style="display: flex; flex-direction: row; align-items: center;"><label for="balance">Description</label><input id="des" type="text" name="des" class="form-control ml-auto" placeholder="" style="width:200px;"></div>
 </div>
@@ -740,9 +740,28 @@
             var qty = parseFloat(row.find('.qty').val()) || 0;
             var rate = parseFloat(row.find('.price').val()) || 0;
             var discount = parseFloat(row.find('.discount').val()) || 0;
+            var taxInput = row.find('.taxInput').val();
+
+            var selectedTaxOption = row.find('.tax option:selected').val();
+        
+            // Parse the tax rate from the selected option
+            var taxRate = parseFloat(selectedTaxOption.match(/\[(\d+%)\]/)[1]) || 0;
+
+            // Set the tax rate to the respective input
+            row.find('.seltax').val(taxRate);
+
+
+
 
             var rowAmount = (qty * rate) - discount;
             row.find('.total').val(rowAmount.toFixed(2));
+
+            $('#tab_logic').on('change', '.tax', function () {
+                var row = $(this).closest('tr');
+                calculateRowAmount(row);
+                calculateSubtotal();
+                calculateGrandTotal();
+            });
 
             return rowAmount;
         }
@@ -754,6 +773,65 @@
             });
             $('#subtotal').val(subtotal.toFixed(2));
         }
+
+        // Function to calculate the grand total
+function calculateGrandTotal() {
+    var grandTotal = 0;
+    var totalTaxAmount = 0;
+  
+    $('#tab_logic tbody tr').each(function () {
+      var rowAmount = calculateRowAmount($(this));
+      grandTotal += rowAmount;
+      //var taxAmount = parseFloat($(this).find('.taxamount').val());
+      //grandTotal += taxAmount;
+      //totalTaxAmount += taxAmount;
+    });
+  
+    $('#grandtotal').val(grandTotal.toFixed(2));
+    $('#total_taxamount').val(totalTaxAmount.toFixed(2));
+  }
+  
+    $('#tab_logic').on('change', '.tax', function () {
+      var row = $(this).closest('tr');
+      calculateRowAmount(row);
+      calculateSubtotal();
+      calculateGrandTotal();
+    });
+
+
+
+    // Inside your <script> tag
+
+function handleProductChange(row) {
+    var productId = row.find('.product').val();
+    var creditNoteId = row.find('.tax').val();
+
+    if (!productId || !creditNoteId) {
+        // Handle the case where no product or credit note is selected
+        return;
+    }
+
+    $.ajax({
+        url: "/get_tax_rate/",
+        type: 'GET',
+        data: {
+            id: productId,
+            credit_note_id: creditNoteId,
+        },
+        success: function (response) {
+            var taxRate = response.tax_rate;
+
+            // Now you have the tax rate, you can use it as needed in your code
+            console.log('Tax Rate:', taxRate);
+
+            // ... your existing code ...
+        },
+        error: function (error) {
+            console.error('Error fetching tax rate:', error.responseText);
+        }
+    });
+}
+
 
         // Function to handle product change
         function handleProductChange(row) {
@@ -789,6 +867,7 @@
                     // Add logic to handle GST
                     calculateRowAmount(row);
                     calculateSubtotal(); // Call the calculateSubtotal function
+                    calculateGrandTotal();
                 },
             });
         }
