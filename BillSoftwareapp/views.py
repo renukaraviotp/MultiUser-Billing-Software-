@@ -464,7 +464,9 @@ def item_save(request):
     unit=request.POST['unit']
     saleprice=request.POST['saleprice']
     purchaseprice=request.POST['purchaseprice']
-    item=ItemModel(item_name=itemname,item_hsn=hsn,item_unit=unit,item_sale_price=saleprice,item_purchase_price=purchaseprice)
+    intra_st=request.POST['intra_st']
+    inter_st=request.POST['inter_st']
+    item=ItemModel(item_name=itemname,item_hsn=hsn,item_unit=unit,item_sale_price=saleprice,item_purchase_price=purchaseprice,item_gst=intra_st,item_igst=inter_st)
     item.save()
     return redirect('credit_add') 
   

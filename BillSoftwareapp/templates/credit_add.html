@@ -740,28 +740,10 @@
             var qty = parseFloat(row.find('.qty').val()) || 0;
             var rate = parseFloat(row.find('.price').val()) || 0;
             var discount = parseFloat(row.find('.discount').val()) || 0;
-            var taxInput = row.find('.taxInput').val();
-
-            var selectedTaxOption = row.find('.tax option:selected').val();
-        
-            // Parse the tax rate from the selected option
-            var taxRate = parseFloat(selectedTaxOption.match(/\[(\d+%)\]/)[1]) || 0;
-
-            // Set the tax rate to the respective input
-            row.find('.seltax').val(taxRate);
-
-
-
-
+            
             var rowAmount = (qty * rate) - discount;
             row.find('.total').val(rowAmount.toFixed(2));
 
-            $('#tab_logic').on('change', '.tax', function () {
-                var row = $(this).closest('tr');
-                calculateRowAmount(row);
-                calculateSubtotal();
-                calculateGrandTotal();
-            });
 
             return rowAmount;
         }
@@ -799,38 +781,45 @@ function calculateGrandTotal() {
     });
 
 
-
-    // Inside your <script> tag
-
-function handleProductChange(row) {
-    var productId = row.find('.product').val();
-    var creditNoteId = row.find('.tax').val();
-
-    if (!productId || !creditNoteId) {
-        // Handle the case where no product or credit note is selected
-        return;
+    function calc_total() {
+        total = 0;
+        $('.total').each(function () {
+            total += parseFloat($(this).val());
+        });
+        taxamount = 0;
+        $('.taxamount').each(function () {
+            taxamount += parseFloat($(this).val());
+        });
+        $('#sub_total').val(total.toFixed(2));
+        $('#tax_amount').val(taxamount.toFixed(2));
+        adj_val = parseFloat($('#adj').val())
+        gtot = taxamount + total + adj_val;
+        $('#grandtotal').val(gtot.toFixed(2));
+        $('#baldue').val(gtot.toFixed(2));
+        adv_val = parseFloat($('#advance').val())
+        adv_val = gtot - adv_val
+        $('#balance').val(adv_val.toFixed(2));
+        taxfun()
     }
 
-    $.ajax({
-        url: "/get_tax_rate/",
-        type: 'GET',
-        data: {
-            id: productId,
-            credit_note_id: creditNoteId,
-        },
-        success: function (response) {
-            var taxRate = response.tax_rate;
 
-            // Now you have the tax rate, you can use it as needed in your code
-            console.log('Tax Rate:', taxRate);
-
-            // ... your existing code ...
-        },
-        error: function (error) {
-            console.error('Error fetching tax rate:', error.responseText);
+    function taxfun(){
+        var bc = $("#psu").val();
+        d=0
+        if (bc == 'State'  ) {
+            gst = taxamount/2
+            $('#cgst').val(parseFloat(gst.toFixed(2)));
+            $('#sgst').val(parseFloat(gst.toFixed(2)));
+            $('#igst').val(parseFloat(d.toFixed(2)));
+        } else {
+            $('#igst').val(taxamount.toFixed(2));
+            $('#cgst').val(d.toFixed(2));
+            $('#sgst').val(d.toFixed(2));
         }
-    });
-}
+    } 
+
+
+
 
 
         // Function to handle product change
