@@ -514,7 +514,7 @@
 <br><br><br>
 
 
-<div class="container col-md-9 mr-1">
+<div class="container table-responsive col-md-9 mr-1">
     <div class="col-md-12 table-responsive-md mt-3">
         <table class="table table-bordered table-hover  mt-3" id="tab_logic" >
             <thead style="background-color:rgb(61, 68, 101);">
@@ -537,17 +537,17 @@
                     <td style="width:21%">
                         <div class="d-flex">
                             <select name='product[]' id="product1" class="form-control border-secondary product" onchange="changeprd(this.id,this.value)" style="color: black; background-color: white;">
-                                <option value="" selected hidden>Select Product</option>
+                                <option value="" selected hidden>Select</option>
                                 {% for i in item %}
                                     {% if i.cid_id == cmp.cid %}
                                         <option value="{{ i.id }}">{{ i.item_name }}</option>
                                     {% endif %}
                                 {% endfor %}
                             </select>
-                           
-                            <button id="modal_closing" style="background-color:rgb(61, 68, 101);" type="button" class="btn " data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                            <button type="button" class="btn btn-outline-success" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#newitem" class="text-capitalize">
                                 <span class="fa fa-plus"></span>
                             </button>
+                           
                         </div>
                     </td>
 
@@ -579,9 +579,9 @@
                     <td hidden><input type="number" name='taxamount1' id="taxamount1" class="form-control border-secondary taxamount" /></td>
                    
                     <td style="width:5%">
-                        <button type="button" id="1" class="btn font-weight-bold  clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button>
+                        <button type="button" id="1" style="background-color:rgb(61, 68, 101);" class="btn font-weight-bold  clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button>
                         <br>
-                        <button type="button" id="1" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row"> </button>
+                        <button type="button" id="1" class="btn btn-danger remove_row px-2 py-1 mx-1" title="Remove Row"><i class="fa-solid fa-xmark"></i> </button>
                     </td>
                 </tr>
             </tbody>
@@ -686,15 +686,17 @@
         </div>
     </div>
 </div>
+<br><br>
 
 <div class="row">
    
-    <div class="col-md-1 mt-4 mr-0"></div>
-    <div class="col-md-5 mt-3 d-flex mr-0" style="margin-left:5vh">
+    <div class="ml-auto"></div>
+    <div class="col-md-6 mt-3 d-flex">
         <center>
-        <input type="submit" style="background-color:rgb(61, 68, 101); font-weight:bold;color:white;" class="btn  me-3" name="Next" value="SAVE"></input>
-        <input type="submit" style="background-color:rgb(61, 68, 101);font-weight:bold; color:white; margin-left:8px;" class="btn " name="Save" value="SAVE & NEXT"></input>
+            <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn  " value="new" name="buttonn">Save & New</button> 
+            <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="old" name="buttonn"><a href="{% url "transactiontable" %}">Save</a> </button> <br><br><br>
         </center>
+        
 
     </div>
 </div>
@@ -706,159 +708,104 @@
 </div>
 </div>
 
-<!-- modal -->
-<div class="modal fade" id="newitem" style="background-color:">
-<div class="modal-dialog modal-xl" style="background-color:rgb(130, 144, 199)">
-<div class="modal-content" style="background-color:rgb(130, 144, 199)">
-<div class="modal-header" style="background-color:rgb(130, 144, 199); ;">
-<h3 class="text-light ms-3">ADD ITEM</h3>
-<button type="button" style="font-size:x-large;" class="btn-close me-5" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
-<div class="modal-body" style="background-color: rgb(130, 144, 199);" >
-<form method="post" class="needs-validation" novalidate autocomplete="off" id="modalItem">
-{% csrf_token %}
-<div class="bg-light bs p-4 rounded mb-5">
-<div id="main_form_div">
-<div class="row" style="margin-left: -1vh;">
-    <div class="col-md-3">
-        <select style="color: black;" class="form-control border-dark bg-light" name="type" id="type" required>
-            <option selected value="" hidden>Select Type</option>
-            <option value="Goods">Products</option>
-            <option value="Services">Services</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name" name="item_name" required>
-    </div>
-    <div class="col-md-3">
-        <input style="color: black;" class="form-control border-dark fw-bolder" type="number" placeholder="ITEM HSN" id="hsn" name="hsn" onchange="checkhsn(this)" required>
-        <div class="text-danger m-2" id="warnhsn"></div>
-    </div>
-    <div class="col-md-3">
-        <select style="color: black;" class="form-control border-dark bg-light" id="unit" name="unit" required>
-            <option value="" hidden>Select a unit</option>
-            <option value="NOS">NOS</option>
-            <option value="BOX">BOX</option>
-            <option value="PACKET">PACKET</option>
-            {% for i in item_units %}
-            <option value="{{ i.unit_name|upper }}">{{ i.unit_name|upper }}</option>
-            {% endfor %}
-        </select>
-    </div>
-</div>
-<div>
-    <p></p>
-    <hr class="p-0 m-0">
-    <div style="background-color: rgb(61, 68, 101);" class="p-3 pb-0 mb-0">
-        <div class="">
-            <div class="row pb-0 mb-0">
-                <div id="prc_" class="col text-center pb-2" >
-                    <a class="fw-bolder fs-4" style="color: white; font-weight:bold; cursor: pointer;" >PRICING</a>
-                </div>
-                <div id="stk_" class="col text-center pb-2" >
-                    <a class="fw-bolder fs-4" style="color: white; font-weight:bold; cursor: pointer;" >STOCKS</a>
-                </div>
+<!-- New Item Modal -->
+<div class="modal fade" id="newitem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-        </div>
-    </div>
-
-    <div id="pricing_template" style="background-color: rgba(144, 211, 117, 0.098);">
-        <div class="row">
-            <div class="col-sm-12  col-md-1"></div>
-            <div class="col-sm-12 col-md-10 pb-4">
-                <div class="text- pt-5">
-                    <label class="fs-4 tb" for="item_tax_1" style=" user-select: none; color: black;">Taxable</label>
-                    <input class="me-3" name="taxref" type="radio" id="inclusive" value="Taxable" required>
-                    <label class="fs-4 tb" for="item_tax_2" style=" user-select: none; color: black;">Non Taxable</label>
-                    <input name="taxref" type="radio" value="Non Taxable" id="check" required>
-                </div>
-                <br>
-                <div id="taxdiv" style="display: none;">
-                    <div class="d-flex">
-                        <div class="w-50 me-3">
-                            <label class="fw-bold tb fs-3" for="" style="color: black;">GST</label><br>
-                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary fs-3" id="intra_st" name="intra_st" >
-                            <option value="GST0[0%]" selected>GST0[0%]</option>
-                            <option value="GST3[3%]">GST3[3%]</option>
-                            <option value="GST5[5%]">GST5[5%]</option>
-                            <option value="GST12[12%]">GST12[12%]</option>
-                            <option value="GST18[18%]">GST18[18%]</option>
-                            <option value="GST28[28%]">GST28[28%]</option>
-                            </select>
+            <div class="modal-body">
+                <!-- Your form for adding new items goes here -->
+                <!-- Example form: -->
+                <form id="newItemForm" action="{% url "save_item" %}" method='post' id="modalItem">
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <div class="col">
+                            <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name" name="item_name" required>
                         </div>
-                        <div class="w-50">
-                            <label class="fw-bold tb fs-3" for="" style="color: black;">IGST</label><br>
-                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary tb fs-3" id="inter_st" name="inter_st" >
-                            <option value="IGST0[0%]" selected>IGST0[0%]</option>
-                            <option value="IGST3[3%]">IGST3[3%]</option>
-                            <option value="IGST5[5%]">IGST5[5%]</option>
-                            <option value="IGST12[12%]">IGST12[12%]</option>
-                            <option value="IGST18[18%]">IGST18[18%]</option>
-                            <option value="IGST28[28%]">IGST28[28%]</option>
-                            </select>
+                        <div class="col">
+                            <input style="color: black;" class="form-control border-dark fw-bolder" type="number" placeholder="ITEM HSN" id="hsn" name="hsn" onchange="checkhsn(this)" required>
+                            <div class="text-danger m-2" id="warnhsn"></div>
+                        </div>
+                        <div class="col">
+                            <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="QTY" autocomplete="off" id="qty" name="qty" required>
                         </div>
                     </div>
-                    <br>
-                </div>
-               
-                <div class="d-flex">
-                    <div class="w-50 me-3">
-                        <label class="tb fw-bold" for="" style="color: black;">SALES PRICE</label><br>
-                        <input style="color: black;background-color: white;" id="saleprice" class="form-control fw-normal border-secondary  fs-3" type="number" name="saleprice" value="0">
-                    </div>
-                    <div class="w-50">
-                        <label class="tb fw-bold" for="" style="color: black;">PURCHASE PRICE</label><br>
-                        <input style="color: black;background-color: white;" id="purprice" class="form-control fw-normal border-secondary  fs-3" type="number" name="purprice" value="0">
-                    </div>
-                </div>
-                <div class="text-start mt-5">
-                    <button id="next_btn" style="background-color:rgb(61, 68, 101); color:white;" class="btn  bg-gradient" type="button">Next</button>
-                </div>
+                    <div id="pricing_template" style="background-color: rgba(144, 211, 117, 0.098);">
+                        <div class="row">
+                            <div class="col-sm-12  col-md-1"></div>
+                            <div class="col-sm-12 col-md-10 pb-4">
+                                <div class="text- pt-5">
+                                    <label class="fs-4 tb" for="item_tax_1" style=" user-select: none; color: black;">Taxable</label>
+                                    <input class="me-3" name="taxref" type="radio" id="inclusive" value="Taxable" required onclick="showTaxDropdowns()">
+                                    <label class="fs-4 tb" for="item_tax_2" style=" user-select: none; color: black;">Non Taxable</label>
+                                    <input name="taxref" type="radio" value="Non Taxable" id="check" required onclick="hideTaxDropdowns()">
+                                </div>
+                                
+                                <br>
+                                
+                                <div id="taxdiv" style="display: none;">
+                                    <div class="d-flex">
+                                        <div class="w-50 me-3">
+                                            <label class="fw-bold tb fs-3" for="" style="color: black;">GST</label><br>
+                                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary fs-3" id="intra_st" name="intra_st">
+                                                <option value="GST0[0%]" selected>GST0[0%]</option>
+                                                <option value="GST3[3%]">GST3[3%]</option>
+                                                <option value="GST5[5%]">GST5[5%]</option>
+                                                <option value="GST12[12%]">GST12[12%]</option>
+                                                <option value="GST18[18%]">GST18[18%]</option>
+                                                <option value="GST28[28%]">GST28[28%]</option>
+                                            </select>
+                                        </div>
+                                        <div class="w-50">
+                                            <label class="fw-bold tb fs-3" for="" style="color: black;">IGST</label><br>
+                                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary tb fs-3" id="inter_st" name="inter_st">
+                                                <option value="IGST0[0%]" selected>IGST0[0%]</option>
+                                                <option value="IGST3[3%]">IGST3[3%]</option>
+                                                <option value="IGST5[5%]">IGST5[5%]</option>
+                                                <option value="IGST12[12%]">IGST12[12%]</option>
+                                                <option value="IGST18[18%]">IGST18[18%]</option>
+                                                <option value="IGST28[28%]">IGST28[28%]</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <br>
+                                </div>
+                                
+                                <div class="d-flex">
+                                    <div class="w-50 me-3">
+                                        <label class="tb fw-bold" for="" style="color: black;">SALES PRICE</label><br>
+                                        <input style="color: black;background-color: white;" id="saleprice" class="form-control fw-normal border-secondary  fs-3" type="number" name="saleprice" value="0">
+                                    </div>
+                                    <div class="w-50">
+                                        <label class="tb fw-bold" for="" style="color: black;">PURCHASE PRICE</label><br>
+                                        <input style="color: black;background-color: white;" id="purprice" class="form-control fw-normal border-secondary  fs-3" type="number" name="purprice" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br><br>
+                    <!-- Add more fields as needed -->
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <div hidden id="stock_template"style="background-color: rgba(144, 211, 117, 0.098);">
-        <div class="row">
-            <div class="col-sm-12  col-md-1"></div>
-            <div class="col-sm-12 col-md-10 pb-4">
-                <br><br>
-                <div class="d-flex">
-                    <div class="w-50 me-3">
-                    <label class="tb fw-bold" for="stock" style="color: black;">OPENING STOCK</label><br>
-                    <input style="color: black;background-color: white;" id="stock" class="form-control fw-normal border-secondary  fs-3" type="number" name="stock" value="0">
-                    </div>
-                    <div id="at_price_div" class="w-50">
-                    <label class="tb fw-bold" for="itmprice" style="color: black;">AT PRICE</label><br>
-                    <input style="color: black;background-color: white" id="itmprice" class="form-control fw-normal border-secondary  fs-3" type="number" name="itmprice" value="0">
-                    </div>
-                </div>
-                <br>
-                <div class="d-flex">
-                    <div class="w-50 me-3">
-                    <label class="tb fw-bold" for="itmdate" style="color: black;">DATE</label><br>
-                    <input style="color: black;background-color: white" id="itmdate" class="form-control fw-normal border-secondary  fs-3" type="date" required name="itmdate" value="{{tod}}">
-                    </div>
-                    <div class="w-50">
-                    <label class="tb fw-bold" for="minstock" style="color: black;">MINIMUM STOCK TO MAINTAIN</label><br>
-                    <input style="color: black;background-color: white" id="minstock" class="form-control fw-normal border-secondary  fs-3" type="number" name="minstock" value="0">
-                    </div>
-                </div>
-                <div class="text-start mt-5">
-                    <button style="background-color:rgb(61, 68, 101); colr:white;" id="prev_btn" class="btn  bg-gradient  me-3" type="button">PREVIOUS</button>
-                    <button style="background-color:rgb(61, 68, 101); color:white;" class="btn  bg-gradient" type="button" id="itemsave">SAVE</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-</div>
-</form>
-</div>
-</div>
-</div>
-</div>
+<script>
+    function showTaxDropdowns() {
+        document.getElementById('taxdiv').style.display = 'block';
+    }
+
+    function hideTaxDropdowns() {
+        document.getElementById('taxdiv').style.display = 'none';
+    }
+</script>
 
 
 <script>
@@ -1126,10 +1073,10 @@
 </script>
 
 <script>
-    $(document).on("change", "#plosu", function(){
+    $(document).on("change", "#psu", function(){
         var table = document.getElementById("items-table-body");
         var numberOfRows = table.rows.length;
-        var bc = document.getElementById("plosu").value;
+        var bc = document.getElementById("psu").value;
         if (bc == 'State' ) {
             document.getElementById('cgstdiv').style.display = 'flex';
             document.getElementById('sgstdiv').style.display = 'flex';
@@ -1301,7 +1248,7 @@
                                 {% endfor %}
                             </select>&nbsp;&nbsp;&nbsp;
 
-                            <button id="modal_closing" type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                            <button type="button" class="btn btn-outline-success" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#newitem" class="text-capitalize">
                                 <span class="fa fa-plus"></span>
                             </button>
                         </div>
@@ -1338,7 +1285,7 @@
                     <td style="width:13%">
                         <button type="button" id="${roinc}" style="background-color:rgb(61, 68, 101);" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button>
                         <br>
-                        <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row fa fa-close"></button>
+                        <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row"><i class="fa-solid fa-xmark"></i></button>
                     </td>
                 </tr>`
             );
@@ -1443,7 +1390,7 @@
     }
 
     function taxfun(){
-        var bc = $("#plosu").val();
+        var bc = $("#psu").val();
         d=0
         if (bc == 'State'  ) {
             gst = taxamount/2
