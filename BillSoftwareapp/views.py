@@ -533,22 +533,78 @@ def item_dropdown(request):
 
 
 
-# def credit_save(request):
-#   sid = request.session.get('staff_id')
-#   staff = staff_details.objects.get(id=sid)
-#   cmp = company.objects.get(id=staff.company.id)
-#   user=cmp.id
-#   party = Parties.objects.filter(company_id=cmp.id)
-#   if request.method == 'GET':
-#     date=request.GET['date']
-#     gsttype=request.GET['gsttype']
-#     credit=Creditnote(state_of_supply=gsttype,date = date,company_id=user,staff_id=staff.id) 
-#     credit.save()
-#     returnno=credit.id
-#     return render(request, 'credit_add.html', {'party': party,'returnno':returnno}) 
+def credit_save(request):
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    user=cmp.id
+    party = Parties.objects.filter(company_id=cmp.id)
+    context = {}  # Initialize context
+
+    if request.method == 'POST':
+        # Extract data from the form
+        party_name = request.POST.get('party_name')
+        contact = request.POST.get('contact')
+        address = request.POST.get('address')
+        invoice_no = request.POST.get('invoice_no')
+        idate = request.POST.get('idate')
+        state_of_supply = request.POST.get('state_of_supply')
+        date = request.POST.get('date')
+        gstin = request.POST.get('gstin')
+        subtotal = request.POST.get('subtotal')
+        sgst = request.POST.get('sgst')
+        cgst = request.POST.get('cgst')
+        igst = request.POST.get('igst')
+        taxamount = request.POST.get('taxamount')
+        roundoff = request.POST.get('roundoff')
+        grandtotal = request.POST.get('grandtotal')
+        description = request.POST.get('description')
+
+        # Generate next_returnno
+        latest_credit_note = Creditnote.objects.order_by('-returnno').first()
+        if latest_credit_note:
+            next_returnno = latest_credit_note.returnno + 1
+        else:
+            next_returnno = 1
+
+        # Create an instance of Creditnote model and save the data
+        credit_note = Creditnote(
+            party_name=party_name,
+            contact=contact,
+            address=address,
+            invoice_no=invoice_no,
+            idate=idate,
+            state_of_supply=state_of_supply,
+            date=date,
+            gstin=gstin,
+            subtotal=subtotal,
+            sgst=sgst,
+            cgst=cgst,
+            igst=igst,
+            taxamount=taxamount,
+            roundoff=roundoff,
+            grandtotal=grandtotal,
+            description=description,
+            returnno=next_returnno  # Include the generated returnno
+            # Add other fields here
+        )
+
+        # Save the instance
+        credit_note.save()
+
+        # Redirect to a success page or render a template
+        return redirect('transactiontable')  # Change 'transactiontable' to the actual URL or name of your success page
+
+    # Handle other HTTP methods if needed
+    context = {'next_returnno': next_returnno}
+    print("Next Return No:", next_returnno)
+    return render(request, 'credit_add.html', context)
   
 def save_item(request):
-    if request.method == 'POST':
+  sid = request.session.get('staff_id')
+  staff =  staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  if request.method == 'POST':
         item_name = request.POST.get('item_name')
         hsn = request.POST.get('hsn')
         qty = request.POST.get('qty')
@@ -577,7 +633,7 @@ def save_item(request):
         return redirect("credit_add")
 
     # Handle GET requests or any other cases
-    return render(request, 'credit_add.html') 
+  return render(request, 'credit_add.html') 
   
   
 def get_tax_rate(request):

@@ -327,7 +327,7 @@
                                 <thead >
                                     <tr class="fs-2 tb" >
                                         <th> DATE </th>
-                                        <th> BILL NO </th>
+                                        <th> REF NO </th>
                                         <th> PARTY NAME </th>
                                         <th> PAYMENT TYPE </th>
                                         <th> AMOUNT </th>
@@ -417,11 +417,11 @@
                 <form id="excelForm" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-group">
-                        <label for="file" style="color: black;">Choose Excel File for Purchase Bill- </label> <br>
+                        <label for="file" style="color: black;">Choose Excel File for CreditNote- </label> <br>
                         <input type="file" class="form-control-file" id="billfile" name="billfile" accept=".xls, .xlsx"><br><br>
                         
 
-                        <label for="file" style="color: black;">Choose Excel File for Purchase Bill Products- </label> <br>
+                        <label for="file" style="color: black;">Choose Excel File for CreditNote Products- </label> <br>
                         <input type="file" class="form-control-file" id="prdfile" name="prdfile" accept=".xls, .xlsx"><br>
                     </div>
                 </form>
@@ -477,14 +477,14 @@ function findhistory( rowid,pid){
 function uploadFile() {
     const form = document.getElementById('excelForm');
     const formData = new FormData(form);
-    fetch('import_purchase_bill', {
+    fetch('import_credit_note', {
         method: 'POST',
         body: formData
     })
     .then(data => {
         swal({
             title: "Imported !",
-            text: "Purchase Bill Import Successfull!",
+            text: "CreditNote Import Successfull!",
             icon: "success",
             buttons: false,
         })
@@ -497,7 +497,7 @@ function uploadFile() {
     .catch(error => {
         swal({
             title: "Error !",
-            text: "Purchase Bill Import Unuccessfull!",
+            text: "CreditNote Import Unuccessfull!",
             icon: "warning",
             buttons: false,
         })
@@ -673,7 +673,7 @@ function deletepbill(Id)
 {
     swal({
         title: "Confirmation !",
-        text: "Do you want to Delete this Purchase Bill?",
+        text: "Do you want to Delete this CreditNote?",
         icon: "warning",
         buttons: true,
         dangerMode: true,
@@ -682,7 +682,7 @@ function deletepbill(Id)
         if (willDelete) {
             swal({
                 title: "Deleted !",
-                text: "Purchase Bill Deleted Successfully!",
+                text: "CreditNote Deleted Successfully!",
                 icon: "success",
                 buttons: false,
             })
@@ -735,7 +735,7 @@ function ExportToExcel(){
     const ws = XLSX.utils.table_to_sheet(table);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    XLSX.writeFile(wb, 'PurchaseBill.xlsx');
+    XLSX.writeFile(wb, 'CreditNote.xlsx');
 }
 </script>
 
@@ -745,13 +745,13 @@ function excelmodel(){
     const ws1 = XLSX.utils.table_to_sheet(table1);
     const wb1 = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb1, ws1, 'Sheet1');
-    XLSX.writeFile(wb1, 'PurchaseBillModel.xlsx');
+    XLSX.writeFile(wb1, 'CreditNoteModel.xlsx');
 
     const table2 = document.querySelector('#billtableitemmodel');
     const ws2 = XLSX.utils.table_to_sheet(table2);
     const wb2 = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb2, ws2, 'Sheet1');
-    XLSX.writeFile(wb2, 'PurchaseBillItemModel.xlsx');
+    XLSX.writeFile(wb2, 'CreditNoteItemModel.xlsx');
 }
 </script>
 {% endblock %}
