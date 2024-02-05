@@ -208,7 +208,7 @@
                             
                 
                             <div class="form-group row">
-                                <div class="col"><label for=""> Return No.</label><input id="returnno" type="text" value="{{ next_returnno }}" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
+                                <div class="col"><label for=""> Return No.</label><input id="returnno" type="text" value="" name="returnno" class="form-control" placeholder="Return Number"></div>
                                 <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div>
                                 <div class="col"><label for=""> Bill Date</label><input id="bdt" type="text" name="billDate" class="form-control" placeholder="Bill Date"> </div>
                                 
@@ -378,33 +378,21 @@
                                                         </div>
                                                         <div class="col-sm-4 m-0 p-0"></div>
                                                     </div>
+                                                    
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Description</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                        <input type="text" name='des' id="des" value=0.00 style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     
-                                        <div class="row" style="margin-left: 2vh;" >
-                                            <div class="col-md-6" id="tab_logic_total" style=" color: black; border: 1px solid rgba(128, 128, 128, 0.6); margin-left: 2vh; background-color: rgba(61, 68, 101); width:30px; margin-top:18px;">
-                                                <div class="p-3">
-                                                    <div class="row container-fluid p-2 m-0">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Paid Off</label></div>
-                                                        <div class="col-sm-1 mt-2">:</div>
-                                                        <div class="col-sm-7">
-                                                            <input type="number" step="any" name='advance' id="advance" value=0.00 class="form-control border-secondary" style="color: black; background-color: white;"/>
-                                                        </div>
-                                                        <div class="col-sm-4 m-0 p-0"></div>
-                                                    </div>
-                                                    <div class="row container-fluid p-2 m-0">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Balance</label></div>
-                                                        <div class="col-sm-1 mt-2">:</div>
-                                                        <div class="col-sm-7">
-                                                            <input type="number" name='balance' id="balance" value=0.00 readonly style="color: black; background-color: white;"  class="form-control border-secondary" readonly />
-                                                        </div>
-                                                        <div class="col-sm-4 m-0 p-0"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        
+                                    </div> 
                                
                                         <div class="row">
                                             <div class="col-md-1 mt-4"></div>
@@ -627,7 +615,6 @@
             </div>
         </div>
 </div>
-<!-- New Item Modal -->
    
         </div>
     </div>
