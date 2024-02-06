@@ -172,7 +172,7 @@
                                     <div class="col-md-4 custom-dropdown">
                                         <label for=""> Party Name</label>
                                         <div class="input-group">
-                                            <input type="text" class="dropdown-input form-control" id="ip" placeholder='Search Party' oninput="getEmail();">
+                                            <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();">
                                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
@@ -199,8 +199,9 @@
                                                
                                             </small>
                                     </div>
+                                    <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" placeholder="Bill Number" hidden></div>
                                     
-                                    <div class="col-md-4"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
+                                    <div class="col-md-3"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
                                     <div class="col-md-4"><label for="">Billing Address</label>
                                         <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly></textarea></div>
                                 
@@ -208,9 +209,9 @@
                             
                 
                             <div class="form-group row">
-                                <div class="col"><label for=""> Return No.</label><input id="returnno" type="text" value="" name="returnno" class="form-control" placeholder="Return Number"></div>
+                                <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{refno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
                                 <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div>
-                                <div class="col"><label for=""> Bill Date</label><input id="bdt" type="text" name="billDate" class="form-control" placeholder="Bill Date"> </div>
+                                <div class="col"><label for=""> Bill Date</label><input id="bdt" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div>
                                 
                             </div>
                         
@@ -383,7 +384,7 @@
                                                         <div class="col-sm-4 mt-2"><label for="a" class="text-center">Description</label></div>
                                                         <div class="col-sm-1 mt-2">:</div>
                                                         <div class="col-sm-7">
-                                                        <input type="text" name='des' id="des" value=0.00 style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        <input type="text" name='des' id="des" style="color: black; background-color: white;" class="form-control border-secondary"/>
                                                         </div>
                                                         <div class="col-sm-4 m-0 p-0"></div>
                                                     </div>
@@ -681,12 +682,14 @@
         if (selectedElement) {
             var phone_number = selectedElement.getAttribute("data-phone");
             var billing_address = selectedElement.getAttribute("data-address");
-            var opening_balance = selectedElement.getAttribute("data-balance")
+            var opening_balance = selectedElement.getAttribute("data-balance");
+            var party_id = selectedElement.getAttribute("data-party-id");
     
             // Assuming you have input fields with IDs "ph" and "ad" in your HTML
             document.getElementById("ph").value = phone_number;
             document.getElementById("ad").value = billing_address;
             document.getElementById("ab").value = opening_balance;
+            document.getElementById("pid").value = party_id
             
 
             // Show the Available Balance section

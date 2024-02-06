@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.db.models import F
 
 # Create your views here.
 
@@ -348,8 +349,20 @@ def credit_add(request):
   cmp = company.objects.get(id=staff.company.id)
   todaydate = date.today().isoformat()
   party = Parties.objects.filter(company_id=cmp.id)
-  item=ItemModel.objects.all() 
-  return render(request, 'credit_add.html', {'party': party,'todaydate':todaydate,'item':item}) 
+  item=ItemModel.objects.filter(company_id=cmp.id) 
+  last_ref = Creditnote.objects.filter(company=cmp).order_by('-returnno').first()
+  if last_ref:
+        refno = last_ref.returnno + 1
+  else:
+        refno = 1
+  context = {
+        'refno': refno,
+        'party':party,
+        'item':item,
+        'todaydate':todaydate,
+        # Add other context variables as needed
+    }
+  return render(request, 'credit_add.html',context) 
 
 
 def get_sales_invoice_details(request, party_id):
@@ -454,12 +467,11 @@ def party_save(request):
               return redirect('credit_add') 
             
 def item_save(request):
-  sid = request.session.get('staff_id')
-  staff = staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
-  user = cmp.id
     
   if request.method == 'POST':
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
     itemname=request.POST['itemname']
     hsn=request.POST['hsn']
     unit=request.POST['unit']
@@ -467,7 +479,7 @@ def item_save(request):
     purchaseprice=request.POST['purchaseprice']
     intra_st=request.POST['intra_st']
     inter_st=request.POST['inter_st']
-    item=ItemModel(item_name=itemname,item_hsn=hsn,item_unit=unit,item_sale_price=saleprice,item_purchase_price=purchaseprice,item_gst=intra_st,item_igst=inter_st)
+    item=ItemModel(item_name=itemname,item_hsn=hsn,item_unit=unit,item_sale_price=saleprice,item_purchase_price=purchaseprice,item_gst=intra_st,item_igst=inter_st,staff=staff,company=cmp)
     item.save()
     return redirect('credit_add') 
   
@@ -532,79 +544,60 @@ def item_dropdown(request):
 
 def credit_save(request):
     if request.method == 'POST':
-        # Extract data from the form
-        party_name = request.POST.get('party_name')
-        contact = request.POST.get('contact')
-        address = request.POST.get('address')
-        invoice_no = request.POST.get('invoice_no')
-        idate = request.POST.get('idate')
-        returnno=request.POST.get('returnno')
-        state_of_supply = request.POST.get('state_of_supply')
-        date = request.POST.get('date')
-        gstin = request.POST.get('gstin')
-        subtotal = request.POST.get('subtotal')
-        sgst = request.POST.get('sgst')
-        cgst = request.POST.get('cgst')
-        igst = request.POST.get('igst')
-        taxamount = request.POST.get('taxamount')
-        adj = request.POST.get('adj')
-        grandtotal = request.POST.get('grandtotal')
-        des = request.POST.get('des')
-        
+        sid = request.session.get('staff_id')
+        staff =  staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id) 
+        party=Parties.objects.get(id=request.POST.get('pid'))
 
         # Create an instance of Creditnote model and save the data
         credit_note = Creditnote(
-            user=request.user,
-            party_name=party_name,
-            contact=contact,
-            address=address,
-            invoice_no=invoice_no,
-            idate=idate,
-            state_of_supply=state_of_supply,
-            date=date,
-            gstin=gstin,
-            subtotal=subtotal,
-            sgst=sgst,
-            cgst=cgst,
-            igst=igst,
-            taxamount=taxamount,
-            roundoff=adj,
-            grandtotal=grandtotal,
-            description=des,
-            returnno=returnno
+            party_name=request.POST.get('partyname'),
+            contact=request.POST.get('number'),
+            address=request.POST.get('address'),
+            invoice_no=request.POST.get('billNo'),
+            idate=request.POST.get('billDate'),
+            state_of_supply=request.POST.get('placosupply'),
+            date=request.POST.get('date'),
+            gstin=request.POST.get('gstin'),
+            subtotal=request.POST.get('subtotal'),
+            sgst=request.POST.get('sgst'),
+            cgst=request.POST.get('cgst'),
+            igst=request.POST.get('igst'),
+            taxamount=request.POST.get('taxamount'),
+            roundoff=request.POST.get('adj'),
+            grandtotal=request.POST.get('grandtotal'),
+            description=request.POST.get('des'),
+            returnno=request.POST.get('returnno'),
+            staff=staff,
+            company=cmp,
+            party=party
         )
 
         # Save the instance
         credit_note.save()
         
-        # Handle Credititem data
-        items = request.POST.getlist('item_name[]')
-        hsns = request.POST.getlist('hsn[]')
-        quantities = request.POST.getlist('quantity[]')
-        rates = request.POST.getlist('rate[]')
-        taxes = request.POST.getlist('tax[]')
-        discounts = request.POST.getlist('discount[]')
-        amounts = request.POST.getlist('amount[]')
+        product = tuple(request.POST.getlist("product[]"))
+        qty =  tuple(request.POST.getlist("qty[]"))
+        discount =  tuple(request.POST.getlist("discount[]"))
+        total =  tuple(request.POST.getlist("total[]"))
+        # returnno = Creditnote.objects.get(returnno =credit_note.returnno,company=cmp)
+        
+        if len(product)==len(qty)==len(discount)==len(total):
+          mapped=zip(product,qty,discount,total)
+          mapped=list(mapped)
+          for ele in mapped:
+            itm = ItemModel.objects.get(id=ele[0])
+            CreditnoteItem.objects.create(product = itm,qty=ele[1],discount=ele[2],total=ele[3],company=cmp)
+        credit_note.save()
 
-        if len(items) == len(hsns) == len(quantities) == len(rates) == len(discounts) == len(taxes) == len(amounts):
-            for i in range(len(items)):
-                add_item_instance = get_object_or_404(ItemModel, pk=items[i])
-                add_item_instance.save()
-
-                item = ItemModel(
-                    item_name=add_item_instance,
-                    item_hsn=hsns[i],
-                    item_unit=quantities[i],
-                    rate=rates[i],
-                    tax=taxes[i],
-                    discount=discounts[i],
-                    amount=amounts[i],
-                )
-                item.save()
-
-            return redirect('transactiontable')
-
-    return render(request, 'transaction_table.html', {'c': [credit_note]})
+        if 'Next' in request.POST:
+          return redirect('credit_add')
+    
+        if "Save" in request.POST:
+          return redirect('transactiontable')
+    
+    else:
+      return render(request,'credit_add.html')
   
 def save_item(request):
   sid = request.session.get('staff_id')
