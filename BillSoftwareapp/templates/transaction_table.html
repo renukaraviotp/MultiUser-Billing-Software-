@@ -201,7 +201,7 @@
                                     <tr class="fs-2 tb">
                                         <th class="w-8 text-white" style="background-color:rgb(61, 68, 101);">#</th>
                                         <th class="w-8 text-white" style="background-color:rgb(61, 68, 101);">
-                                            DATE 
+                                            DATE
                                             <a class="extra text-white" onclick="toggleDropdown(0)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
                                             {% comment %} <div class="dropdown-content" id="dropdownContent0">
                                                 <label for="filterInput0" style="color: black; text-align: left;">Equal To</label>
@@ -245,7 +245,7 @@
                                             <a class="extra text-white" onclick="toggleDropdown(5)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
                                             {% comment %} <div class="dropdown-content" id="dropdownContent5">
                                                 <label for="filterInput5" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput5" />
+                                                <input type="text" id="filterInput5"/>
                                                 <a class="btn " style="background-color:rgb(61, 68, 101);" onclick="cleardropdown(5)">Clear</a> 
                                                 &nbsp;<a class="btn" style="background-color:rgb(61, 68, 101);" onclick="filterTable(5)">Apply</a>
                                             </div> {% endcomment %}
@@ -274,14 +274,15 @@
                                     </tr>
                                 </thead>
                                 <tbody style="background-color:white;">
-                                    {% for p in pbill %}
+                                    {% for p in credit %}
                                     <tr>
-                                        <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.billdate | date:'d-m-Y'}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.billno}}</td>
+                                        <td class="nnum" style="text-align: center; color: black; width:2%">1</td>
+                                        <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.idate | date:'d-m-Y'}}</td>
+                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.returnno}}</td>
                                         <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.party.party_name}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.pay_method}}</td>
                                         <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.grandtotal}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.balance}}</td>
+                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}"></td>
+                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}"></td>
                                         <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}"></td>
                                         <td class="clickable-row extra " style="color: black;" data-href="details_purchasebill/{{ p.id }}"></td>
                                                    
@@ -320,7 +321,7 @@
 
                             <p id="emptyMessage" style="text-align: center;">
                                 <br><br><br>
-                                No Transactions to Show
+                               
                             </p>
 
                             <table id="excelbilltable" hidden>
@@ -335,14 +336,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for p in pbill %}
+                                    {% for p in credit %}
                                     <tr>
-                                        <td>{{p.billdate | date:'d-m-Y'}}</td>
-                                        <td>{{p.billno}}</td>
+                                        <td>{{p.idate | date:'d-m-Y'}}</td>
+                                        <td>{{p.returnno}}</td>
                                         <td>{{p.party.party_name}}</td>
-                                        <td>{{p.pay_method}}</td>
+                                        <td></td>
                                         <td>{{p.grandtotal}}</td>
-                                        <td>{{p.balance}}</td>
+                                        <td></td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -441,6 +442,14 @@ function updateMinDate() {
     var selectedDate = document.getElementById('fromDate').value;
     document.getElementById('toDate').min = selectedDate;
 }
+</script>
+<script>
+        // Function to update row numbers
+        function updateRowNumbers() {
+            $('.nnum').each(function (index) {
+                $(this).text(index + 1);
+            });
+        }
 </script>
 
 

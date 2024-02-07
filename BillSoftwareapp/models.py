@@ -181,7 +181,6 @@ class CreditnoteItem(models.Model):
     tax=models.CharField(max_length =50,null=True) 
     discount=models.FloatField(default=0,null=True,blank=True)
     total=models.FloatField(default=0,null=True,blank=True)
-    refno=models.IntegerField(null=True)
     
     
 

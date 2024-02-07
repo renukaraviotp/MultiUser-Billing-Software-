@@ -522,7 +522,7 @@ def saveitem(request):
 
   itm = ItemModel(item_name=name, item_hsn=hsn,item_unit=unit,item_taxable=taxref, item_gst=intra_st,item_igst=inter_st, item_sale_price=sell_price, 
                 item_purchase_price=cost_price,item_current_stock=stock,item_at_price=itmprice,item_date=itmdate,
-              company=cmp,user=cmp.user)
+              company=cmp,user=cmp.user,staff=staff)
   itm.save() 
   return JsonResponse({'success': True})
 
@@ -580,21 +580,26 @@ def credit_save(request):
         qty =  tuple(request.POST.getlist("qty[]"))
         discount =  tuple(request.POST.getlist("discount[]"))
         total =  tuple(request.POST.getlist("total[]"))
-        # returnno = Creditnote.objects.get(returnno =credit_note.returnno,company=cmp)
+        returnno = Creditnote.objects.get(returnno =credit_note.returnno,company=cmp)
         
         if len(product)==len(qty)==len(discount)==len(total):
           mapped=zip(product,qty,discount,total)
           mapped=list(mapped)
           for ele in mapped:
             itm = ItemModel.objects.get(id=ele[0])
-            CreditnoteItem.objects.create(product = itm,qty=ele[1],discount=ele[2],total=ele[3],company=cmp)
+            CreditnoteItem.objects.create(product = itm,qty=ele[1],discount=ele[2],total=ele[3],company=cmp,credit=returnno,staff=staff)
+        Creditnote.objects.filter(company=cmp,staff=staff).update(returnno=F('returnno') + 1)
+    
+    
+        credit_note.returnno = credit_note.returnno
         credit_note.save()
-
+        
+        
         if 'Next' in request.POST:
-          return redirect('credit_add')
+          return redirect('transactiontable')
     
         if "Save" in request.POST:
-          return redirect('transactiontable')
+          return redirect('credit_add')
     
     else:
       return render(request,'credit_add.html')
@@ -624,7 +629,9 @@ def save_item(request):
             item_gst=intra_st,
             item_igst=inter_st,
             item_sale_price=sale_price,
-            item_purchase_price=purchase_price
+            item_purchase_price=purchase_price,
+            staff=staff,
+            company=cmp
         )
         item.save()
 
@@ -659,7 +666,11 @@ def get_tax_rate(request):
 
 
 def transactiontable(request):
-  return render(request,'transaction_table.html')
+  sid = request.session.get('staff_id')
+  staff =  staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  credit=Creditnote.objects.filter(company=cmp)
+  return render(request,'transaction_table.html',{'credit':credit})
 
 
 
