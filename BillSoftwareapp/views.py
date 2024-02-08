@@ -340,7 +340,7 @@ def parties_add_page(request):
 
 
 
-def credit_default(request):
+def credit_default(request): 
   return render(request,'credit_default.html')
 
 def credit_add(request):
@@ -545,15 +545,20 @@ def item_dropdown(request):
 def credit_save(request):
     if request.method == 'POST':
         sid = request.session.get('staff_id')
-        staff =  staff_details.objects.get(id=sid)
-        cmp = company.objects.get(id=staff.company.id) 
-        party=Parties.objects.get(id=request.POST.get('pid'))
+        staff = staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
+
+        # Retrieve party details if available
+        party = None
+        party_id = request.POST.get('pid')
+        if party_id:
+            party = Parties.objects.get(id=party_id)
 
         # Create an instance of Creditnote model and save the data
         credit_note = Creditnote(
-            party_name=request.POST.get('partyname'),
-            contact=request.POST.get('number'),
-            address=request.POST.get('address'),
+            party_name=party.party_name if party else None,
+            contact=party.phone_number if party else None,
+            address=party.billing_address if party else None,
             invoice_no=request.POST.get('billNo'),
             idate=request.POST.get('billDate'),
             state_of_supply=request.POST.get('placosupply'),
@@ -575,34 +580,40 @@ def credit_save(request):
 
         # Save the instance
         credit_note.save()
-        
-        product = tuple(request.POST.getlist("product[]"))
-        qty =  tuple(request.POST.getlist("qty[]"))
-        discount =  tuple(request.POST.getlist("discount[]"))
-        total =  tuple(request.POST.getlist("total[]"))
-        returnno = Creditnote.objects.get(returnno =credit_note.returnno,company=cmp)
-        
-        if len(product)==len(qty)==len(discount)==len(total):
-          mapped=zip(product,qty,discount,total)
-          mapped=list(mapped)
-          for ele in mapped:
-            itm = ItemModel.objects.get(id=ele[0])
-            CreditnoteItem.objects.create(product = itm,qty=ele[1],discount=ele[2],total=ele[3],company=cmp,credit=returnno,staff=staff)
-        Creditnote.objects.filter(company=cmp,staff=staff).update(returnno=F('returnno') + 1)
-    
-    
-        credit_note.returnno = credit_note.returnno
-        credit_note.save()
-        
-        
+        # history = CreditnoteHistory(company_id=cmp,party_id=party,staff_id=staff,action='CREATED')
+        # history.save()
+
+        # Save credit note items
+        product = request.POST.getlist("product[]")
+        qty = request.POST.getlist("qty[]")
+        discount = request.POST.getlist("discount[]")
+        total = request.POST.getlist("total[]")
+
+        if len(product) == len(qty) == len(discount) == len(total):
+            mapped = zip(product, qty, discount, total)
+            for ele in mapped:
+                itm = ItemModel.objects.get(id=ele[0])
+                CreditnoteItem.objects.create(
+                    product=itm,
+                    qty=ele[1],
+                    discount=ele[2],
+                    total=ele[3],
+                    company=cmp,
+                    credit=credit_note,
+                    staff=staff
+                )
+
+        Creditnote.objects.filter(company=cmp, staff=staff).update(returnno=F('returnno'))
+
         if 'Next' in request.POST:
-          return redirect('transactiontable')
-    
+            return redirect('transactiontable')
+
         if "Save" in request.POST:
-          return redirect('credit_add')
-    
+            return redirect('credit_add')
+
     else:
-      return render(request,'credit_add.html')
+        return render(request, 'credit_add.html')
+
   
 def save_item(request):
   sid = request.session.get('staff_id')
@@ -671,6 +682,10 @@ def transactiontable(request):
   cmp = company.objects.get(id=staff.company.id)
   credit=Creditnote.objects.filter(company=cmp)
   return render(request,'transaction_table.html',{'credit':credit})
+
+def credit_details(request,pk):
+  cd=Creditnote.objects.get(id=pk)
+  return render(request,'transaction_table.html',{'cd':cd})  
 
 
 

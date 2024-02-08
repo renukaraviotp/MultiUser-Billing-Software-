@@ -182,5 +182,12 @@ class CreditnoteItem(models.Model):
     discount=models.FloatField(default=0,null=True,blank=True)
     total=models.FloatField(default=0,null=True,blank=True)
     
+class CreditnoteHistory(models.Model):
+    party=models.ForeignKey(Parties,on_delete=models.CASCADE,null=True,blank=True)
+    credit=models.ForeignKey(Creditnote,on_delete=models.CASCADE,null=True,blank=True)
+    company = models.ForeignKey(company, on_delete=models.CASCADE,null=True,blank=True)
+    staff = models.ForeignKey(staff_details,on_delete=models.CASCADE,default='')
+    action=models.CharField(max_length=255,null=True)
+        
     
 
