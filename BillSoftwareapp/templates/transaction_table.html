@@ -196,7 +196,7 @@
                 <div class="row">
                     <div class="col-md-12" style="margin-left: 6vh;">
                         <div class="mt-4" style="overflow: scroll;height: 28rem; width: 90%;" id="tablediv">
-                            <table class="table table-bordered table-info table-striped tb table-responsive w-100" id="billtable"  style="text-align: center;">
+                            <table class="table table-bordered table-info table-striped tb table-responsive w-100" id="credittable"  style="text-align: center;">
                                 <thead >
                                     <tr class="fs-2 tb">
                                         <th class="w-8 text-white" style="background-color:rgb(61, 68, 101);">#</th>
@@ -263,33 +263,20 @@
                                         <td class="clickable-row" style="color: black;" data-href="credit_details/{{ p.id }}">Credit Note</td>
                                         <td class="clickable-row" style="color: black;" data-href="credit_details/{{ p.id }}">{{p.grandtotal}}</td>
                                                    
-                                        <td>
-                                            <div class="dropdown show col">
-                                                <button class="btn dropdown-toggle" style="background-color:rgb(61, 68, 101)" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                   
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                    <a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-eye pe-2 tg"></span> View</a>
-                                                    <a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-edit pe-2 tj"></span> Edit</a>
-                                                    <a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-history pe-2 th"></span> History</a>
-                                                    <a class="dropdown-item fw-bold tb hide_table_text_d" style="color:black;" href=""><span style="color: red;" class="fa-solid fa-trash" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        
-                                        {% comment %} <div class="btn-group">
+                                        <td class="pt-3 m-0 extra">
+                                            <div class="btn-group">
                                                 <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <span class="fa fa-ellipsis-v text-dark fs-1 ps-"></span>
                                                 </button>
                                                 <ul class="dropdown-menu">
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'details_purchasebill' p.id %}"><span class="fa fa-eye pe-2 tg"></span> View </a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_purchasebill' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'history_purchasebill' p.id %}"><span class="fa fa-history pe-2 th"></span> History</a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_d" onclick="deletepbill('{{p.id}}')"><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a></li>
+                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-eye pe-2 tg"></span> View </a></li>
+                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
+                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-history pe-2 th"></span> History</a></li>
+                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_d" href=""><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a></li>
                                                 </ul>
-                                            </div> {% endcomment %}
-                                        
-                                        <td style="color: black;" hidden>{{p.advance}}</td>
+                                            </div>
+                                        </td>
+
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -301,7 +288,7 @@
                                
                             </p>
 
-                            <table id="excelbilltable" hidden>
+                            <table id="excelcredittable" hidden>
                                 <thead >
                                     <tr class="fs-2 tb" >
                                         <th> DATE </th>
@@ -324,7 +311,7 @@
                                 </tbody>
                             </table>
 
-                            <table id="billtablemodel" hidden>
+                            <table id="credittablemodel" hidden>
                                 <thead>
                                     <tr>
                                         <th>Customer Name</th>
@@ -351,7 +338,7 @@
                                 </tbody>
                             </table>
 
-                            <table id="billtableitemmodel" hidden>
+                            <table id="credittableitemmodel" hidden>
                                 <thead>
                                     <tr>
                                         <th>Credit Note</th>
@@ -394,7 +381,7 @@
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="file" style="color: black;">Choose Excel File for CreditNote- </label> <br>
-                        <input type="file" class="form-control-file" id="billfile" name="billfile" accept=".xls, .xlsx"><br><br>
+                        <input type="file" class="form-control-file" id="creditfile" name="creditfile" accept=".xls, .xlsx"><br><br>
                         
 
                         <label for="file" style="color: black;">Choose Excel File for CreditNote Products- </label> <br>
@@ -429,13 +416,6 @@ function updateMinDate() {
                 $(this).text(index + 1);
             });
         }
-
-        document.querySelectorAll('[data-href]').forEach(item => {
-            item.addEventListener('click', event => {
-                window.location.href = item.getAttribute('data-href');
-            });
-        });
-        
     });
 </script>
 
@@ -443,7 +423,7 @@ function updateMinDate() {
 
 
 <script>
-var table = document.getElementById('billtable');
+var table = document.getElementById('credittable');
 var rows = table.getElementsByTagName('tr');
 for (var i = 1; i < rows.length; i++) {
     var pid = rows[i].getElementsByTagName('td')[1].innerText;
@@ -549,7 +529,7 @@ function printfunction(){
         } else {
             input = document.getElementById('filterInput' + index).value.toUpperCase();
         }
-        var table = document.getElementById('billtable');
+        var table = document.getElementById('credittable');
         var rows = table.getElementsByTagName('tr');
         var emptyMessage = document.getElementById('emptyMessage');
         var isEmpty = true;
@@ -601,7 +581,7 @@ function printfunction(){
             var selectedDate = new Date(fromDate);
             selectedDate.setDate(selectedDate.getDate() - 1);
             var toDate = document.getElementById("toDate").value;
-            var table = document.getElementById("billtable");
+            var table = document.getElementById("credittable");
             var rows = table.getElementsByTagName("tr");
             var emptyMessage = document.getElementById('emptyMessage');
             var isEmpty = true;
@@ -635,7 +615,7 @@ jQuery(document).ready(function($) {
 </script>
 
 <script>
-function deletepbill(Id)
+function deletecredit(Id)
 {
     swal({
         title: "Confirmation !",
@@ -671,7 +651,7 @@ document.getElementById("search_input").addEventListener("input", function() {
     var input, filter, table, tr, td, i, txtValue;
     input = document.getElementById("search_input");
     filter = input.value.toUpperCase();
-    table = document.getElementById("billtable");
+    table = document.getElementById("credittable");
     tr = table.getElementsByTagName("tr");
     var emptyMessage = document.getElementById("emptyMessage");
     var anyMatch = false;
@@ -697,7 +677,7 @@ document.getElementById("search_input").addEventListener("input", function() {
 
 <script>
 function ExportToExcel(){
-    const table = document.querySelector('#excelbilltable');
+    const table = document.querySelector('#excelcredittable');
     const ws = XLSX.utils.table_to_sheet(table);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
@@ -707,13 +687,13 @@ function ExportToExcel(){
 
 <script>
 function excelmodel(){
-    const table1 = document.querySelector('#billtablemodel');
+    const table1 = document.querySelector('#credittablemodel');
     const ws1 = XLSX.utils.table_to_sheet(table1);
     const wb1 = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb1, ws1, 'Sheet1');
     XLSX.writeFile(wb1, 'CreditNoteModel.xlsx');
 
-    const table2 = document.querySelector('#billtableitemmodel');
+    const table2 = document.querySelector('#credittableitemmodel');
     const ws2 = XLSX.utils.table_to_sheet(table2);
     const wb2 = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb2, ws2, 'Sheet1');

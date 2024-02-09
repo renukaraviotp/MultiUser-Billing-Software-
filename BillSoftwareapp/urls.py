@@ -45,7 +45,7 @@ urlpatterns = [
     path('itemdetails',views.itemdetails,name='itemdetails'),
     path('saveitem',views.saveitem,name='saveitem'),
     path('item_dropdown',views.item_dropdown,name='item_dropdown'),
-    path('credit_details/<int:pk>',views.credit_details,name='credit_details'),
+    # path('credit_details/<int:pk>',views.credit_details,name='credit_details'),
     
     
     

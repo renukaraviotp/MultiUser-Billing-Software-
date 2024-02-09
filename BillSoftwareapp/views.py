@@ -681,11 +681,12 @@ def transactiontable(request):
   staff =  staff_details.objects.get(id=sid)
   cmp = company.objects.get(id=staff.company.id)
   credit=Creditnote.objects.filter(company=cmp)
-  return render(request,'transaction_table.html',{'credit':credit})
+  item=ItemModel.objects.filter(company_id=cmp.id)
+  return render(request,'transaction_table.html',{'credit':credit,'item':item})
 
-def credit_details(request,pk):
-  cd=Creditnote.objects.get(id=pk)
-  return render(request,'transaction_table.html',{'cd':cd})  
+# def credit_details(request,pk):
+#   cd=Creditnote.objects.get(id=pk)
+#   return render(request,'transaction_table.html',{'cd':cd})  
 
 
 
