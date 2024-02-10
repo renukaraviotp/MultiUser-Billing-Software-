@@ -44,7 +44,7 @@ urlpatterns = [
     path('get_tax_rate/', views.get_tax_rate, name='get_tax_rate'),
     path('itemdetails',views.itemdetails,name='itemdetails'),
     path('saveitem',views.saveitem,name='saveitem'),
-    path('item_dropdown',views.item_dropdown,name='item_dropdown'),
+    path('edit_credit/<int:pk>',views.edit_credit,name='edit_credit'),
     # path('credit_details/<int:pk>',views.credit_details,name='credit_details'),
     
     

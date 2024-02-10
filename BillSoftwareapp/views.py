@@ -383,7 +383,7 @@ def item_details(request):
     
 
     hsn = item.item_hsn
-    price = item.item_purchase_price
+    price = item.item_sale_price
     gst = item.item_gst
     igst = item.item_igst
     qty = item.item_current_stock
@@ -490,7 +490,7 @@ def itemdetails(request):
   hsn = itm.item_hsn
   gst = itm.item_gst
   igst = itm.item_igst
-  price = itm.item_purchase_price
+  price = itm.item_sale_price
   qty = itm.item_current_stock
   return JsonResponse({'hsn':hsn, 'gst':gst, 'igst':igst, 'price':price, 'qty':qty})
 
@@ -681,8 +681,31 @@ def transactiontable(request):
   staff =  staff_details.objects.get(id=sid)
   cmp = company.objects.get(id=staff.company.id)
   credit=Creditnote.objects.filter(company=cmp)
-  item=ItemModel.objects.filter(company_id=cmp.id)
+  item=Creditnote.objects.filter(company_id=cmp.id)
   return render(request,'transaction_table.html',{'credit':credit,'item':item})
+
+def edit_credit(request,pk):
+  toda = date.today()
+  tod = toda.strftime("%Y-%m-%d")
+  sid = request.session.get('staff_id')
+  staff =  staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  party = Parties.objects.filter(company=cmp,user=cmp.user)
+  item = ItemModel.objects.filter(company=cmp,user=cmp.user)
+  crd = Creditnote.objects.get(id=pk,company=cmp)
+  crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
+  cdate = crd.date.strftime("%Y-%m-%d")
+  context = {
+    'staff':staff,  
+    'crd':crd, 
+    'crditem':crditem, 
+    'party':party, 
+    'item':item,
+    'tod':tod,
+    'cdate':cdate
+    }
+  return render(request,'creditnote_edit.html',context)
+  
 
 # def credit_details(request,pk):
 #   cd=Creditnote.objects.get(id=pk)

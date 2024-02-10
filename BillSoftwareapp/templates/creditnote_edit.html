@@ -156,7 +156,7 @@
                     <form action="{% url 'credit_save' %}" method="post" enctype="multipart/form-data" onsubmit="return validatecredit()" novalidate>
                         {% csrf_token %}
                         <div class="container col-md-12" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
-                            <h2>Add Credit Note</h2><br>
+                            <h2>Edit Credit Note</h2><br>
                             {% for m in messages %}
                             <h5 style="background-color: rgba(255, 0, 0, 0.4);color: red;font-size: larger;padding: 10px;border-radius: 10px;text-align: center;">{{m}}</h5>
                             {% endfor %}

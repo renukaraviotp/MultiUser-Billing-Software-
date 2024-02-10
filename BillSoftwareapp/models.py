@@ -190,7 +190,8 @@ class CreditnoteHistory(models.Model):
         ('Created', 'Created'),
         ('Updated', 'Updated'),
     ]
-    action = models.CharField(max_length=20, choices=CHOICES,null=True)
+    action = models.CharField(max_length=50, choices=CHOICES,null=True)
+    name=models.CharField(max_length=50,null=True)
     transactiondate = models.DateField(auto_now=True)
         
     
