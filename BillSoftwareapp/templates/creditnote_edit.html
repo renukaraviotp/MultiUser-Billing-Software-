@@ -153,13 +153,10 @@
         <br><br><br><br><br>
        
         <div class="container" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
-                    <form action="{% url 'credit_save' %}" method="post" enctype="multipart/form-data" onsubmit="return validatecredit()" novalidate>
+                    <form action="{% url 'update_creditnote' crd.id %}" method="post" enctype="multipart/form-data" onsubmit="return validatecredit()" novalidate>
                         {% csrf_token %}
                         <div class="container col-md-12" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
                             <h2>Edit Credit Note</h2><br>
-                            {% for m in messages %}
-                            <h5 style="background-color: rgba(255, 0, 0, 0.4);color: red;font-size: larger;padding: 10px;border-radius: 10px;text-align: center;">{{m}}</h5>
-                            {% endfor %}
                 
                             <div class='party'>
                                 <h3>Party</h3>
@@ -172,23 +169,30 @@
                                     <div class="col-md-4 custom-dropdown">
                                         <label for=""> Party Name</label>
                                         <div class="input-group">
-                                            <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();">
-                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
-                                                <i class="fa-solid fa-plus"></i>
-                                            </button>
-                                        </div>
-<ul id="employee" class="dropdown-list">
-{% for p in party %}
-    <li class="dropdown-item"
-        data-value="{{ p.party_name }}"
-        data-party-id="{{ p.id }}" data-phone="{{ p.phone_number }}" data-address="{{ p.billing_address }}" data-balance="{{ p.opening_balance }}"
-        onclick="selectItem(this);"
-     >
-        {{ p.party_name }}
-    </li>
-{% endfor %}
-</ul>
-                                            
+                                            <select name="partyname" id="employee" class="form-control border-secondary dropdown-list" style="color: black; background-color: white;">
+                                                    <option value="{{ crd.party.id }}" selected hidden>{{crd.party.party_name}}</option>
+                                                    {% for c in party %}
+                                                        
+                                                        <option value={{c.id}}> {{ c.party_name }}</option>
+                                                        
+                                                    {% endfor %}
+                                                </select> 
+                                                {% comment %} <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();"> {% endcomment %}
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+    {% comment %} <ul id="employee" class="dropdown-list">
+    {% for p in party %}
+        <li class="dropdown-item"
+            data-value="{{ p.party_name }}"
+            data-party-id="{{ p.id }}" data-phone="{{ p.phone_number }}" data-address="{{ p.billing_address }}" data-balance="{{ p.opening_balance }}"
+            onclick="selectItem(this);"
+         >
+            {{ p.party_name }}
+        </li>
+    {% endfor %}
+    </ul> {% endcomment %}
                                             <small id="availableBalanceSection" style='color:black'> 
                                                 
                                                 {% if party.to_pay == 1 %}
@@ -201,17 +205,17 @@
                                     </div>
                                     <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" placeholder="Bill Number" hidden></div>
                                     
-                                    <div class="col-md-3"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
+                                    <div class="col-md-3"><label for=""> Phone Number</label><input id="ph" value="{{crd.contact}}" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
                                     <div class="col-md-4"><label for="">Billing Address</label>
-                                        <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly></textarea></div>
+                                        <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly>{{crd.address}}</textarea></div>
                                 
                                 </div>
                             
                 
                             <div class="form-group row">
-                                <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{refno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
-                                <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div>
-                                <div class="col"><label for=""> Bill Date</label><input id="bdt" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div>
+                                <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{crd.refno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
+                                <div class="col"><label for=""> Bill No.</label><input id="bno" value="{{crd.invoice_no}}" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div>
+                                <div class="col"><label for=""> Bill Date</label><input id="bdt" value="{{crd.idate}}" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div>
                                 
                             </div>
                         
@@ -219,12 +223,12 @@
                             
                 
                             <div class="row form-group">
-                                <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{todayDate}}" class="form-control"></div>
+                                <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{crd.date}}" class="form-control"></div>
                 
                                 <div class="col-md">
                                     <label class="col-form-label ">Place of Supply</label>
                                         <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">
-                                            <option value="" selected hidden>Select</option>
+                                            <option value="{{crd.state_of_supply }}" selected hidden>{{crd.state_of_supply }}</option>
                                                 <option value="State">State</option>
                                                 <option value="Other State">Other State</option>
                                         </select> 
@@ -251,6 +255,70 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody id="items-table-body">
+                                                    {% for j in crditem %}
+                                                        <tr id='addr0{{ forloop.counter }}'>
+                                                            <td style="text-align: center; width:2%" class="nnum">
+                                                                {{ forloop.counter }}<input type="text"  name='id[]' style="color:black;" value="{{ j.id }}" hidden>
+                                                            </td>
+    
+                                                            <td style="width:21%" >
+                                                                <div class="d-flex">
+                                                                    <select name='product[]' id="product{{ forloop.counter }}" class="form-control product border-secondary" onchange="changeprd(this.id,this.value)" style="color: black; background-color: white;">
+                                                                        <option value="{{ j.product.id }}" selected hidden>{{j.product.item_name}}</option>
+                                                                        {% for i in item %}
+                                                                            {% if i.cid_id == cmp.cid %}
+                                                                                <option value="{{ i.id }}" >{{ i.item_name  }} </option>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </select>&nbsp;&nbsp;&nbsp;
+                                                                    <button id="modal_closing" type="button" class="btn " style="background-color:rgb(61, 68, 101);" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                                                                        <span class="fa fa-plus"></span>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+    
+                                                            <td style="width:12%">
+                                                                <input type="text" name='hsn[]'  value="{{ j.product.item_hsn }}" id="hsn{{ forloop.counter }}" class="form-control border-secondary" style="color: black; background-color: white;"/>
+                                                            </td>
+    
+                                                            <td style="width: 13%;">
+                                                                <input type="number" name='qty[]' value="{{ j.qty }}"  placeholder='Enter Qty' id="qty{{ forloop.counter }}" value=0 class="form-control qty mb-1 border-secondary" step=0 min=0 style="color: black; background-color: white;" />
+                                                            </td>
+    
+                                                            <td style="width:12%">
+                                                                <input type="number" name='price[]' value="{{ j.product.item_purchase_price }}" id="unit{{ forloop.counter }}"class="form-control border-secondary price" step="0.00" min="0" style="color: black; background-color: white;" />
+                                                            </td>
+    
+                                                            <td style="width: 15%;">
+                                                                <input type="text" id="intrataxval{{ forloop.counter }}" value="{{j.product.item_gst}}" hidden>
+                                                                <input type="text" id="intertaxval{{ forloop.counter }}" value="{{j.product.item_igst}}" hidden>
+                                                                {% if crd.state_of_supply  == 'State'  %}
+                                                                    <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.product.item_gst}}"   />
+                                                                {% else %}
+                                                                    <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.product.item_igst}}"   />
+                                                                {% endif %}
+                                                            </td>
+    
+                                                            <td style="width:10%">
+                                                                <input type="number" name='discount[]' placeholder='Enter Discount' id="disc{{forloop.counter}}" value="{{j.discount|default:0}}" class="form-control disc border-secondary" step=0 min=0 style="color: black; background-color: white;">
+                                                            </td>
+    
+                                                            <td style="width:13%">
+                                                                <input type="number" name='total[]' value="{{ j.total }}" id="total{{ forloop.counter }}" placeholder=0 class="form-control total border-secondary" value=0 step="any" readonly style="color: black; background-color: white;" />
+                                                            </td>
+    
+                                                            <td style="display: none;">
+                                                                <input type="number" step="any" name='taxamount1' id="taxamount{{ forloop.counter }}" class="form-control taxamount" />
+                                                            </td>
+    
+                                                            <td style="width:5%">
+                                                                <button type="button" id="{{forloop.counter}}" style="background-color:rgb(61, 68, 101);" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button><br>
+                                                                <button type="button" id="{{forloop.counter}}" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row"> </button>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                {% comment %} <tbody id="items-table-body">
                                                     <tr id='addr01'>
                                                         <td class="nnum" style="text-align: center; color: black;">1</td> 
                                     
@@ -304,7 +372,7 @@
                                                             <button type="button" id="1" class="btn btn-danger remove_row px-2 py-1 mx-1" title="Remove Row"><i class="fa-solid fa-xmark"></i> </button>
                                                         </td>
                                                     </tr>
-                                                </tbody>
+                                                </tbody> {% endcomment %}
                                                 <tr >
                                                     <td style="border: none;background-color:rgb(61, 68, 101); width=:2px;"><a class="btn-sm" role="button" id="add" ><span class="fa fa-plus"></span></a></td>
                                                 </tr>

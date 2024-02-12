@@ -45,6 +45,9 @@ urlpatterns = [
     path('itemdetails',views.itemdetails,name='itemdetails'),
     path('saveitem',views.saveitem,name='saveitem'),
     path('edit_credit/<int:pk>',views.edit_credit,name='edit_credit'),
+    path('update_creditnote/<int:pk>',views.update_creditnote,name='update_creditnote'),
+    path('template1/<int:pk>',views.template1,name='template1'),
+    
     # path('credit_details/<int:pk>',views.credit_details,name='credit_details'),
     
     

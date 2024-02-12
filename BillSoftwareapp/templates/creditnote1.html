@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<style>
+    *,
+*::after,
+*::before{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root{
+    --blue-color: #0c2f54;
+    --dark-color: #535b61;
+    --white-color: #fff;
+}
+
+ul{
+    list-style-type: none;
+}
+ul li{
+    margin: 2px 0;
+}
+
+/* text colors */
+.text-dark{
+    color: var(--dark-color);
+}
+.text-blue{
+    color: var(--blue-color);
+}
+.text-end{
+    text-align: right;
+}
+.text-center{
+    text-align: center;
+}
+.text-start{
+    text-align: left;
+}
+.text-bold{
+    font-weight: 700;
+}
+/* hr line */
+.hr{
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+/* border-bottom */
+.border-bottom{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body{
+    font-family: 'Poppins', sans-serif;
+    color: var(--dark-color);
+    font-size: 14px;
+}
+.credit-wrapper{
+    min-height: 100vh;
+    background-color: rgba(0, 0, 0, 0.1);
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.credit{
+    max-width: 850px;
+    margin-right: auto;
+    margin-left: auto;
+    background-color: var(--white-color);
+    padding: 70px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    min-height: 920px;
+}
+.credit-head-top-left img{
+    width: 130px;
+}
+.credit-head-top-right h3{
+    font-weight: 500;
+    font-size: 27px;
+    color: var(--blue-color);
+}
+.credit-head-middle, .credit-head-bottom{
+    padding: 16px 0;
+}
+.credit-body{
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.credit-body table{
+    border-collapse: collapse;
+    border-radius: 4px;
+    width: 100%;
+}
+.credit-body table td, .credit-body table th{
+    padding: 12px;
+}
+.credit-body table tr{
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+.credit-body table thead{
+    background-color: rgba(0, 0, 0, 0.02);
+}
+.credit-body-info-item{
+    display: grid;
+    grid-template-columns: 80% 20%;
+}
+.credit-body-info-item .info-item-td{
+    padding: 12px;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+.credit-foot{
+    padding: 30px 0;
+}
+.credit-foot p{
+    font-size: 12px;
+}
+.credit-btns{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+.credit-btn{
+    padding: 3px 9px;
+    color: var(--dark-color);
+    font-family: inherit;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.credit-head-top, .credit-head-middle, .credit-head-bottom{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding-bottom: 10px;
+}
+
+@media screen and (max-width: 992px){
+    .credit{
+        padding: 40px;
+    }
+}
+
+@media screen and (max-width: 576px){
+    .credit-head-top, .credit-head-middle, .credit-head-bottom{
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .credit-head-bottom-right{
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+    .credit *{
+        text-align: left;
+    }
+    .credit{
+        padding: 28px;
+    }
+}
+
+.overflow-view{
+    overflow-x: scroll;
+}
+.credit-body{
+    min-width: 600px;
+}
+
+@media print{
+    .print-area{
+        visibility: visible;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        overflow: hidden;
+    }
+
+    .overflow-view{
+        overflow-x: hidden;
+    }
+
+    .credit-btns{
+        display: none;
+    }
+}
+</style>
+
+
+<div class = "credit-wrapper" id = "print-area">
+    <br><br><br><br>
+    <div class = "credit ml-auto">
+        <div class = "credit-container">
+            <div class = "credit-head">
+                <div class = "credit-head-top">
+                    {% comment %} <div class = "credit-head-top-left text-start">
+                        <img src = "{% static "img/logo/logo3.png" %}" height="30" width="0">
+                    </div> {% endcomment %}
+                    <div class = "credit-head-top-right text-end">
+                        <h3 style='text-align:center;'>Credit Note</h3>
+                    </div>
+                </div>
+                <div class = "hr"></div>
+                <div class = "credit-head-middle">
+                    
+                    <div class = "credit-head-middle-left text-start">
+                        <p><span class = "text-bold">Date:</span>{{cd.date}}</p>
+                    </div>
+                    <div class = "credit-head-middle-right text-end">
+                        <p><spanf class = "text-bold">CreditNote No:</span>{{cd.returnno}}</p>
+                    </div>
+                    
+                </div>
+                <div class = "hr"></div>
+                <div class = "credit-head-bottom">
+                    <div class = "credit-head-bottom-left">
+                        <ul>
+                            <li class = 'text-bold'>From:</li>
+                            <li>{{cd.company.company_name}}</li>
+                            <li>{{cd.company.address}}</li>
+                        </ul>
+                    </div>
+                    <div class = "credit-head-bottom-right">
+                        <ul class = "text-end">
+                            <li class = 'text-bold'>To:</li>
+                            <li>{{cd.party_name}}</li>
+                            <li>{{cd.address}}</li>
+                            <li>{{cd.contact}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class = "overflow-view">
+                <div class = "credit-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <td class = "text-bold">Item</td>
+                                <td class = "text-bold">HSN</td>
+                                <td class = "text-bold">Qty</td>
+                                <td class = "text-bold">Rate</td>
+                                <td class = "text-bold">Tax</td>
+                                <td class = "text-bold">Discount</td>
+                                <td class = "text-bold">Total</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in crditem %}
+                            <tr>
+                                <td>{{i.product}}</td>
+                                <td>Creating a website design</td>
+                                <td>$50.00</td>
+                                <td>10</td>
+                                <td class = "text-end">$500.00</td>
+                                <td></td>
+                                <td>{{i.total}}</td>
+                            </tr>
+                            {% endfor %}
+                            <!-- <tr>
+                                <td colspan="4">10</td>
+                                <td>$500.00</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                    <div class = "credit-body-bottom">
+                        <div class = "credit-body-info-item border-bottom">
+                            <div class = "info-item-td text-end text-bold">Sub Total:</div>
+                            <div class = "info-item-td text-end">{{cd.subtotal}}</div>
+                        </div>
+                        <div class = "credit-body-info-item border-bottom">
+                            <div class = "info-item-td text-end text-bold">Tax:</div>
+                            <div class = "info-item-td text-end"></div>
+                        </div>
+                        <div class = "credit-body-info-item">
+                            <div class = "info-item-td text-end text-bold">Total:</div>
+                            <div class = "info-item-td text-end">{{cd.grandtotal}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class = "credit-foot text-center">
+                
+
+                <div class = "credit-btns">
+                    <button type = "button" class = "credit-btn" onclick="printcredit()">
+                        <span>
+                            <i class="fa-solid fa-print"></i>
+                        </span>
+                        <span>Print</span>
+                    </button>
+                    <button type = "button" class = "credit-btn">
+                        <span>
+                            <i class="fa-solid fa-download"></i>
+                        </span>
+                        <span>Download</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function printcredit(){
+        window.print();
+    }
+</script>
+{% endblock content %}

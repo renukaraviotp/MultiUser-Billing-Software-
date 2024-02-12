@@ -197,7 +197,7 @@
                 <div class="row">
                     <div class="col-md-12" style="margin-left: 6vh;">
                         <div class="mt-4" style="overflow: scroll;height: 28rem; width: 90%;" id="tablediv">
-                            <table class="table table-bordered table-info table-striped tb table-responsive w-100" id="credittable"  style="text-align: center;">
+                            <table class="table table-bordered table-info table-striped tb table-responsive w-100" id="credittable"  style="text-align: center; width:100%;">
                                 <thead >
                                     <tr class="fs-2 tb">
                                         <th class="w-8 text-white" style="background-color:rgb(61, 68, 101);">#</th>
@@ -235,10 +235,10 @@
                                             TYPE
                                             <a class="extra text-white" onclick="toggleDropdown(5)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
                                             <div class="dropdown-content" id="dropdownContent5">
-                                                <label for="filterInput3" style="color: black; text-align: left;">Equal To</label><br>
+                                                <label for="filterInput5" style="color: black; text-align: left;">Equal To</label><br>
                                                 <input type="text" id="filterInput3"/><br>
-                                                <a class="btn " style="background-color:rgb(61, 68, 101);" onclick="cleardropdown(3)">Clear</a> 
-                                                &nbsp;<a class="btn" style="background-color:rgb(61, 68, 101);" onclick="filterTable(3)">Apply</a>
+                                                <a class="btn " style="background-color:rgb(61, 68, 101);" onclick="cleardropdown(5)">Clear</a> 
+                                                &nbsp;<a class="btn" style="background-color:rgb(61, 68, 101);" onclick="filterTable(5)">Apply</a>
                                             </div>
                                         </th>
                                         <th class="text-white" style="background-color:rgb(61, 68, 101);">
@@ -258,30 +258,33 @@
                                     {% for p in credit %}
                                     <tr>
                                         <td class="nnum" style="text-align: center; color: black; width:2%"></td>
-                                        <td class="clickable-row extra" style="color: black;" data-href="credit_details/{{ p.id }}">{{p.date | date:'d-m-Y'}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="credit_details/{{ p.id }}">{{p.returnno}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="credit_details/{{ p.id }}">{{p.party.party_name}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="credit_details/{{ p.id }}">Credit Note</td>
-                                        <td class="clickable-row" style="color: black;" data-href="credit_details/{{ p.id }}">{{p.grandtotal}}</td>
+                                        <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}">{{p.date | date:'d-m-Y'}}</td>
+                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.returnno}}</td>
+                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.party.party_name}}</td>
+                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">Credit Note</td>
+                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.grandtotal}}</td>
                                                    
-                                        <td class="pt-3 m-0 extra">
-                                            <div class="btn-group">
-                                                <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <span class="fa fa-ellipsis-v text-dark fs-1 ps-"></span>
+                                        <td>
+                                            <div class="dropdown show col">
+                                                <button class="btn dropdown-toggle" style="background-color:rgb(61, 68, 101)" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                   
                                                 </button>
-                                                <ul class="dropdown-menu">
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-eye pe-2 tg"></span> View </a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url "edit_credit" p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-history pe-2 th"></span> History</a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_d" href=""><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a></li>
-                                                </ul>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                    <a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-eye pe-2 tg"></span> View</a>
+                                                    <a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a>
+                                                    <a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-history pe-2 th"></span> History</a>
+                                                    <a class="dropdown-item fw-bold tb hide_table_text_d" style="color:black;" onclick="deletepbill('{{p.id}}')"><span style="color: red;" class="fa-solid fa-trash" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a>
+                                                </div>
                                             </div>
                                         </td>
+                                        <a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a>
 
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+                                
                             </table>
+                            
                             <br><br>
 
                             <p id="emptyMessage" style="text-align: center;">

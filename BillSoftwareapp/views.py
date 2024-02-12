@@ -690,8 +690,8 @@ def edit_credit(request,pk):
   sid = request.session.get('staff_id')
   staff =  staff_details.objects.get(id=sid)
   cmp = company.objects.get(id=staff.company.id)
-  party = Parties.objects.filter(company=cmp,user=cmp.user)
-  item = ItemModel.objects.filter(company=cmp,user=cmp.user)
+  party = Parties.objects.filter(company=cmp,staff=staff)
+  item = ItemModel.objects.filter(company=cmp,staff=staff)
   crd = Creditnote.objects.get(id=pk,company=cmp)
   crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
   cdate = crd.date.strftime("%Y-%m-%d")
@@ -705,6 +705,55 @@ def edit_credit(request,pk):
     'cdate':cdate
     }
   return render(request,'creditnote_edit.html',context)
+
+def update_creditnote(request,pk):
+  if request.method =='POST':
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)  
+    party = Parties.objects.get(id=request.POST.get('partyname'))
+    crd = Creditnote.objects.get(id=pk,company=cmp)
+    crd.party = party
+    crd.date = request.POST.get('date')
+    crd.invoice_no = request.POST.get('billNo')
+    crd.idate = request.POST.get('billdate')
+    crd.state_of_supply  = request.POST.get('placosupply')
+    crd.subtotal =float(request.POST.get('subtotal'))
+    crd.grandtotal = request.POST.get('grandtotal')
+    crd.igst = request.POST.get('igst')
+    crd.cgst = request.POST.get('cgst')
+    crd.sgst = request.POST.get('sgst')
+    crd.taxamount = request.POST.get("taxamount")
+    crd.roundoff = request.POST.get("adj")
+    crd.description = request.POST.get("method")
+
+    crd.save()
+
+    product = tuple(request.POST.getlist("product[]"))
+    qty = tuple(request.POST.getlist("qty[]"))
+    total = tuple(request.POST.getlist("total[]"))
+    discount = tuple(request.POST.getlist("discount[]"))
+
+    CreditnoteItem.objects.filter(pdebit=crd,company=cmp).delete()
+    if len(total)==len(discount)==len(qty):
+      mapped=zip(product,qty,discount,total)
+      mapped=list(mapped)
+      for ele in mapped:
+        itm = ItemModel.objects.get(id=ele[0])
+        CreditnoteItem.objects.create(product =itm,qty=ele[1],discount=ele[2],total=ele[3],pdebit=crd,company=cmp)
+
+    CreditnoteHistory.objects.create(debitnote=crd,company=cmp,staff=staff,action='Updated')
+    return redirect('transactiontable')
+
+  return redirect('transactiontable')
+
+def template1(request,pk):
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)  
+  cd=Creditnote.objects.get(id=pk)
+  crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
+  return render(request,'creditnote1.html',{'cd':cd,'crditem':crditem})
   
 
 # def credit_details(request,pk):
