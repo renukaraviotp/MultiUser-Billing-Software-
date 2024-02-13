@@ -174,6 +174,7 @@ class CreditnoteItem(models.Model):
     credit=models.ForeignKey(Creditnote,on_delete=models.CASCADE,null=True,blank=True)
     company = models.ForeignKey(company, on_delete=models.CASCADE,null=True,blank=True)
     staff = models.ForeignKey(staff_details,on_delete=models.CASCADE,default='')
+    item = models.ForeignKey(ItemModel, on_delete=models.CASCADE,null=True,blank=True)
     product=models.CharField(max_length =50,null=True)  
     hsn=models.CharField(max_length =50,null=True) 
     qty=models.IntegerField(default=0,null=True,blank=True)
@@ -181,6 +182,10 @@ class CreditnoteItem(models.Model):
     tax=models.CharField(max_length =50,null=True) 
     discount=models.FloatField(default=0,null=True,blank=True)
     total=models.FloatField(default=0,null=True,blank=True)
+    
+    def __str__(self):
+        return self.product
+    
     
 class CreditnoteHistory(models.Model):
     credit=models.ForeignKey(Creditnote,on_delete=models.CASCADE,null=True,blank=True)

@@ -588,16 +588,20 @@ def credit_save(request):
         qty = request.POST.getlist("qty[]")
         discount = request.POST.getlist("discount[]")
         total = request.POST.getlist("total[]")
+        hsn = request.POST.getlist("hsn[]")
+        tax = request.POST.getlist("tax[]")
 
-        if len(product) == len(qty) == len(discount) == len(total):
-            mapped = zip(product, qty, discount, total)
+        if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax):
+            mapped = zip(product, qty, discount, total, hsn, tax)
             for ele in mapped:
                 itm = ItemModel.objects.get(id=ele[0])
                 CreditnoteItem.objects.create(
-                    product=itm,
+                    product=itm.item_name,
                     qty=ele[1],
                     discount=ele[2],
                     total=ele[3],
+                    hsn=ele[4],
+                    tax=ele[5],
                     company=cmp,
                     credit=credit_note,
                     staff=staff
@@ -754,6 +758,22 @@ def template1(request,pk):
   cd=Creditnote.objects.get(id=pk)
   crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
   return render(request,'creditnote1.html',{'cd':cd,'crditem':crditem})
+
+def template2(request,pk):
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)  
+  cd=Creditnote.objects.get(id=pk)
+  crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
+  return render(request,'creditnote2.html',{'cd':cd,'crditem':crditem})
+
+def template3(request,pk):
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)  
+  cd=Creditnote.objects.get(id=pk)
+  crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
+  return render(request,'creditnote3.html',{'cd':cd,'crditem':crditem})
   
 
 # def credit_details(request,pk):

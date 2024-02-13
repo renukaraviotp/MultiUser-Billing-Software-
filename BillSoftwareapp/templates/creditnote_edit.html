@@ -264,7 +264,7 @@
                                                             <td style="width:21%" >
                                                                 <div class="d-flex">
                                                                     <select name='product[]' id="product{{ forloop.counter }}" class="form-control product border-secondary" onchange="changeprd(this.id,this.value)" style="color: black; background-color: white;">
-                                                                        <option value="{{ j.product.id }}" selected hidden>{{j.product.item_name}}</option>
+                                                                        <option value="{{ j.item.id }}" selected hidden>{{j.item.item_name}}</option>
                                                                         {% for i in item %}
                                                                             {% if i.cid_id == cmp.cid %}
                                                                                 <option value="{{ i.id }}" >{{ i.item_name  }} </option>
@@ -278,7 +278,7 @@
                                                             </td>
     
                                                             <td style="width:12%">
-                                                                <input type="text" name='hsn[]'  value="{{ j.product.item_hsn }}" id="hsn{{ forloop.counter }}" class="form-control border-secondary" style="color: black; background-color: white;"/>
+                                                                <input type="text" name='hsn[]'  value="{{ j.item.item_hsn }}" id="hsn{{ forloop.counter }}" class="form-control border-secondary" style="color: black; background-color: white;"/>
                                                             </td>
     
                                                             <td style="width: 13%;">
@@ -286,12 +286,12 @@
                                                             </td>
     
                                                             <td style="width:12%">
-                                                                <input type="number" name='price[]' value="{{ j.product.item_purchase_price }}" id="unit{{ forloop.counter }}"class="form-control border-secondary price" step="0.00" min="0" style="color: black; background-color: white;" />
+                                                                <input type="number" name='price[]' value="{{ j.item.item_sale_price }}" id="unit{{ forloop.counter }}"class="form-control border-secondary price" step="0.00" min="0" style="color: black; background-color: white;" />
                                                             </td>
     
                                                             <td style="width: 15%;">
-                                                                <input type="text" id="intrataxval{{ forloop.counter }}" value="{{j.product.item_gst}}" hidden>
-                                                                <input type="text" id="intertaxval{{ forloop.counter }}" value="{{j.product.item_igst}}" hidden>
+                                                                <input type="text" id="intrataxval{{ forloop.counter }}" value="{{j.item.item_gst}}" hidden>
+                                                                <input type="text" id="intertaxval{{ forloop.counter }}" value="{{j.item.item_igst}}" hidden>
                                                                 {% if crd.state_of_supply  == 'State'  %}
                                                                     <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.product.item_gst}}"   />
                                                                 {% else %}

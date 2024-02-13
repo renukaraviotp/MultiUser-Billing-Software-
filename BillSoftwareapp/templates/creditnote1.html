@@ -9,6 +9,10 @@
     margin: 0;
     box-sizing: border-box;
 }
+body{
+    background-color: rgb(130, 144, 199);
+    
+}
 
 :root{
     --blue-color: #0c2f54;
@@ -59,19 +63,17 @@ body{
 }
 .credit-wrapper{
     min-height: 100vh;
-    background-color: rgba(0, 0, 0, 0.1);
-    padding-top: 20px;
+    background-color: rgb(130, 144, 199);
+    {% comment %} padding-top: 20px; {% endcomment %}
     padding-bottom: 20px;
 }
 .credit{
-    max-width: 850px;
-    margin-right: auto;
-    margin-left: auto;
+    max-width: 900px;
     background-color: var(--white-color);
     padding: 70px;
     border: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    min-height: 920px;
+    min-height: 700px;
 }
 .credit-head-top-left img{
     width: 130px;
@@ -110,24 +112,6 @@ body{
 .credit-body-info-item .info-item-td{
     padding: 12px;
     background-color: rgba(0, 0, 0, 0.02);
-}
-.credit-foot{
-    padding: 30px 0;
-}
-.credit-foot p{
-    font-size: 12px;
-}
-.credit-btns{
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-}
-.credit-btn{
-    padding: 3px 9px;
-    color: var(--dark-color);
-    font-family: inherit;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    cursor: pointer;
 }
 
 .credit-head-top, .credit-head-middle, .credit-head-bottom{
@@ -184,19 +168,65 @@ body{
     }
 }
 </style>
+<body>
+    
+
+<br><br><br><br><br><br>
+<div class="row ps-3 pe-3 m-0" >
+<div class="col-sm-12 ps-2 pe-3" style="margin-left:23%;">
+    <div class="row pt-0 m-0">
+        <div class="card p-0 bg-light bs col-md-9"><br>
+            <div class="row">
+                <div class="container">
+                    <div class="row ">
+                        <div class="col-md-3" style="margin-left: 7vh; margin-top: 7vh;">
+                            <div class="form-group">
+                                <h3>Credit Note Details</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-4 text-right" style="margin-left: -13vh;">
+                            <button class="btn mt-3" type="button" onclick="printcredit()" style="margin-right: 2vh;">
+                                <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
+                                <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
+                            </button>
+
+                            <button class="btn mt-3" type="button" onclick="downloadPdf()" style="margin-right: 2vh;">
+                                <span><img width="30px" src="{% static 'images/credit/pdf.jpg' %}" alt="no img"></span>
+                                <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
+                            </button>
+
+                            <button class="btn mt-3" type="button" data-toggle="modal" data-target="#excelModal" onclick="excelmodel()">
+                                <span><img width="30px" src="{% static 'images/credit/share.png' %}" alt="no img"></span>
+                                <br><span style="color: black; font-size: small; font-weight: bold;">Share</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div><br>
+            
+            
+            <br>
+        </div>
+    </div>
+
 
 
 <div class = "credit-wrapper" id = "print-area">
     <br><br><br><br>
-    <div class = "credit ml-auto">
+    <div class = "credit col-10 mr-0">
         <div class = "credit-container">
             <div class = "credit-head">
                 <div class = "credit-head-top">
                     {% comment %} <div class = "credit-head-top-left text-start">
                         <img src = "{% static "img/logo/logo3.png" %}" height="30" width="0">
                     </div> {% endcomment %}
-                    <div class = "credit-head-top-right text-end">
-                        <h3 style='text-align:center;'>Credit Note</h3>
+                    <div class = "credit-head-top-right text-start"> 
+                        <h3>Credit Note</h3>
                     </div>
                 </div>
                 <div class = "hr"></div>
@@ -248,9 +278,9 @@ body{
                             <tr>
                                 <td>{{i.product}}</td>
                                 <td>Creating a website design</td>
-                                <td>$50.00</td>
+                                <td>{{i.qty}}</td>
                                 <td>10</td>
-                                <td class = "text-end">$500.00</td>
+                                <td class = "text-end">{{i.tax}}</td>
                                 <td></td>
                                 <td>{{i.total}}</td>
                             </tr>
@@ -268,7 +298,7 @@ body{
                         </div>
                         <div class = "credit-body-info-item border-bottom">
                             <div class = "info-item-td text-end text-bold">Tax:</div>
-                            <div class = "info-item-td text-end"></div>
+                            <div class = "info-item-td text-end">{{cd.taxamount}}</div>
                         </div>
                         <div class = "credit-body-info-item">
                             <div class = "info-item-td text-end text-bold">Total:</div>
@@ -277,26 +307,15 @@ body{
                     </div>
                 </div>
             </div>
-            <div class = "credit-foot text-center">
-                
-
-                <div class = "credit-btns">
-                    <button type = "button" class = "credit-btn" onclick="printcredit()">
-                        <span>
-                            <i class="fa-solid fa-print"></i>
-                        </span>
-                        <span>Print</span>
-                    </button>
-                    <button type = "button" class = "credit-btn">
-                        <span>
-                            <i class="fa-solid fa-download"></i>
-                        </span>
-                        <span>Download</span>
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
+</div><br><br>
+<ul class="pagination pagination-sm justify-content-center">
+    <li class="page-item active"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
+    <li class="page-item"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
+    <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
+  </ul><br><br>
+</div>
 </div>
 
 <script>
@@ -304,4 +323,19 @@ body{
         window.print();
     }
 </script>
+<script>
+    function downloadPDF() {
+        // Replace the URL below with the actual URL that serves the PDF file
+        var pdfUrl = 'template1.pdf';
+        
+        // Creating an anchor element to trigger the download
+        var a = document.createElement('a');
+        a.href = pdfUrl;
+        a.download = 'creditnote.pdf'; // Optional: specify a filename for the downloaded file
+        a.target = '_blank'; // Optional: open the PDF in a new tab instead of downloading it
+        a.click();
+    }
+</script>
+
+</body>
 {% endblock content %}

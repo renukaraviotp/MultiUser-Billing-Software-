@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: rgb(130, 144, 199);
+      }
+      
+      .credit {
+        border: 1px solid #ccc;
+        padding: 20px;
+        max-width: 900px;
+      }
+      
+      .credit-header, .credit-footer {
+        text-align: center;
+      }
+      
+      .credit-body {
+        margin-top: 20px;
+      }
+      
+      .table-container {
+        overflow-x: auto;
+      }
+      
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      
+      table th, table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      
+      .credit-footer p {
+        font-weight: bold;
+      }
+      
+      
+</style>
+<body>
+    
+
+<br><br><br><br><br><br>
+<div class="row ps-3 pe-3 m-0" >
+<div class="col-sm-12 ps-2 pe-3" style="margin-left:23%;">
+    <div class="row pt-0 m-0">
+        <div class="card p-0 bg-light bs col-md-9"><br>
+            <div class="row">
+                <div class="container">
+                    <div class="row ">
+                        <div class="col-md-3" style="margin-left: 7vh; margin-top: 7vh;">
+                            <div class="form-group">
+                                <h3>Credit Note Details</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+                        <div class="col-md-4 text-right" style="margin-left: -13vh;">
+                            <button class="btn mt-3" type="button" onclick="printcredit()" style="margin-right: 2vh;">
+                                <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
+                                <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
+                            </button>
+
+                            <button class="btn mt-3" type="button" onclick="downloadPdf()" style="margin-right: 2vh;">
+                                <span><img width="30px" src="{% static 'images/credit/pdf.jpg' %}" alt="no img"></span>
+                                <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
+                            </button>
+
+                            <button class="btn mt-3" type="button" data-toggle="modal" data-target="#excelModal" onclick="excelmodel()">
+                                <span><img width="30px" src="{% static 'images/credit/share.png' %}" alt="no img"></span>
+                                <br><span style="color: black; font-size: small; font-weight: bold;">Share</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div><br>
+            
+            
+            <br>
+        </div>
+    </div>
+
+    <div class="credit" style='background-color:white;'>
+        <div class="credit-header">
+          <h1>Credit Note</h1>
+          <p>CreditNote No: <span id="creditNumber">{{cd.returnno}}</span></p>
+          <p>Date: <span id="creditDate">{{cd.date}}</span></p>
+        </div>
+        <div class="credit-body">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                    <td class = "text-bold">Item</td>
+                    <td class = "text-bold">HSN</td>
+                    <td class = "text-bold">Qty</td>
+                    <td class = "text-bold">Rate</td>
+                    <td class = "text-bold">Tax</td>
+                    <td class = "text-bold">Discount</td>
+                    <td class = "text-bold">Total</td>
+                </tr>
+              </thead>
+              <tbody id="creditItems">
+                {% for i in crditem %}
+                            <tr>
+                                <td>{{i.product}}</td>
+                                <td>Creating a website design</td>
+                                <td>{{i.qty}}</td>
+                                <td>10</td>
+                                <td class = "text-end">{{i.tax}}</td>
+                                <td></td>
+                                <td>{{i.total}}</td>
+                            </tr>
+                            {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <br><br>
+        <div class="credit-footer">
+          <p>Sub Total: <span id="totalAmount">{{cd.subtotal}}</span></p>
+          <p>Tax: <span id="totalAmount">{{cd.taxamount}}</span></p>
+          <p>Total: <span id="totalAmount">{{cd.grandtotal}}</span></p>
+        </div>
+      </div>
+
+
+
+<br><br>
+<ul class="pagination pagination-sm justify-content-center">
+    <li class="page-item"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
+    <li class="page-item"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
+    <li class="page-item active"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
+  </ul><br><br>
+</div>
+</div>
+
+<script>
+    function printcredit(){
+        window.print();
+    }
+</script>
+<script>
+    function downloadPDF() {
+        // Replace the URL below with the actual URL that serves the PDF file
+        var pdfUrl = 'template1.pdf';
+        
+        // Creating an anchor element to trigger the download
+        var a = document.createElement('a');
+        a.href = pdfUrl;
+        a.download = 'creditnote.pdf'; // Optional: specify a filename for the downloaded file
+        a.target = '_blank'; // Optional: open the PDF in a new tab instead of downloading it
+        a.click();
+    }
+</script>
+
+</body>
+{% endblock content %}
