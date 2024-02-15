@@ -590,9 +590,10 @@ def credit_save(request):
         total = request.POST.getlist("total[]")
         hsn = request.POST.getlist("hsn[]")
         tax = request.POST.getlist("tax[]")
+        price = request.POST.getlist("price[]")
 
-        if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax):
-            mapped = zip(product, qty, discount, total, hsn, tax)
+        if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax) == len(price):
+            mapped = zip(product, qty, discount, total, hsn, tax, price)
             for ele in mapped:
                 itm = ItemModel.objects.get(id=ele[0])
                 CreditnoteItem.objects.create(
@@ -602,6 +603,7 @@ def credit_save(request):
                     total=ele[3],
                     hsn=ele[4],
                     tax=ele[5],
+                    price=ele[6],
                     company=cmp,
                     credit=credit_note,
                     staff=staff
@@ -697,7 +699,7 @@ def edit_credit(request,pk):
   party = Parties.objects.filter(company=cmp,staff=staff)
   item = ItemModel.objects.filter(company=cmp,staff=staff)
   crd = Creditnote.objects.get(id=pk,company=cmp)
-  crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
+  crditem = CreditnoteItem.objects.filter(credit=crd,company=cmp)
   cdate = crd.date.strftime("%Y-%m-%d")
   context = {
     'staff':staff,  
@@ -754,9 +756,9 @@ def update_creditnote(request,pk):
 def template1(request,pk):
   sid = request.session.get('staff_id')
   staff = staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)  
+  cmp = company.objects.get(id=staff.company.id)   
   cd=Creditnote.objects.get(id=pk)
-  crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
+  crditem = CreditnoteItem.objects.filter(credit=cd,company=cmp)
   return render(request,'creditnote1.html',{'cd':cd,'crditem':crditem})
 
 def template2(request,pk):
@@ -764,7 +766,7 @@ def template2(request,pk):
   staff = staff_details.objects.get(id=sid)
   cmp = company.objects.get(id=staff.company.id)  
   cd=Creditnote.objects.get(id=pk)
-  crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
+  crditem = CreditnoteItem.objects.filter(credit=cd,company=cmp)
   return render(request,'creditnote2.html',{'cd':cd,'crditem':crditem})
 
 def template3(request,pk):
@@ -772,8 +774,17 @@ def template3(request,pk):
   staff = staff_details.objects.get(id=sid)
   cmp = company.objects.get(id=staff.company.id)  
   cd=Creditnote.objects.get(id=pk)
-  crditem = CreditnoteItem.objects.filter(id=pk,company=cmp)
+  crditem = CreditnoteItem.objects.filter(credit=cd,company=cmp)
   return render(request,'creditnote3.html',{'cd':cd,'crditem':crditem})
+
+def credithistory(request,pk):
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)  
+  cd=Creditnote.objects.get(id=pk)
+  history=CreditnoteHistory.objects.filter(credit=cd,company=cmp)
+  context = {'staff':staff,'history':history}
+  return render(request,'credithistory.html',context)
   
 
 # def credit_details(request,pk):

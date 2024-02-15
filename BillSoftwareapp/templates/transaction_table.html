@@ -272,12 +272,13 @@
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                     <a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-eye pe-2 tg"></span> View</a>
                                                     <a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a>
-                                                    <a class="dropdown-item fw-bold tb hide_table_text_v" href=""><span class="fa fa-history pe-2 th"></span> History</a>
+                                                    <a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url "credithistory" p.id %}"><span class="fa fa-history pe-2 th"></span> History</a>
                                                     <a class="dropdown-item fw-bold tb hide_table_text_d" style="color:black;" onclick="deletepbill('{{p.id}}')"><span style="color: red;" class="fa-solid fa-trash" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a>
                                                 </div>
                                             </div>
                                         </td>
                                         <a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a>
+                                        <a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url "credithistory" p.id %}"><span class="fa fa-history pe-2 th"></span> History</a>
 
                                     </tr>
                                     {% endfor %}

@@ -2,10 +2,13 @@
 {% block content %}
 {% load static %}
 
-<script src="https://kit.fontawesome.com/fbe819dd43.js" crossorigin="anonymous"></script>
-    <!-- Add these in the head section of your HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/fbe819dd43.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-**********" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -157,6 +160,9 @@
                         {% csrf_token %}
                         <div class="container col-md-12" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
                             <h2>Edit Credit Note</h2><br>
+                            <div class="col-md-1">
+                                <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
+                            </div>
                 
                             <div class='party'>
                                 <h3>Party</h3>
@@ -173,7 +179,9 @@
                                                     <option value="{{ crd.party.id }}" selected hidden>{{crd.party.party_name}}</option>
                                                     {% for c in party %}
                                                         
-                                                        <option value={{c.id}}> {{ c.party_name }}</option>
+                                                        <option value={{c.id}} data-value="{{ p.party_name }}"
+                                                        data-party-id="{{ p.id }}" data-phone="{{ p.phone_number }}" data-address="{{ p.billing_address }}" data-balance="{{ p.opening_balance }}"
+                                                        onclick="selectItem(this);"> {{ c.party_name }}</option>
                                                         
                                                     {% endfor %}
                                                 </select> 
@@ -196,9 +204,9 @@
                                             <small id="availableBalanceSection" style='color:black'> 
                                                 
                                                 {% if party.to_pay == 1 %}
-                                                Available Balance:<input id="ab" style='color:red' type="text" readonly>
+                                                Available Balance:<input id="ab" style='color:red' value="{{crd.party.opening_balance}}" type="text" readonly>
                                                 {% else %}
-                                                Available Balance:<input id="ab" style='color:green' type="text" readonly>
+                                                Available Balance:<input id="ab" style='color:green' value="{{crd.party.opening_balance}}" type="text" readonly>
                                                 {% endif %}
                                                
                                             </small>
@@ -213,9 +221,9 @@
                             
                 
                             <div class="form-group row">
-                                <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{crd.refno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
+                                <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{crd.returnno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
                                 <div class="col"><label for=""> Bill No.</label><input id="bno" value="{{crd.invoice_no}}" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div>
-                                <div class="col"><label for=""> Bill Date</label><input id="bdt" value="{{crd.idate}}" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div>
+                                <div class="col"><label for=""> Bill Date</label><input id="bdt" value="{{crd.idate|date:'Y-m-d'}}" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div>
                                 
                             </div>
                         
@@ -223,7 +231,7 @@
                             
                 
                             <div class="row form-group">
-                                <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{crd.date}}" class="form-control"></div>
+                                <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{crd.date|date:'Y-m-d'}}" class="form-control"></div>
                 
                                 <div class="col-md">
                                     <label class="col-form-label ">Place of Supply</label>
@@ -260,11 +268,11 @@
                                                             <td style="text-align: center; width:2%" class="nnum">
                                                                 {{ forloop.counter }}<input type="text"  name='id[]' style="color:black;" value="{{ j.id }}" hidden>
                                                             </td>
-    
+     
                                                             <td style="width:21%" >
                                                                 <div class="d-flex">
                                                                     <select name='product[]' id="product{{ forloop.counter }}" class="form-control product border-secondary" onchange="changeprd(this.id,this.value)" style="color: black; background-color: white;">
-                                                                        <option value="{{ j.item.id }}" selected hidden>{{j.item.item_name}}</option>
+                                                                        <option value="{{ j.product.id }}" selected hidden>{{j.product}}</option>
                                                                         {% for i in item %}
                                                                             {% if i.cid_id == cmp.cid %}
                                                                                 <option value="{{ i.id }}" >{{ i.item_name  }} </option>
@@ -278,7 +286,7 @@
                                                             </td>
     
                                                             <td style="width:12%">
-                                                                <input type="text" name='hsn[]'  value="{{ j.item.item_hsn }}" id="hsn{{ forloop.counter }}" class="form-control border-secondary" style="color: black; background-color: white;"/>
+                                                                <input type="text" name='hsn[]'  value="{{ j.hsn }}" id="hsn{{ forloop.counter }}" class="form-control border-secondary" style="color: black; background-color: white;"/>
                                                             </td>
     
                                                             <td style="width: 13%;">
@@ -286,16 +294,16 @@
                                                             </td>
     
                                                             <td style="width:12%">
-                                                                <input type="number" name='price[]' value="{{ j.item.item_sale_price }}" id="unit{{ forloop.counter }}"class="form-control border-secondary price" step="0.00" min="0" style="color: black; background-color: white;" />
+                                                                <input type="number" name='price[]' value="{{ j.price }}" id="unit{{ forloop.counter }}"class="form-control border-secondary price" step="0.00" min="0" style="color: black; background-color: white;" readonly />
                                                             </td>
     
                                                             <td style="width: 15%;">
                                                                 <input type="text" id="intrataxval{{ forloop.counter }}" value="{{j.item.item_gst}}" hidden>
                                                                 <input type="text" id="intertaxval{{ forloop.counter }}" value="{{j.item.item_igst}}" hidden>
                                                                 {% if crd.state_of_supply  == 'State'  %}
-                                                                    <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.product.item_gst}}"   />
+                                                                    <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.tax}}"   />
                                                                 {% else %}
-                                                                    <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.product.item_igst}}"   />
+                                                                    <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.tax}}"   />
                                                                 {% endif %}
                                                             </td>
     
@@ -318,61 +326,6 @@
                                                         </tr>
                                                     {% endfor %}
                                                     </tbody>
-                                                {% comment %} <tbody id="items-table-body">
-                                                    <tr id='addr01'>
-                                                        <td class="nnum" style="text-align: center; color: black;">1</td> 
-                                    
-                                                        <td style="width:21%">
-                                                            <div class="d-flex">
-                                                                <select name='product[]' id="product1" class="form-control border-secondary product" onchange="changeprd(this.id,this.value)" style="color: black; background-color: white;">
-                                                                    <option value="" selected hidden>Select</option>
-                                                                    {% for i in item %}
-                                                                        {% if i.cid_id == cmp.cid %}
-                                                                            <option value="{{ i.id }}">{{ i.item_name }}</option>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </select>
-                                                                <button type="button" class="btn btn-outline-success" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#newitem" class="text-capitalize">
-                                                                    <span class="fa fa-plus"></span>
-                                                                </button>
-                                                               
-                                                            </div>
-                                                        </td>
-                                    
-                                                        <td style="width:12%">
-                                                            <input type="text" name='hsn[]' id="hsn1" class="form-control border-secondary HSNCODE" style="color: black; background-color: white;" readonly />
-                                                        </td>
-                                    
-                                                        <td style="width:13%">
-                                                            <input type="number" name='qty[]' id="qty1"  class="form-control border-secondary qty mb-1" step=0 min=0 style="color: black; background-color: white;" value=0 />
-                                                        </td>
-                                                   
-                                                        <td style="width:12%">
-                                                            <input type="number" name='price[]' id="unit1" class="form-control border-secondary price" step="0.00" min="0" style="color: black; background-color: white;" value=0 readonly />
-                                                        </td>
-                                                       
-                                                        <td style="width:15%">
-                                                            <input type="text" id="intrataxval1" hidden>
-                                                            <input type="text" id="intertaxval1" hidden>
-                                                            <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" placeholder="GST"  readonly />
-                                                        </td>
-                                    
-                                                        <td style="width: 10%;">
-                                                            <input type="number" name='discount[]'  placeholder='Enter Discount' id="disc1" value=0 class="form-control border-secondary disc" step=0 min=0 style="  color: black; background-color: white;"  />
-                                                        </td>
-                                    
-                                                        <td style="width:13%">
-                                                            <input type="number" name='total[]' id="total1" class="form-control border-secondary total" value=0 readonly style="color: black; background-color: white;"  />
-                                                        </td>
-                                                        <td hidden><input type="number" name='taxamount1' id="taxamount1" class="form-control border-secondary taxamount" /></td>
-                                                       
-                                                        <td style="width:5%">
-                                                            <button type="button" id="1" style="background-color:rgb(61, 68, 101);" class="btn font-weight-bold  clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button>
-                                                            <br>
-                                                            <button type="button" id="1" class="btn btn-danger remove_row px-2 py-1 mx-1" title="Remove Row"><i class="fa-solid fa-xmark"></i> </button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody> {% endcomment %}
                                                 <tr >
                                                     <td style="border: none;background-color:rgb(61, 68, 101); width=:2px;"><a class="btn-sm" role="button" id="add" ><span class="fa fa-plus"></span></a></td>
                                                 </tr>
@@ -389,43 +342,68 @@
                                                         <div class="col-sm-4 mt-2"><label class="text-center">Sub Total</label></div>
                                                         <div class="col-sm-1 mt-2">:</div>
                                                         <div class="col-sm-7">
-                                                            <input type="number" step="any" name='subtotal' value=0.00 readonly style="color: black; background-color: white;" class="form-control border-secondary" id="sub_total">
+                                                            <input type="number" step="any" name='subtotal' value="{{crd.subtotal}}" readonly style="color: black; background-color: white;" class="form-control border-secondary" id="sub_total">
                                                         </div>
                                                         <div class="col-sm-4 m-0 p-0"></div>
                                                     </div>
                                     
-                                                    <div class="row container-fluid p-2 m-0" id="igstdiv">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">IGST</label></div>
-                                                        <div class="col-sm-1 mt-2">:</div>
-                                                        <div class="col-sm-7">
-                                                            <input type="number" name='igst' step="any" id="igst" value=0.00 readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                    {% if crd.state_of_supply  == 'State' %}
+                                                        <div class="row container-fluid p-2 m-0" id="cgstdiv">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">CGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='cgst' step="any" id="cgst"  value="{{crd.cgst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
                                                         </div>
-                                                        <div class="col-sm-4 m-0 p-0"></div>
-                                                    </div>
-                                               
-                                                    <div class="row container-fluid p-2 m-0" style="display: none;" id="cgstdiv">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">CGST</label></div>
-                                                        <div class="col-sm-1 mt-2">:</div>
-                                                        <div class="col-sm-7">
-                                                            <input type="number" name='cgst' step="any" id="cgst" value=0.00 readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        <div class="row container-fluid p-2 m-0"  id="sgstdiv">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">SGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='sgst' step="any" id="sgst" value="{{crd.sgst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
                                                         </div>
-                                                        <div class="col-sm-4 m-0 p-0"></div>
-                                                    </div>
-                                    
-                                                    <div class="row container-fluid p-2 m-0" style="display: none;" id="sgstdiv">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">SGST</label></div>
-                                                        <div class="col-sm-1 mt-2">:</div>
-                                                        <div class="col-sm-7">
-                                                        <input type="number" name='sgst' step="any" id="sgst" value=0.00 readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        <div class="row container-fluid p-2 m-0" style="display: none;" id="igstdiv">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">IGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='igst' step="any" id="igst" value="{{crd.igst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
                                                         </div>
-                                                        <div class="col-sm-4 m-0 p-0"></div>
-                                                    </div>
+                                                    {% else %}
+                                                        <div class="row container-fluid p-2 m-0" style="display: none;" id="cgst1">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">CGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='cgst' step="any" id="cgst"  value="{{crd.cgst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                        <div class="row container-fluid p-2 m-0" style="display: none;" id="sgst1">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">SGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='sgst' step="any" id="sgst" value="{{crd.sgst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                        <div class="row container-fluid p-2 m-0" id="igst1">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">IGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='igst' step="any" id="igst" value="{{crd.igst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                    {% endif %}
                                     
                                                     <div class="row container-fluid p-2 m-0">
                                                         <div class="col-sm-4 mt-2"><label for="a" class="text-center">Tax Amount</label></div>
                                                         <div class="col-sm-1 mt-2">:</div>
                                                         <div class="col-sm-7">
-                                                        <input type="number" step="any" name='taxamount' id="tax_amount" value=0.00 readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        <input type="number" step="any" name='taxamount' id="tax_amount" value="{{crd.taxamount}}" readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
                                                         </div>
                                                         <div class="col-sm-4 m-0 p-0"></div>
                                                     </div>
@@ -434,7 +412,7 @@
                                                         <div class="col-sm-4 mt-2"><label for="a" class="text-center">Round Off</label></div>
                                                         <div class="col-sm-1 mt-2">:</div>
                                                         <div class="col-sm-7">
-                                                        <input type="number" step="any" name='adj' id="adj" value=0.00 class="form-control border-secondary" style="color: black; background-color: white;"/>
+                                                        <input type="number" step="any" name='adj' id="adj" value="{{crd.roundoff}}" class="form-control border-secondary" style="color: black; background-color: white;"/>
                                                         </div>
                                                         <div class="col-sm-4 m-0 p-0"></div>
                                                     </div>
@@ -443,7 +421,7 @@
                                                         <div class="col-sm-4 mt-2"><label for="a" class="text-center">Grand Total</label></div>
                                                         <div class="col-sm-1 mt-2">:</div>
                                                         <div class="col-sm-7">
-                                                        <input type="number" name='grandtotal' id="grandtotal" value=0.00 readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        <input type="number" name='grandtotal' id="grandtotal" value="{{crd.grandtotal}}" readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
                                                         </div>
                                                         <div class="col-sm-4 m-0 p-0"></div>
                                                     </div>
@@ -452,7 +430,7 @@
                                                         <div class="col-sm-4 mt-2"><label for="a" class="text-center">Description</label></div>
                                                         <div class="col-sm-1 mt-2">:</div>
                                                         <div class="col-sm-7">
-                                                        <input type="text" name='des' id="des" style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        <input type="text" name='des' id="des" value="{{crd.description}}" style="color: black; background-color: white;" class="form-control border-secondary"/>
                                                         </div>
                                                         <div class="col-sm-4 m-0 p-0"></div>
                                                     </div>

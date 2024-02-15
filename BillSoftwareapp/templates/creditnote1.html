@@ -75,10 +75,7 @@ body{
     border-radius: 5px;
     min-height: 700px;
 }
-.credit-head-top-left img{
-    width: 130px;
-}
-.credit-head-top-right h3{
+.credit-head-top-left h3{
     font-weight: 500;
     font-size: 27px;
     color: var(--blue-color);
@@ -222,11 +219,11 @@ body{
         <div class = "credit-container">
             <div class = "credit-head">
                 <div class = "credit-head-top">
-                    {% comment %} <div class = "credit-head-top-left text-start">
-                        <img src = "{% static "img/logo/logo3.png" %}" height="30" width="0">
-                    </div> {% endcomment %}
-                    <div class = "credit-head-top-right text-start"> 
+                    <div class = "credit-head-top-left text-start">
                         <h3>Credit Note</h3>
+                    </div>
+                    <div class = "credit-head-top-right text-end"> 
+                            <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
                     </div>
                 </div>
                 <div class = "hr"></div>
@@ -277,12 +274,12 @@ body{
                             {% for i in crditem %}
                             <tr>
                                 <td>{{i.product}}</td>
-                                <td>Creating a website design</td>
+                                <td>{{i.hsn}}</td>
                                 <td>{{i.qty}}</td>
-                                <td>10</td>
-                                <td class = "text-end">{{i.tax}}</td>
-                                <td></td>
-                                <td>{{i.total}}</td>
+                                <td>{{i.price}}</td>
+                                <td>{{i.tax}}</td>
+                                <td>{{i.discount}}</td> 
+                                <td class = "text-end">{{i.total}}</td>
                             </tr>
                             {% endfor %}
                             <!-- <tr>

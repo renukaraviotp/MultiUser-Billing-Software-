@@ -90,6 +90,9 @@
     </div>
 
     <div class="credit" style='background-color:white;'>
+      <div class="text-end ml-auto">
+        <a href="{% url "transactiontable" %}" class="close-icon" style="text-align: right; font-size: large;"><i class="fa fa-times" aria-hidden="true"></i></a>
+    </div>
         <div class="credit-header">
           <h1>Credit Note</h1>
           <p>CreditNote No: <span id="creditNumber">{{cd.returnno}}</span></p>
@@ -111,19 +114,19 @@
               </thead>
               <tbody id="creditItems">
                 {% for i in crditem %}
-                            <tr>
-                                <td>{{i.product}}</td>
-                                <td>Creating a website design</td>
-                                <td>{{i.qty}}</td>
-                                <td>10</td>
-                                <td class = "text-end">{{i.tax}}</td>
-                                <td></td>
-                                <td>{{i.total}}</td>
-                            </tr>
-                            {% endfor %}
+                <tr>
+                  <td>{{i.product}}</td>
+                  <td>{{i.hsn}}</td>
+                  <td>{{i.qty}}</td>
+                  <td>{{i.price}}</td>
+                  <td>{{i.tax}}</td>
+                  <td>{{i.discount}}</td> 
+                  <td class = "text-end">{{i.total}}</td>
+                </tr>
+                {% endfor %}
               </tbody>
             </table>
-          </div>
+          </div> 
         </div>
         <br><br>
         <div class="credit-footer">
