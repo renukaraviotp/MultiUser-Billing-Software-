@@ -169,7 +169,7 @@ body{
     
 
 <br><br><br><br><br><br>
-<div class="row ps-3 pe-3 m-0" >
+<div class="row ps-3 pe-3 m-0" id="whatToPrint1" >
 <div class="col-sm-12 ps-2 pe-3" style="margin-left:23%;">
     <div class="row pt-0 m-0">
         <div class="card p-0 bg-light bs col-md-9"><br>
@@ -192,7 +192,7 @@ body{
                                 <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
                             </button>
 
-                            <button class="btn mt-3" type="button" onclick="downloadPdf()" style="margin-right: 2vh;">
+                            <button class="btn mt-3" type="button" id="pdflink" style="margin-right: 2vh;">
                                 <span><img width="30px" src="{% static 'images/credit/pdf.jpg' %}" alt="no img"></span>
                                 <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
                             </button>
@@ -209,14 +209,14 @@ body{
             
             <br>
         </div>
-    </div>
+    </div> 
 
 
 
 <div class = "credit-wrapper" id = "print-area">
     <br><br><br><br>
     <div class = "credit col-10 mr-0">
-        <div class = "credit-container">
+        <div class = "credit-container" id="printdiv1">
             <div class = "credit-head">
                 <div class = "credit-head-top">
                     <div class = "credit-head-top-left text-start">
@@ -250,8 +250,8 @@ body{
                         <ul class = "text-end">
                             <li class = 'text-bold'>To:</li>
                             <li>{{cd.party_name}}</li>
-                            <li>{{cd.address}}</li>
-                            <li>{{cd.contact}}</li>
+                            {% comment %} <li>{{cd.address}}</li>
+                            <li>{{cd.contact}}</li> {% endcomment %}
                         </ul>
                     </div>
                 </div>
@@ -320,19 +320,28 @@ body{
         window.print();
     }
 </script>
-<script>
-    function downloadPDF() {
-        // Replace the URL below with the actual URL that serves the PDF file
-        var pdfUrl = 'template1.pdf';
-        
-        // Creating an anchor element to trigger the download
-        var a = document.createElement('a');
-        a.href = pdfUrl;
-        a.download = 'creditnote.pdf'; // Optional: specify a filename for the downloaded file
-        a.target = '_blank'; // Optional: open the PDF in a new tab instead of downloading it
-        a.click();
-    }
+<script type="text/javascript">
+    $(document).ready(function ($) {
+        $(document).on('click', '#pdflink', function (event) {
+            event.preventDefault();
+            print1 = document.getElementById('whatToPrint1')
+
+            var element = document.getElementById('printdiv1') 
+    
+
+            var opt =
+            {
+                margin: 1,
+                filename: 'CreditNote'+ '{{cd.returnno}}' + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait', }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+    });
 </script>
+
 
 </body>
 {% endblock content %}

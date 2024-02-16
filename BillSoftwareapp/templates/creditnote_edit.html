@@ -151,7 +151,7 @@
     
     </style>
     <body>
-       
+        
     <div class="body-wrapper" style="margin-left:20%;">
         <br><br><br><br><br>
        
@@ -231,8 +231,10 @@
                             
                 
                             <div class="row form-group">
-                                <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{crd.date|date:'Y-m-d'}}" class="form-control"></div>
-                
+                                <div class="col"><label for="">Date</label>
+                                    <input type="date" name="date" value="{{crd.date|date:'Y-m-d'}}" class="form-control">
+                                </div>
+                                <input type="date" name="date" value="{{crd.date|date:'Y-m-d'}}" id="">
                                 <div class="col-md">
                                     <label class="col-form-label ">Place of Supply</label>
                                         <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">

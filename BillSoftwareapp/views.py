@@ -580,8 +580,8 @@ def credit_save(request):
 
         # Save the instance
         credit_note.save()
-        # history = CreditnoteHistory(company_id=cmp,party_id=party,staff_id=staff,action='CREATED')
-        # history.save()
+        history = CreditnoteHistory(company=cmp,staff=staff,credit=credit_note,action='Created')
+        history.save()
 
         # Save credit note items
         product = request.POST.getlist("product[]")
@@ -719,7 +719,7 @@ def update_creditnote(request,pk):
     cmp = company.objects.get(id=staff.company.id)  
     party = Parties.objects.get(id=request.POST.get('partyname'))
     crd = Creditnote.objects.get(id=pk,company=cmp)
-    crd.party = party
+    crd.party = party if party else None
     crd.date = request.POST.get('date')
     crd.invoice_no = request.POST.get('billNo')
     crd.idate = request.POST.get('billdate')
@@ -731,7 +731,7 @@ def update_creditnote(request,pk):
     crd.sgst = request.POST.get('sgst')
     crd.taxamount = request.POST.get("taxamount")
     crd.roundoff = request.POST.get("adj")
-    crd.description = request.POST.get("method")
+    crd.description = request.POST.get("des")
 
     crd.save()
 
@@ -739,16 +739,19 @@ def update_creditnote(request,pk):
     qty = tuple(request.POST.getlist("qty[]"))
     total = tuple(request.POST.getlist("total[]"))
     discount = tuple(request.POST.getlist("discount[]"))
+    hsn = request.POST.getlist("hsn[]")
+    tax = request.POST.getlist("tax[]")
+    price = request.POST.getlist("price[]")
 
-    CreditnoteItem.objects.filter(pdebit=crd,company=cmp).delete()
-    if len(total)==len(discount)==len(qty):
-      mapped=zip(product,qty,discount,total)
+    CreditnoteItem.objects.filter(credit=crd,company=cmp).delete()
+    if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax) == len(price):
+      mapped=zip(product, qty, discount, total, hsn, tax, price)
       mapped=list(mapped)
       for ele in mapped:
         itm = ItemModel.objects.get(id=ele[0])
-        CreditnoteItem.objects.create(product =itm,qty=ele[1],discount=ele[2],total=ele[3],pdebit=crd,company=cmp)
+        CreditnoteItem.objects.create(product =itm.item_name,qty=ele[1],discount=ele[2],total=ele[3],credit=crd,company=cmp,item=itm,staff=staff)
 
-    CreditnoteHistory.objects.create(debitnote=crd,company=cmp,staff=staff,action='Updated')
+    CreditnoteHistory.objects.create(credit=crd,company=cmp,staff=staff,action='Updated')
     return redirect('transactiontable')
 
   return redirect('transactiontable')
@@ -783,9 +786,18 @@ def credithistory(request,pk):
   cmp = company.objects.get(id=staff.company.id)  
   cd=Creditnote.objects.get(id=pk)
   history=CreditnoteHistory.objects.filter(credit=cd,company=cmp)
-  context = {'staff':staff,'history':history}
+  context = {'staff':staff,'history':history,'cd':cd}
   return render(request,'credithistory.html',context)
-  
+
+
+def delete_credit(request,pk):
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id) 
+  crd = Creditnote.objects.get(id=pk)
+  CreditnoteItem.objects.filter(credit=crd,company=cmp).delete()
+  crd.delete()
+  return redirect('transactiontable')
 
 # def credit_details(request,pk):
 #   cd=Creditnote.objects.get(id=pk)

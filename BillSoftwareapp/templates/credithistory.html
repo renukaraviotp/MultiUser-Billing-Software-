@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="tablediv" style="overflow: scroll;height: 35rem; width: 70%;">
-                <table class="table table-bordered  tb table-responsive w-120"   id="billtable"  style="text-align: center; margin-left:15%">
+                <table class="table table-bordered  tb table-responsive"   id="billtable"  style="text-align: center; margin-left:15%; width:100%;">
                     <thead style="background-color:rgb(61, 68, 101); ">
                         <tr style="width:45%;">
                             <th class=" text-white" style="width:8%;">
@@ -65,12 +65,12 @@
                         {% for h in history %}
                         <tr>
                             <td>{{forloop.counter}}</td>
-                            <td style="color: black;" >{{h.date | date:'d-m-Y'}}</td>
-                            <td style="color: black;" >{{staff.first_name}} {{staff.last_name}}</td>
+                            <td style="color: black;" >{{h.transactiondate | date:'d-m-Y'}}</td>
+                            <td style="color: black;" >{{h.staff.first_name}} {{h.staff.last_name}}</td>
                             {% if h.action == 'Created' %}
                                 <td style="color: red;" >{{h.action}}</td>
                             {% else %}
-                                <td style="color: #154c79;" >{{h.action}}</td>
+                                <td style="color: green;" >{{h.action}}</td>
                             {% endif %}
                         </tr>
                         {% endfor %}
