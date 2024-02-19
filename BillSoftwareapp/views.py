@@ -11,6 +11,12 @@ from django.views import View
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.db.models import F
+from django.core.exceptions import ObjectDoesNotExist
+from django.template.loader import get_template
+from django.core.mail import EmailMessage
+from django.conf import settings
+from io import BytesIO
+from xhtml2pdf import pisa
 
 # Create your views here.
 
@@ -798,6 +804,44 @@ def delete_credit(request,pk):
   CreditnoteItem.objects.filter(credit=crd,company=cmp).delete()
   crd.delete()
   return redirect('transactiontable')
+
+def sharepdftomail(request,pk):
+  if request.user:
+        try:
+            if request.method == 'POST':
+                emails_string = request.POST['email_ids']
+
+                # Split the string by commas and remove any leading or trailing whitespace
+                emails_list = [email.strip() for email in emails_string.split(',')]
+                email_message = request.POST['email_message']
+                print(emails_list)
+                sid = request.session.get('staff_id')
+                staff = staff_details.objects.get(id=sid)
+                cmp = company.objects.get(id=staff.company.id) 
+                
+                crd = Creditnote.objects.get(id=id,company=cmp)
+                citm = CreditnoteItem.objects.filter(credit=crd,company=cmp)
+                context = {'crd':crd, 'cmp':cmp,'citm':citm}
+                template_path = 'creditmail.html'
+                template = get_template(template_path)
+
+                html  = template.render(context)
+                result = BytesIO()
+                pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+                pdf = result.getvalue()
+                filename = f'CREDIT NOTE - {crd.id}.pdf'
+                subject = f"CREDIT NOTE - {crd.id}"
+                email = EmailMessage(subject, f"Hi,\nPlease find the attached CREDIT NOTE - File-{crd.id}. \n{email_message}\n\n--\nRegards,\n{cmp.company_name}\n{cmp.address}\n{cmp.state} - {cmp.country}\n{cmp.contact}", from_email=settings.EMAIL_HOST_USER, to=emails_list)
+                email.attach(filename, pdf, "application/pdf")
+                email.send(fail_silently=False)
+
+                msg = messages.success(request, 'Debit note file has been shared via email successfully..!')
+                return redirect('transactiontable', id=pk)
+
+        except Exception as e:
+            print(e)
+            messages.error(request, f'{e}')
+            return redirect('transactiontable', id=pk)
 
 # def credit_details(request,pk):
 #   cd=Creditnote.objects.get(id=pk)

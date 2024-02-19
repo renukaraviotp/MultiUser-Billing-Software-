@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 {% load static %}
+{% load social_share %}
 <style>
     body {
         font-family: Arial, sans-serif;
@@ -88,20 +89,29 @@
                             </div>
                             <div class="col-md-2"></div>
                             <div class="col-md-4 text-right" style="margin-left: -13vh;">
-                                <button class="btn mt-3" type="button" onclick="printcredit()" style="margin-right: 2vh;">
-                                    <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
-                                    <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
-                                </button>
-    
-                                <button class="btn mt-3" type="button" onclick="downloadPdf()" style="margin-right: 2vh;">
-                                    <span><img width="30px" src="{% static 'images/credit/pdf.jpg' %}" alt="no img"></span>
-                                    <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
-                                </button>
-    
-                                <button class="btn mt-3" type="button" data-toggle="modal" data-target="#excelModal" onclick="excelmodel()">
-                                    <span><img width="30px" src="{% static 'images/credit/share.png' %}" alt="no img"></span>
-                                    <br><span style="color: black; font-size: small; font-weight: bold;">Share</span>
-                                </button>
+                                <div class="btn-group" role="group" aria-label="Button group">
+                                    <button class="btn mt-3" type="button" onclick="printfun()" style="margin-right: 2vh;">
+                                        <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
+                                        <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
+                                    </button>
+                            
+                                    <button class="btn mt-3" type="button" id="pdflink" style="margin-right: 2vh;">
+                                        <span><img width="30px" src="{% static 'images/credit/pdf.jpg' %}" alt="no img"></span>
+                                        <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
+                                    </button>
+                            
+                                    <div class="dropdown">
+                                        <button class="btn mt-3 dropdown-toggle" type="button" id="shareDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span><img width="30px" src="{% static 'images/credit/share.png' %}" alt="no img"></span>
+                                            <br>
+                                            <span style="color: black; font-size: small; font-weight: bold;">Share</span>
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="shareDropdown">
+                                            <a class="dropdown-item" href="#" id="share_on_whatsapp">{% post_to_whatsapp object_or_url "WhatsApp" %}</a>
+                                            <a class="dropdown-item" href="#" id="share_with_email" onclick="toggleEmailModal()">Email</a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

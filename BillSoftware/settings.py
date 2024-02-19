@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'BillSoftwareapp'
+    'BillSoftwareapp',
+    'django_social_share'
 ]
 
 MIDDLEWARE = [
