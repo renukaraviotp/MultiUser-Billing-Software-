@@ -232,9 +232,9 @@
                 
                             <div class="row form-group">
                                 <div class="col"><label for="">Date</label>
-                                    <input type="date" name="date" value="{{crd.date|date:'Y-m-d'}}" id="" class="form-control">
+                                    <input id="bdt1" value="{{crd.date|date:'Y-m-d'}}" type="date" name="date1" class="form-control">
+        
                                 </div>
-                                {% comment %} <input type="date" name="date" value="{{crd.date|date:'Y-m-d'}}" id=""> {% endcomment %}
                                 <div class="col-md">
                                     <label class="col-form-label ">Place of Supply</label>
                                         <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">

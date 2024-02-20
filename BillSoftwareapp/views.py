@@ -726,7 +726,7 @@ def update_creditnote(request,pk):
     party = Parties.objects.get(id=request.POST.get('partyname'))
     crd = Creditnote.objects.get(id=pk,company=cmp)
     crd.party = party if party else None
-    crd.date = request.POST.get('date')
+    crd.date = request.POST.get('date1')
     crd.invoice_no = request.POST.get('billNo')
     crd.idate = request.POST.get('billdate')
     crd.state_of_supply  = request.POST.get('placosupply')
@@ -809,9 +809,9 @@ def sharepdftomail(request,pk):
   if request.user:
         try:
             if request.method == 'POST':
-                emails_string = request.POST['email_ids']
+                emails_string = request.POST['email_ids'] 
 
-                # Split the string by commas and remove any leading or trailing whitespace
+             
                 emails_list = [email.strip() for email in emails_string.split(',')]
                 email_message = request.POST['email_message']
                 print(emails_list)
@@ -835,7 +835,7 @@ def sharepdftomail(request,pk):
                 email.attach(filename, pdf, "application/pdf")
                 email.send(fail_silently=False)
 
-                msg = messages.success(request, 'Debit note file has been shared via email successfully..!')
+                msg = messages.success(request, 'Credit note file has been shared via email successfully..!')
                 return redirect('transactiontable', id=pk)
 
         except Exception as e:
