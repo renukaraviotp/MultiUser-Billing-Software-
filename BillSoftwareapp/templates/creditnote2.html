@@ -90,7 +90,7 @@
                             <div class="col-md-2"></div>
                             <div class="col-md-4 text-right" style="margin-left: -13vh;">
                                 <div class="btn-group" role="group" aria-label="Button group">
-                                    <button class="btn mt-3" type="button" onclick="printfun()" style="margin-right: 2vh;">
+                                    <button class="btn mt-3" type="button" onclick="printContent()" style="margin-right: 2vh;">
                                         <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
                                         <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
                                     </button>
@@ -124,7 +124,6 @@
     
     
 
-<body>
   <div class="credit" id = "print-area">
     <div class="text-end ml-auto">
         <a href="{% url "transactiontable" %}" class="close-icon" style="text-align: right; font-size: large;"><i class="fa fa-times" aria-hidden="true"></i></a>
@@ -205,12 +204,9 @@
       </ul><br><br>
     </div>
     </div>
-    
-    <script>
-        function printcredit(){
-            window.print();
-        }
-    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
             var element = document.getElementById('print-area');
@@ -218,12 +214,26 @@
                 margin: 1,
                 filename: 'CreditNote.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait', }
+                html2canvas: { scale: 3 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
             html2pdf().set(opt).from(element).save();
         });
     </script>
+    
+
+    
+    <script>
+        function printContent() {
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write('<html><head><title>Credit Note</title></head><body>');
+            printWindow.document.write(document.getElementById('print-area').innerHTML);
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
+    
     
     </body>
 {% endblock content %}

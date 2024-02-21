@@ -72,7 +72,7 @@
                                   <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
                               </button>
                       
-                              <button class="btn mt-3" type="button" id="pdflink" style="margin-right: 2vh;">
+                              <button class="btn mt-3" type="button" id="download-pdf" style="margin-right: 2vh;">
                                   <span><img width="30px" src="{% static 'images/credit/pdf.jpg' %}" alt="no img"></span>
                                   <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
                               </button>
@@ -103,6 +103,7 @@
       <div class="text-end ml-auto">
         <a href="{% url "transactiontable" %}" class="close-icon" style="text-align: right; font-size: large;"><i class="fa fa-times" aria-hidden="true"></i></a>
     </div>
+    <div class="credit-container">
         <div class="credit-header"> 
           <h1>Credit Note</h1>
           <p>CreditNote No: <span id="creditNumber">{{cd.returnno}}</span></p>
@@ -145,6 +146,7 @@
           <p>Total: <span id="totalAmount">{{cd.grandtotal}}</span></p>
         </div>
       </div>
+    </div>
 
 
 
@@ -157,24 +159,29 @@
 </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+<script>
+  document.getElementById('download-pdf').addEventListener('click', function() {
+      var element = document.querySelector('.credit-container'); // Select the container to print
+      var opt = {
+          margin: 1,
+          filename: 'CreditNote.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 3 },
+          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save(); // Generate and save PDF
+  });
+</script>
+
+
 <script>
     function printcredit(){
         window.print();
     }
 </script>
-<script>
-    function downloadPDF() {
-        // Replace the URL below with the actual URL that serves the PDF file
-        var pdfUrl = 'template1.pdf';
-        
-        // Creating an anchor element to trigger the download
-        var a = document.createElement('a');
-        a.href = pdfUrl;
-        a.download = 'creditnote.pdf'; // Optional: specify a filename for the downloaded file
-        a.target = '_blank'; // Optional: open the PDF in a new tab instead of downloading it
-        a.click();
-    }
-</script>
+
 
 </body>
 {% endblock content %}

@@ -190,7 +190,7 @@ body{
                         <div class="col-md-2"></div>
                         <div class="col-md-4 text-right" style="margin-left: -13vh;">
                             <div class="btn-group" role="group" aria-label="Button group">
-                                <button class="btn mt-3" type="button" onclick="printfun()" style="margin-right: 2vh;">
+                                <button class="btn mt-3" type="button" onclick="printfunction()" style="margin-right: 2vh;">
                                     <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
                                     <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
                                 </button>
@@ -323,7 +323,23 @@ body{
 </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+<script>
+    document.getElementById('download-pdf').addEventListener('click', function() {
+        var element = document.getElementById('whatToPrint'); // select the container to print
+        var opt = {
+            margin: 1,
+            filename: 'CreditNote.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save(); // generate and save PDF
+    });
+</script>
+
+
 
 <script>
     function printcredit(){
@@ -385,8 +401,6 @@ body{
         </div>
     </div>
 </div>
-
-
 <script>
     // Function to open the email modal
     function toggleEmailModal() {
@@ -456,19 +470,6 @@ body{
     }
 </script>
 
-<script>
-    document.getElementById('download-pdf').addEventListener('click', function() {
-        var element = document.getElementById('print-area');
-        var opt = {
-            margin: 1,
-            filename: 'CreditNote.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait', }
-        };
-        html2pdf().set(opt).from(element).save();
-    });
-</script>
 
 </body>
 {% endblock content %}
