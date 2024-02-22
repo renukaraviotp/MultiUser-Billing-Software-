@@ -51,7 +51,7 @@ urlpatterns = [
     path('template3/<int:pk>',views.template3,name='template3'),
     path('credithistory/<int:pk>',views.credithistory,name='credithistory'),
     path('delete_credit/<int:pk>',views.delete_credit,name='delete_credit'),
-    path('sharepdftomail/<int:id>',views.sharepdftomail,name='sharepdftomail'),
+    path('sharepdftomail/<int:pk>',views.sharepdftomail,name='sharepdftomail'),
     
     
     # path('credit_details/<int:pk>',views.credit_details,name='credit_details'),

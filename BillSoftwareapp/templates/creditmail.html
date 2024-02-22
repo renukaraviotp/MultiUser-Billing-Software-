@@ -64,9 +64,9 @@
                   text-align: center;
                   color: rgb(0, 0, 0);
                 ">
-                    <p>Creditnote No. <span style="font-weight: bold;">{{crd.returnno}}</span>
+                    <p>Creditnote No. <span style="font-weight: bold;">{{cd.returnno}}</span>
                         <br>
-                        Credit Date: <span style="font-weight: bold;">{{crd.date | date:'d-m-Y'}}</span>
+                        Credit Date: <span style="font-weight: bold;">{{cd.date | date:'d-m-Y'}}</span>
                         <br>
                        
                     </p>
@@ -83,19 +83,19 @@
                     <tr>
                         <td>
                             <h5 class="text-info" style="font-weight: bold; color: rgb(49, 49, 138);">
-                                {{crd.company.company_name }}</h5>
+                                {{cd.company.company_name }}</h5>
                             <p class="address" style="font-weight: bold;color: #000;"> {{cmp.address}}<br>
-                                {{crd.company.address}}<br>
+                                {{cd.company.address}}<br>
                             </p>
                         </td>
                         <td></td>
                         <td>
                             <h5 class="text-info" style="font-weight: bold;"><span style="color: #000;">Name:
-                                </span>{{crd.party.party_name}}</h5>
+                                </span>{{cd.party.party_name}}</h5>
                             <p class="address" style="font-weight: bold;color: #000;">
-                                <span>Address :</span>{{crd.party.billing_address}}
+                                <span>Address :</span>{{cd.party.billing_address}}
                                 <br>
-                                <span>Contact: </span>{{crd.party.phone_number}}
+                                <span>Contact: </span>{{cd.party.phone_number}}
                                 <br>
                                 
                            
@@ -126,7 +126,7 @@
                                                                         <td class="text-center" style="color: black;">{{i.item.item_hsn}}</td>
                                                                         <td class="text-center" style="color: black;">{{ i.qty }}</td>
                                                                         <td class="text-center" style="color:black">{{i.item.item_purchase_price}}</td>
-                                                                        {% if pbill.supplyplace == 'State' %}
+                                                                        {% if cd.state_of_supply == 'State' %}
                                                                         <td class="text-center" style="color: black;">{{i.item.item_gst}}</td>
                                                                         {% else %}
                                                                         <td class="text-center" style="color: black;">{{i.item.item_igst}}</td>
@@ -149,14 +149,14 @@
                                 <th colspan="5">
                                     <span style="float: right; margin-right: 10px">Sub Total :</span>
                                 </th>
-                                <td class="text-right" style="color: #000;">{{crd.subtotal}}</td>
+                                <td class="text-right" style="color: #000;">{{cd.subtotal}}</td>
                             </tr>
                             
-                            {% if crd.state_of_supply == 'State' %}
+                            {% if cd.state_of_supply == 'State' %}
                             <tr>
                                 <td style="color: #000;">CGST</td>
                                 <td style="color: #000;">:</td>
-                                <td class="text-right" style="color: #000;">{{crd.cgst}}</td>
+                                <td class="text-right" style="color: #000;">{{cd.cgst}}</td>
                                 
                             </tr>
                             <tr>
@@ -168,24 +168,24 @@
                             <tr >
                                 <td style="color: #000;">IGST</td>
                                 <td style="color: #000;">:</td>
-                                <td class="text-right" style="color: #000;">{{crd.igst}}</td>
+                                <td class="text-right" style="color: #000;">{{cd.igst}}</td>
                             </tr>
                             {% endif %}
                             <tr >
                                 <th colspan="5">
                                     <span style="float: right; margin-right: 10px">Tax Amount:</span>
                                 </th>
-                                <td class="text-right" style="color: #000;">{{crd.taxamount}}</td>
+                                <td class="text-right" style="color: #000;">{{cd.taxamount}}</td>
                             </tr>
 
-                            {% if crd.roundoff != '0.00' %}
-                            {% if crd.roundoff != '0' %}                           
+                            {% if cd.roundoff != '0.00' %}
+                            {% if cd.roundoff != '0' %}                           
                             <tr >
                                 <th colspan="5">
                                     <span style="float: right; margin-right: 10px">Adjustment:</span>
                                 </th>
 
-                                <td class="text-right" style="color: #000;">{{crd.roundoff}}</td>
+                                <td class="text-right" style="color: #000;">{{cd.roundoff}}</td>
                             </tr>
                             {% endif %}
                             {% endif %}
@@ -197,7 +197,7 @@
                                         <span style="float: right; margin-right: 14px">Grand Total:</span>
                                     </th>
                                     <td style="color: black; font-weight: bold">
-                                        {{crd.grandtotal}}
+                                        {{cd.grandtotal}}
                                     </td>
                                 </tr>
                             </tfoot>

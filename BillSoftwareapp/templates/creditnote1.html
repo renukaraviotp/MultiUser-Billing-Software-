@@ -370,37 +370,32 @@ body{
 
 <div id="emailModal" class="modal col-md-6" style="margin-left:25%; height:125%">
     <div class="modal-content">
-        <span class="close" onclick="closeEmailModal()">&times;</span>
-        <div class="modal-header" style="background: rgb(61, 68, 101);">
+        <span class="close" style="cursor: pointer;" onclick="closeEmailModal()">&times;</span>
+        <div class="modal-header" style="background: rgb(130, 144, 199);">
             <h5 class="m-3 text-uppercase" style="color:white;" id="shareBillEmailLabel">Share Credit Note Via Email</h5>
-           
-          </div>
-          <div class="modal-body" style="background: rgb(61, 68, 101);">
+        </div>
+        <div class="modal-body" style="background: rgb(130, 144, 199);">
             <div class="card p-3 m-3">
-              <form action="{% url 'sharepdftomail' cd.id %}" method="post" class="needs-validation"
-                id="share_to_email_form" autocomplete="off">
-                {% csrf_token %}
-                <div class="form-group">
-                  <label for="emailIds">Email IDs</label>
-                  <textarea class="form-control text-dark" name="email_ids" id="emailIds" rows="3"
-                    placeholder="Multiple emails can be added by separating with a comma(,)." required></textarea>
-                </div>
-                <div class="form-group mt-2">
-                  <label for="item_unitname">Message(optional)</label>
-                  <textarea name="email_message" id="email_message" class="text-dark form-control" cols=""
-                    rows="2" placeholder="This message will be sent along with credit note details."></textarea>
-                </div>
-              </form>
+                <form action="{% url 'sharepdftomail' cd.id %}" method="post" class="needs-validation" id="share_to_email_form" autocomplete="off">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="emailIds">Email IDs</label>
+                        <textarea class="form-control text-dark" name="email_ids" id="emailIds" rows="3" placeholder="Multiple emails can be added by separating with a comma." required></textarea>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="item_unitname">Message(optional)</label>
+                        <textarea name="email_message" id="email_message" class="text-dark form-control" cols="" rows="2" placeholder="This message will be sent along with credit note details."></textarea>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center" style="border-top: 2px solid #ffff;">
+                        <input type="submit" id="share_with_email" class="submitShareEmailBtn rounded-pill text-grey w-40 my-4 mx-3" value="SEND">
+                    </div>
+                </form>
             </div>
-            <div class="modal-footer d-flex justify-content-center" style="border-top: 2px solid #ffff;">
-              <input type="submit" id="share_with_email"
-                class="submitShareEmailBtn rounded-pill text-grey w-40 my-4 mx-3" value="SEND MAIL">
-            </div>
-          </div>
-
         </div>
     </div>
 </div>
+
+
 <script>
     // Function to open the email modal
     function toggleEmailModal() {

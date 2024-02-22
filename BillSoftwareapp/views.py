@@ -9,14 +9,13 @@ from datetime import date
 from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
 from django.db.models import F
-from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import get_template
 from django.core.mail import EmailMessage
 from django.conf import settings
 from io import BytesIO
 from xhtml2pdf import pisa
+from django.core.mail import send_mail
 
 # Create your views here.
 
@@ -805,48 +804,86 @@ def delete_credit(request,pk):
   crd.delete()
   return redirect('transactiontable')
 
-def sharepdftomail(request,id):
- if request.user:
+def sharepdftomail(request,pk):
+  if request.user:
         try:
             if request.method == 'POST':
                 emails_string = request.POST['email_ids']
-                
 
                 # Split the string by commas and remove any leading or trailing whitespace
                 emails_list = [email.strip() for email in emails_string.split(',')]
                 email_message = request.POST['email_message']
-                if request.user.is_company:
-                  cmp = request.user.company
-                else:
-                  cmp = request.user.employee.company  
-                usr = User.objects.get(username=request.user)
-                # print(emails_list)
-                cd = Creditnote.objects.get(id=id,company=cmp)
-                itm = CreditnoteItem.objects.filter(credit=cd)
-                dis = 0
-                for itm in itm:
-                  dis += int(itm.discount)
-                itm_len = len(itm)
-                context={'cd':cd,'itm':itm,'itm_len':itm_len,'dis':dis}
-                template_path = 'vatpdf.html'
+                print(emails_list)
+                sid = request.session.get('staff_id')
+                staff = staff_details.objects.get(id=sid)
+                cmp = company.objects.get(id=staff.company.id) 
+                
+                cd = Creditnote.objects.get(id=pk,company=cmp)
+                itm = CreditnoteItem.objects.filter(credit=cd,company=cmp)
+                context = {'cd':cd, 'cmp':cmp,'itm':itm}
+                template_path = 'creditmail.html'
                 template = get_template(template_path)
 
                 html  = template.render(context)
                 result = BytesIO()
-                pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)#, link_callback=fetch_resources)
+                pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
                 pdf = result.getvalue()
-                filename = f'Credit Note - {cd.returnno}.pdf'
-                subject = f"Credit Note - {cd.returnno}"
-                email = EmailMessage(subject, f"Hi,\nPlease find the Purchase bill- Bill-{cd.returnno}. \n{email_message}\n\n--\nRegards,\n{cd.company.company_name}\n{cd.company.address}\n - {cd.company.city}\n{cd.company.contact}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
+                filename = f'CREDIT NOTE - {cd.returnno}.pdf'
+                subject = f"CREDIT NOTE - {cd.returnno}"
+                email = EmailMessage(subject, f"Hi,\nPlease find the attached CREDIT NOTE - File-{cd.returnno}. \n{email_message}\n\n--\nRegards,\n{cmp.company_name}\n{cmp.address}\n{cmp.state} - {cmp.country}\n{cmp.contact}", from_email=settings.EMAIL_HOST_USER, to=emails_list)
                 email.attach(filename, pdf, "application/pdf")
                 email.send(fail_silently=False)
 
-                msg = messages.success(request, 'purchase bill has been shared via email successfully..!')
-                return redirect(transactiontable,id)
+                msg = messages.success(request, 'Credit note file has been shared via email successfully..!')
+                return redirect('template1', id=pk)
+
         except Exception as e:
             print(e)
             messages.error(request, f'{e}')
-            return redirect(transactiontable, id)
+            return redirect('template1', id=pk)
+
+# def sharepdftomail(request,pk):
+#  if request.user:
+#         try:
+#             if request.method == 'POST':
+#                 emails_string = request.POST['email_ids']
+                
+
+#                 # Split the string by commas and remove any leading or trailing whitespace
+#                 emails_list = [email.strip() for email in emails_string.split(',')]
+#                 email_message = request.POST['email_message']
+#                 if request.user.is_company:
+#                   cmp = request.user.company
+#                 else:
+#                   cmp = request.user.employee.company  
+#                 usr = User.objects.get(username=request.user)
+#                 # print(emails_list)
+#                 cd = Creditnote.objects.get(id=pk,company=cmp)
+#                 itm = CreditnoteItem.objects.filter(credit=cd)
+#                 dis = 0
+#                 for itm in itm:
+#                   dis += int(itm.discount)
+#                 itm_len = len(itm)
+#                 context={'cd':cd,'itm':itm,'itm_len':itm_len,'dis':dis}
+#                 template_path = 'creditpdf.html'
+#                 template = get_template(template_path)
+
+#                 html  = template.render(context)
+#                 result = BytesIO()
+#                 pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)#, link_callback=fetch_resources)
+#                 pdf = result.getvalue()
+#                 filename = f'Credit Note - {cd.returnno}.pdf'
+#                 subject = f"Credit Note - {cd.returnno}"
+#                 email = EmailMessage(subject, f"Hi,\nPlease find the Credit Note - No-{cd.returnno}. \n{email_message}\n\n--\nRegards,\n{cd.company.company_name}\n{cd.company.address}\n - {cd.company.city}\n{cd.company.contact}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
+#                 email.attach(filename, pdf, "application/pdf")
+#                 email.send(fail_silently=False)
+
+#                 msg = messages.success(request, 'Credit Note has been shared via email successfully..!')
+#                 return redirect('template1',id=pk)
+#         except Exception as e:
+#             print(e)
+#             messages.error(request, f'{e}')
+#             return redirect('template1', id=pk)
 
 # def sharepdftomail(request,pk):
 #   if request.user:
