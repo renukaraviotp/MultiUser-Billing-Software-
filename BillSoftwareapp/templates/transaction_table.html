@@ -197,89 +197,6 @@
                 <div class="row">
                     <div class="col-md-12" style="margin-left: 6vh;">
                         <div class="mt-4" style="overflow: scroll;height: 28rem; width: 90%;" id="tablediv">
-                            {% comment %} <table class="table table-bordered table-info table-striped tb table-responsive w-100" id="billtable"  style="text-align: center;">
-                                <thead >
-                                    <tr class="fs-2 tb">
-                                        <th class="bg-secondary text-white">
-                                            DATE 
-                                            <a class="extra text-white" onclick="toggleDropdown(0)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent0">
-                                                <label for="filterInput0" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="date" id="filterInput0"  />
-                                                <a class="btn btn-info" onclick="cleardropdown(0)">Clear</a> 
-                                                &nbsp;<a class="btn btn-info" onclick="filterTable(0)">Apply</a>
-                                            </div>
-                                        </th>
-                                        <th class="bg-secondary text-white">
-                                            REF NO 
-                                            <a class="extra text-white" onclick="toggleDropdown(1)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent1">
-                                                <label for="filterInput1" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput1"  />
-                                                <a class="btn btn-info" onclick="cleardropdown(1)">Clear</a> 
-                                                &nbsp;<a class="btn btn-info" onclick="filterTable(1)">Apply</a>
-                                            </div>
-                                        </th>
-                                        <th class="bg-secondary text-white">
-                                            PARTY NAME 
-                                            <a class="extra text-white" onclick="toggleDropdown(2)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent2">
-                                                <label for="filterInput2" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput2"  />
-                                                <a class="btn btn-info" onclick="cleardropdown(2)">Clear</a> 
-                                                &nbsp;<a class="btn btn-info" onclick="filterTable(2)">Apply</a>
-                                            </div>
-                                        </th>
-                                        <th class="bg-secondary text-white">
-                                            TYPE
-                                            <a class="extra text-white" onclick="toggleDropdown(3)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent3">
-                                                <label for="filterInput3" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput3"  />
-                                                <a class="btn btn-info" onclick="cleardropdown(3)">Clear</a> 
-                                                &nbsp;<a class="btn btn-info" onclick="filterTable(3)">Apply</a>
-                                            </div>
-                                        </th>
-                                        
-                                        <th class="bg-secondary text-white extra">
-                                            ACTION
-                                            &nbsp; <a onclick="toggleDropdown(6)"><i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent6">
-                                                <label for="filterInput6" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput6" />
-                                                <a class="btn btn-info" onclick="cleardropdown(6)">Clear</a> 
-                                                &nbsp;<a class="btn btn-info" onclick="filterTable(6)">Apply</a>
-                                            </div>
-                                        </th>
-                                        <th class="bg-secondary text-white extra"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for p in credit %}
-                                    <tr>
-                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.date | date:'d-m-Y'}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.returnno}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.party.party_name}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">Credit Note</td>
-                                        <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.grandtotal}}</td>
-                                        <td class="pt-3 m-0 extra">
-                                            <div class="btn-group">
-                                                <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <span class="fa fa-ellipsis-v text-dark fs-1 ps-"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url "template1" p.id %}"><span class="fa fa-eye pe-2 tg"></span> View </a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url "credithistory" p.id %}"><span class="fa fa-history pe-2 th"></span> History</a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_d" href="{% url "delete_credit" p.id %}"><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a></li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                        <td style="color: black;" hidden>{{p.advance}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody> 
-                            </table> {% endcomment %}
                             <table class="table table-bordered table-info table-striped tb table-responsive w-100" id="credittable"  style="text-align: center; width:100%;">
                                 <thead >
                                     <tr class="fs-2 tb">
@@ -598,9 +515,9 @@ function uploadFile() {
 
 <script>
 function printfunction(){
-    print4 = document.getElementById('tablediv')
+    print4 = document.getElementById('credittable')
     if (print4.style.display !== 'none'){
-        var printContents = document.getElementById("tablediv").innerHTML;
+        var printContents = document.getElementById("credittable").innerHTML;
     }else{
         var printContents = document.getElementById("whatToPrint").innerHTML;
     }
