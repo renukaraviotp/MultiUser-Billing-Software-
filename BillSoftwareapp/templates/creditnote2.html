@@ -220,18 +220,23 @@
             html2pdf().set(opt).from(element).save();
         });
     </script>
+    <iframe id="printFrame" style="display:none;"></iframe>
     
 
     
     <script>
+       
+
         function printContent() {
-            var printWindow = window.open('', '_blank');
-            printWindow.document.write('<html><head><title>Credit Note</title></head><body>');
-            printWindow.document.write(document.getElementById('print-area').innerHTML);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.print();
-        }
+            var content = document.getElementById('print-area').outerHTML;
+            var printFrame = document.getElementById('printFrame');
+            var printDocument = printFrame.contentWindow || printFrame.contentDocument;
+            if (printDocument.document) printDocument = printDocument.document;
+            printDocument.write(content);
+            printDocument.close();
+            printFrame.focus();
+            printFrame.contentWindow.print();
+          }
     </script>
     
     

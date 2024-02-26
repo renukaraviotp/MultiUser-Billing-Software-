@@ -835,12 +835,12 @@ def sharepdftomail(request,pk):
                 email.send(fail_silently=False)
 
                 msg = messages.success(request, 'Credit note file has been shared via email successfully..!')
-                return redirect('template1')
+                return redirect('template1',pk=pk)
 
         except Exception as e:
             print(e)
             messages.error(request, f'{e}')
-            return redirect('template1')
+            return redirect('template1',pk=pk)
 
 # def sharepdftomail(request,pk):
 #  if request.user:

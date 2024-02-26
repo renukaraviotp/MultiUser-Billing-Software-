@@ -176,15 +176,14 @@
                                         <label for=""> Party Name</label>
                                         <div class="input-group">
                                             <select name="partyname" id="employee" class="form-control border-secondary dropdown-list" style="color: black; background-color: white;">
-                                                    <option value="{{ crd.party.id }}" selected hidden>{{crd.party.party_name}}</option>
-                                                    {% for c in party %}
-                                                        
-                                                        <option value={{c.id}} data-value="{{ p.party_name }}"
-                                                        data-party-id="{{ p.id }}" data-phone="{{ p.phone_number }}" data-address="{{ p.billing_address }}" data-balance="{{ p.opening_balance }}"
-                                                        onclick="selectItem(this);"> {{ c.party_name }}</option>
-                                                        
-                                                    {% endfor %}
-                                                </select> 
+                                                <option value="{{ crd.party.id }}" selected hidden>{{crd.party.party_name}}</option>
+                                                {% for c in party %}
+                                                <option value="{{ c.id }}" data-party-name="{{ c.party_name }}"
+                                                        data-party-id="{{ c.id }}" data-phone="{{ c.phone_number }}" data-address="{{ c.billing_address }}" data-balance="{{ c.opening_balance }}">
+                                                        {{ c.party_name }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
                                                 {% comment %} <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();"> {% endcomment %}
                                                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
                                                     <i class="fa-solid fa-plus"></i>
@@ -668,6 +667,33 @@
         </div>
     </div>
 
+    <script>
+        function selectItem(element) {
+            var partyId = element.getAttribute('data-party-id');
+            var partyName = element.getAttribute('data-party-name');
+            var phone = element.getAttribute('data-phone');
+            var address = element.getAttribute('data-address');
+            var balance = element.getAttribute('data-balance');
+
+            // Update additional fields with party details
+            document.getElementById('ph').textContent = phone;
+            document.getElementById('ad').textContent = address;
+            document.getElementById('ab').textContent = balance;
+
+            // Now you have all the details of the selected party, you can use them as needed
+            console.log("Selected Party ID:", partyId);
+            console.log("Selected Party Name:", partyName);
+            console.log("Selected Party Phone:", ph);
+            console.log("Selected Party Address:", ad);
+            console.log("Selected Party Balance:", ab);
+        }
+        
+        document.getElementById('employee').addEventListener('change', function() {
+            var selectedOption = this.options[this.selectedIndex];
+            selectItem(selectedOption);
+        });
+    </script>
+
 
    
    
@@ -724,7 +750,7 @@
 
 
 
-    function getEmail() {
+    {% comment %} function getEmail() {
         var selectedElement = document.querySelector(".dropdown-item.selected");
         
         if (selectedElement) {
@@ -744,7 +770,7 @@
             document.getElementById("availableBalanceSection").style.display = "inline-block";
 
         }
-    }
+    } {% endcomment %}
     
     document.addEventListener("DOMContentLoaded", function() {
         var dropdownItems = document.querySelectorAll(".dropdown-item");

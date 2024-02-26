@@ -15,6 +15,15 @@ body{
     
 }
 
+@media print {
+    body * {
+      visibility: hidden;
+    }
+    .credit-container, .credit-container * {
+      visibility: visible !important;
+    }
+  }
+
 :root{
     --blue-color: #0c2f54;
     --dark-color: #535b61;
@@ -190,7 +199,7 @@ body{
                         <div class="col-md-2"></div>
                         <div class="col-md-4 text-right" style="margin-left: -13vh;">
                             <div class="btn-group" role="group" aria-label="Button group">
-                                <button class="btn mt-3" type="button" onclick="printfunction()" style="margin-right: 2vh;">
+                                <button class="btn mt-3" type="button" onclick="printContent()" style="margin-right: 2vh;">
                                     <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
                                     <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
                                 </button>
@@ -228,58 +237,59 @@ body{
 <div class = "credit-wrapper">
     <br><br><br><br>
     <div class = "credit col-10 mr-0" id = "print-area">
-        <div class = "credit-container" id="whatToPrint">
-            <div class = "credit-head">
-                <div class = "credit-head-top">
-                    <div class = "credit-head-top-left text-start">
+        <div class="credit-container" id="slipdiv">
+            <div class="credit-head">
+                <div class="credit-head-top">
+                    <div class="credit-head-top-left text-start">
                         <h3>Credit Note</h3>
                     </div>
-                    <div class = "credit-head-top-right text-end"> 
-                            <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
+                    <div class="credit-head-top-right text-end">
+                        <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
                     </div>
                 </div>
-                <div class = "hr"></div>
-                <div class = "credit-head-middle">
-                    
-                    <div class = "credit-head-middle-left text-start">
-                        <p><span class = "text-bold">Date:</span>{{cd.date}}</p>
+                <div class="hr"></div>
+                <div class="credit-head-middle">
+        
+                    <div class="credit-head-middle-left text-start">
+                        <p><span class="text-bold">Date:</span>{{cd.date}}</p>
                     </div>
-                    <div class = "credit-head-middle-right text-end">
-                        <p><spanf class = "text-bold">CreditNote No:</span>{{cd.returnno}}</p>
+                    <div class="credit-head-middle-right text-end">
+                        <p><spanf class="text-bold">CreditNote No:</span>{{cd.returnno}}</p>
                     </div>
-                    
+        
                 </div>
-                <div class = "hr"></div>
-                <div class = "credit-head-bottom">
-                    <div class = "credit-head-bottom-left">
+                <div class="hr"></div>
+                <div class="credit-head-bottom">
+                    <div class="credit-head-bottom-left">
                         <ul>
-                            <li class = 'text-bold'>From:</li>
+                            <li class='text-bold'>From:</li>
                             <li>{{cd.company.company_name}}</li>
                             <li>{{cd.company.address}}</li>
                         </ul>
                     </div>
-                    <div class = "credit-head-bottom-right">
-                        <ul class = "text-end">
-                            <li class = 'text-bold'>To:</li>
+                    <div class="credit-head-bottom-right">
+                        <ul class="text-end">
+                            <li class='text-bold'>To:</li>
                             <li>{{cd.party_name}}</li>
-                            {% comment %} <li>{{cd.address}}</li>
+                            {% comment %}
+                            <li>{{cd.address}}</li>
                             <li>{{cd.contact}}</li> {% endcomment %}
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class = "overflow-view">
-                <div class = "credit-body">
-                    <table>
+            <div class="overflow-view">
+                <div class="credit-body">
+                    <table id="credit-table">
                         <thead>
                             <tr>
-                                <td class = "text-bold">Item</td>
-                                <td class = "text-bold">HSN</td>
-                                <td class = "text-bold">Qty</td>
-                                <td class = "text-bold">Rate</td>
-                                <td class = "text-bold">Tax</td>
-                                <td class = "text-bold">Discount</td>
-                                <td class = "text-bold">Total</td>
+                                <th class="text-bold">Item</th>
+                                <th class="text-bold">HSN</th>
+                                <th class="text-bold">Qty</th>
+                                <th class="text-bold">Rate</th>
+                                <th class="text-bold">Tax</th>
+                                <th class="text-bold">Discount</th>
+                                <th class="text-bold">Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -290,29 +300,46 @@ body{
                                 <td>{{i.qty}}</td>
                                 <td>{{i.price}}</td>
                                 <td>{{i.tax}}</td>
-                                <td>{{i.discount}}</td> 
-                                <td class = "text-end">{{i.total}}</td>
+                                <td>{{i.discount}}</td>
+                                <td class="text-end">{{i.total}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
-                    <div class = "credit-body-bottom">
-                        <div class = "credit-body-info-item border-bottom">
-                            <div class = "info-item-td text-end text-bold">Sub Total:</div>
-                            <div class = "info-item-td text-end">{{cd.subtotal}}</div>
+                    <div class="credit-body-bottom">
+                        <div class="credit-body-info-item border-bottom">
+                            <div class="info-item-td text-end text-bold">Sub Total:</div>
+                            <div class="info-item-td text-end">{{cd.subtotal}}</div>
                         </div>
-                        <div class = "credit-body-info-item border-bottom">
-                            <div class = "info-item-td text-end text-bold">Tax:</div>
-                            <div class = "info-item-td text-end">{{cd.taxamount}}</div>
+                        <div class="credit-body-info-item border-bottom">
+                            <div class="info-item-td text-end text-bold">Tax:</div>
+                            <div class="info-item-td text-end">{{cd.taxamount}}</div>
                         </div>
-                        <div class = "credit-body-info-item">
-                            <div class = "info-item-td text-end text-bold">Total:</div>
-                            <div class = "info-item-td text-end">{{cd.grandtotal}}</div>
+                        <div class="credit-body-info-item">
+                            <div class="info-item-td text-end text-bold">Total:</div>
+                            <div class="info-item-td text-end">{{cd.grandtotal}}</div>
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
+        
+        
+        
+        <iframe id="printFrame" style="display:none;"></iframe>
+        
+        <script>
+        function printContent() {
+          var content = document.getElementById('slipdiv').outerHTML;
+          var printFrame = document.getElementById('printFrame');
+          var printDocument = printFrame.contentWindow || printFrame.contentDocument;
+          if (printDocument.document) printDocument = printDocument.document;
+          printDocument.write(content);
+          printDocument.close();
+          printFrame.focus();
+          printFrame.contentWindow.print();
+        }
+        </script>
     </div>
 </div><br><br>
 <ul class="pagination pagination-sm justify-content-center">
@@ -445,25 +472,6 @@ body{
    
 </script>
 
-
-<script>
-    function printfunction() {
-        var printContents = document.getElementById("print-area").innerHTML;
-        var $printerDiv = document.createElement("div");
-        $printerDiv.classList.add("printContainer");
-        $printerDiv.id = "printContainer";
-        $printerDiv.innerHTML = printContents;
-        document.body.appendChild($printerDiv);
-
-        var h1Element = document.createElement("h1");
-        h1Element.textContent = "Credit Note";
-        $printerDiv.insertBefore(h1Element, $printerDiv.firstChild);
-
-        window.print();
-
-        document.body.removeChild($printerDiv);
-    }
-</script>
 
 
 </body>

@@ -19,7 +19,7 @@
         }
 
         .table-head {
-            color: rgb(52, 49, 58);
+            color: rgb(130, 144, 199);
         }
 
         .table2 .tbody tr {
@@ -106,7 +106,7 @@
             </table>
             <hr />
             <section class="product-area mt-4">
-                <table class="table2 table-hover table-primary">
+                <table class="table2 table-hover">
                     <thead>
                         <tr>
                             <td>ITEM</td>
@@ -122,14 +122,14 @@
                       
                         {% for i in itm %}
                                                                     <tr>
-                                                                        <td class="text-center" style="color: black;">{{i.item.item_name}}</td>
-                                                                        <td class="text-center" style="color: black;">{{i.item.item_hsn}}</td>
+                                                                        <td class="text-center" style="color: black;">{{i.product}}</td>
+                                                                        <td class="text-center" style="color: black;">{{i.hsn}}</td>
                                                                         <td class="text-center" style="color: black;">{{ i.qty }}</td>
-                                                                        <td class="text-center" style="color:black">{{i.item.item_purchase_price}}</td>
+                                                                        <td class="text-center" style="color:black">{{i.price}}</td>
                                                                         {% if cd.state_of_supply == 'State' %}
-                                                                        <td class="text-center" style="color: black;">{{i.item.item_gst}}</td>
+                                                                        <td class="text-center" style="color: black;">{{i.tax}}</td>
                                                                         {% else %}
-                                                                        <td class="text-center" style="color: black;">{{i.item.item_igst}}</td>
+                                                                        <td class="text-center" style="color: black;">{{i.tax}}</td>
                                                                         {% endif %}
                                                                         <td class="text-center" style="color:black">{{ i.discount  }}</td>
                                                                         <td class="text-center" style="color:black">{{ i.total }}</td>
