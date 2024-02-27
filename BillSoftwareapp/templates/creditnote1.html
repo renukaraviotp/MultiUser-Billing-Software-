@@ -328,7 +328,7 @@ body{
         
         <iframe id="printFrame" style="display:none;"></iframe>
         
-        <script>
+        <script> 
         function printContent() {
           var content = document.getElementById('slipdiv').outerHTML;
           var printFrame = document.getElementById('printFrame');
@@ -354,7 +354,7 @@ body{
 
 <script>
     document.getElementById('download-pdf').addEventListener('click', function() {
-        var element = document.getElementById('whatToPrint'); // select the container to print
+        var element = document.getElementById('slipdiv'); // select the container to print
         var opt = {
             margin: 1,
             filename: 'CreditNote.pdf',
