@@ -231,7 +231,6 @@
                                                 &nbsp;<a class="btn" onclick="filterTable(2)">Apply</a>
                                             </div>
                                         </th>
-                                        
                                         <th style="background-color:rgb(61, 68, 101);" class=" text-black">
                                             TYPE
                                             <a class="extra text-black" onclick="toggleDropdown(4)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
@@ -242,7 +241,6 @@
                                                 &nbsp;<a class="btn" onclick="filterTable(4)">Apply</a>
                                             </div>
                                         </th>
-                                       
                                         <th style="background-color:rgb(61, 68, 101);" class=" text-black extra">
                                             TOTAL
                                             &nbsp; <a onclick="toggleDropdown(6)"><i class="fa fa-filter" aria-hidden="true"></i></a>
@@ -252,8 +250,7 @@
                                                 <a class="btn" onclick="cleardropdown(6)">Clear</a> 
                                                 &nbsp;<a class="btn" onclick="filterTable(6)">Apply</a>
                                             </div>
-                                        </th>
-                                        
+                                        </th> 
                                         <th style="background-color:rgb(61, 68, 101);" class=" text-black extra"></th>
                                     </tr>
                                 </thead>
@@ -540,6 +537,7 @@ function printfunction(){
 }
 </script>
 
+
 <script>
     function cleardropdown(index){
         if(index == 0){
@@ -567,7 +565,7 @@ function printfunction(){
         } else {
             input = document.getElementById('filterInput' + index).value.toUpperCase();
         }
-        var table = document.getElementById('credittable');
+        var table = document.getElementById('billtable');
         var rows = table.getElementsByTagName('tr');
         var emptyMessage = document.getElementById('emptyMessage');
         var isEmpty = true;
@@ -602,12 +600,9 @@ function printfunction(){
             }
         }
         emptyMessage.style.display = isEmpty ? 'block' : 'none';
-        calculatetotal()
+        calculatetotal();
     }
-    
-    
-    
-    
+
     function formatDateString(inputDate) {
         const parsedDate = new Date(inputDate);
         const day = parsedDate.getDate();
@@ -616,16 +611,16 @@ function printfunction(){
         const formattedDate = `${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}-${year}`;
         return formattedDate;
     }
-    </script>
+</script>
     
 
-    <script>
+<script>
         function filterDates() {
             var fromDate = document.getElementById("fromDate").value;
             var selectedDate = new Date(fromDate);
             selectedDate.setDate(selectedDate.getDate() - 1);
             var toDate = document.getElementById("toDate").value;
-            var table = document.getElementById("credittable");
+            var table = document.getElementById("tablediv");
             var rows = table.getElementsByTagName("tr");
             var emptyMessage = document.getElementById('emptyMessage');
             var isEmpty = true;
@@ -647,7 +642,7 @@ function printfunction(){
             // Assuming calculatetotal() is defined elsewhere in your code
             calculatetotal();
         }
-        </script>
+</script>
         
 
 <script>
@@ -695,7 +690,7 @@ document.getElementById("search_input").addEventListener("input", function() {
     var input, filter, table, tr, td, i, txtValue;
     input = document.getElementById("search_input");
     filter = input.value.toUpperCase();
-    table = document.getElementById("credittable");
+    table = document.getElementById("tablediv");
     tr = table.getElementsByTagName("tr");
     var emptyMessage = document.getElementById("emptyMessage");
     var anyMatch = false;
