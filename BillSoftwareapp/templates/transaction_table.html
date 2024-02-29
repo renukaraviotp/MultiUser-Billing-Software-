@@ -1,542 +1,597 @@
 {% extends 'base.html' %}
-{% block content %}
 {% load static %}
+{% block content %}
 
-
-
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+{% comment %} <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> {% endcomment %}
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-
-
-
-<!-- Include jQuery.table2excel plugin -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-
-<!-- Include jQuery from a CDN -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-<!-- Include jsPDF-AutoTable plugin -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.16/jspdf.plugin.autotable.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-<!-- Add these links to include the required libraries -->
-<script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-**********" crossorigin="anonymous">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
 
 
 <style>
+
     body{
-        background-color: rgb(130, 144, 199);
-        
+        background-color:rgb(130, 144, 199);
     }
-    td{
-        padding: 5px 10px;
-        font-size: larger;
-        
+    .bs{
+        box-shadow: 2px 2px 10px 3px rgba(0, 0, 0, 0.397);
     }
-    td a{
-        text-decoration: none;
+
+    .bs_sm{
+        box-shadow: inset 2px 2px 5px 3px rgba(0, 0, 0, 0.199);
     }
-    #thirdTable label,#thirdTable span,#detailsTable td{
+
+    .paiddiv{
         color: black;
+        height: 10vh;
+        width: 20vh;
+        padding-left: 2vh;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        margin-left: 7vh;
+        border-radius: 8px;
+        background-color: lightgray;
     }
-    #partyTable th{
+
+    .unpaiddiv{
         color: black;
-        font-size: large;
-    }
-    .search-results li {
-      padding: 8px;
-      cursor: pointer;
+        height: 10vh;
+        width: 20vh;
+        padding-left: 2vh;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        margin-left: 7vh;
+        border-radius: 8px;
+        background-color: lightsteelblue;
     }
 
-    .search-results li:hover {
-      background-color: #f0f0f0;
-    }
-    #myInput1{
-        box-shadow: 1px 1px  gray;
-        
-    }
-    #myInput1:hover{
-        box-shadow: none;
-    }
-    #detailsTable th{
+    .totaldiv{
         color: black;
-        font-size: larger;
-    }
-    #editt{
-        color: rgb(58, 15, 214);
-        /* display: inline-flex; */
-        padding: 0;
-
-    }
-    #editt:hover{
-        color: rgb(9, 62, 186);
-    }
-    #filterDropDown a{
-        color: black;
+        height: 10vh;
+        width: 20vh;
+        padding-left: 2vh;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        margin-left: 7vh;
+        border-radius: 8px;
+        background-color: lightgreen;
     }
 
+    #credittable tbody{
+        cursor: pointer;
+    }
 
-  #partyTableScroll::-webkit-scrollbar {
-    width: 1px;
-    height: 0px;
-  }
+    #emptyMessage {
+        display: none;
+        font-size: x-large;
+        font-weight: bold;
+        color: red;
+    }
 
-  #partyTableScroll::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-  }
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
 
-  #partyTableScroll::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 10px;
-    width: 2px;
-    
-  }
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+        padding: 10px;
+        z-index: 1;
+        width: 15%;
+    }
 
-  #partyTableScroll::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
-    width: 2px;
-  }
+    .dropdown-content label {
+        display: block;
+        margin-bottom: 5px;
+    }
 
-  /* For Firefox */
-  #partyTableScroll {
-    scrollbar-width: 2px;
-    scrollbar-color: #888 #f1f1f1;
-  }
+    .dropdown-content input {
+        width: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
 
-  /* For IE/Edge */
-  #partyTableScroll {
-    -ms-overflow-style: none;
-    scrollbar-width: 2px;
-    scrollbar-color: #888 #f1f1f1;
-  }
+    .tplus{
+        margin-top: 3vh;
+        margin-left: 5vh;
+        margin-right: -2vh;
+    }
 
-  /* Hide the scrollbar in Firefox and IE/Edge */
-  #partyTableScroll {
-    overflow: auto;
-  }
+    .tequal{
+        margin-top: 3vh;
+        margin-left: 5vh;
+        margin-right: -2vh;
+    }
 
-</style>
-{% if item %}
-<br><br><br><br><br><br>
+    .tg{
+        color: rgb(0, 140, 7);
+    }
 
-<div class="row ps-3 pe-3 m-0" >
-    <div class="col-sm-12 ps-2 pe-3" style="margin-left:23%;">
-        <div class="row pt-0 m-0">
-            <div class="card p-0 bg-light bs col-md-9"><br>
-                <div class="row">
-                    <div class="container">
-                        <div class="row ">
-                            <div class="col-md-3" style="margin-left: 7vh;">
-                                <div class="form-group">
-                                    <label for="fromDate" style="color: black; margin-bottom: 1vh;">From Date:</label>
-                                    <input type="date" class="form-control h-100 border-secondary" id="fromDate" style="color: black; background-color: white;" onchange="filterDates()"> 
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="toDate" style="color: black; margin-bottom: 1vh;">To Date:</label>
-                                    <input type="date" class="form-control h-100 border-secondary" id="toDate" style="color: black; background-color: white;" onchange="filterDates()">
-                                </div>
-                            </div>
-                            <div class="col-md-2"></div>
-                            <div class="col-md-4 text-right" style="margin-left: -13vh;">
-                                <button class="btn mt-3" type="button" onclick="ExportToExcel()" style="margin-right: 2vh; margin-left: 5vh;">
-                                    <span><img width="22px" src="{% static 'assets/excel2.png' %}" alt="no img"></span>
-                                    <br><span style="color: black; font-size: small; font-weight: bold;">Excel</span>
-                                </button>
+    .tr{
+        color: rgb(218, 0, 0);
+    }
 
-                                <button class="btn mt-3" type="button" onclick="printfunction()" style="margin-right: 2vh;">
-                                    <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
-                                    <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
-                                </button>
+    .tj{
+        color:#E4A11B;
+    }
 
-                                <button class="btn mt-3" type="button" data-toggle="modal" data-target="#excelModal" onclick="excelmodel()">
-                                    <span><img width="30px" src="{% static 'images/import.png' %}" alt="no img"></span>
-                                    <br><span style="color: black; font-size: small; font-weight: bold;">Import</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div><br>
-                
-                
-                <br>
-            </div>
-        </div>
+    .th{
+        color: rgb(12, 79, 234);
+    }
 
-        <div class="row pt-0 m-0">
-           <div class="card p-0 bg-light bs col-md-9">
-                <div class="row m-0 p-0 pt-3">
-                    <div class="col-sm-9 col-lg-3">
-                        <h2 class="tb fw-bolder pt-2 " style="color:rgb(61, 68, 101)">All Credit Notes</h2>
-                    </div>
-                </div>
-                <br>
-                <div class="row">
-                    <div class="col-md-4">
-                        <input id="search_input" style="padding-inline-start: 2rem; margin-left: 1vh; " class="w-100 border-secondary text-dark pt-1 pb-1 pe-1 rounded" type="text" placeholder=" Search">
-                    </div>
-                    <div class="col-md-6"></div>
-                    <div class="col-md-2">
-                        <a class="btn " href="{% url 'credit_add' %}" style="color: white;margin-right:18px;background-color:rgb(61, 68, 101);"> 
-                            <i class="fa fa-plus border-dark " aria-hidden="true" style="color: white;"></i> &nbsp;Add Credit Note
-                        </a>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12" style="margin-left: 2vh;">
-                        <div class="mt-3" style="overflow: scroll;height: 28rem; width: 97%;" id="tablediv">
-                            <table class="table table-bordered table-info table-striped tb table-responsive w-100" id="billtable"  style="text-align: center;">
-                                <thead >
-                                    <tr class="fs-2 tb">
-                                        <th class="w-8 text-white" style="background-color:rgb(61, 68, 101);">#</th>
-                                        <th style="background-color:rgb(61, 68, 101);" class=" text-black">
-                                            DATE 
-                                            <a class="extra text-black" onclick="toggleDropdown(0)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent0">
-                                                <label for="filterInput0" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="date" id="filterInput0"  />
-                                                <a class="btn" onclick="cleardropdown(0)">Clear</a> 
-                                                &nbsp;<a class="btn" onclick="filterTable(0)">Apply</a>
-                                            </div>
-                                        </th>
-                                        <th style="background-color:rgb(61, 68, 101);" class=" text-black">
-                                            REF NO 
-                                            <a class="extra text-black" onclick="toggleDropdown(1)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent1">
-                                                <label for="filterInput1" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput1"  />
-                                                <a class="btn" onclick="cleardropdown(1)">Clear</a> 
-                                                &nbsp;<a class="btn" onclick="filterTable(1)">Apply</a>
-                                            </div>
-                                        </th>
-                                        <th style="background-color:rgb(61, 68, 101);" class=" text-black">
-                                            PARTY NAME 
-                                            <a class="extra text-black" onclick="toggleDropdown(2)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent2">
-                                                <label for="filterInput2" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput2"  />
-                                                <a class="btn" onclick="cleardropdown(2)">Clear</a> 
-                                                &nbsp;<a class="btn" onclick="filterTable(2)">Apply</a>
-                                            </div>
-                                        </th>
-                                        <th style="background-color:rgb(61, 68, 101);" class=" text-black">
-                                            TYPE
-                                            <a class="extra text-black" onclick="toggleDropdown(4)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent4">
-                                                <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput4" />
-                                                <a class="btn" onclick="cleardropdown(4)">Clear</a> 
-                                                &nbsp;<a class="btn" onclick="filterTable(4)">Apply</a>
-                                            </div>
-                                        </th>
-                                        <th style="background-color:rgb(61, 68, 101);" class=" text-black extra">
-                                            TOTAL
-                                            &nbsp; <a onclick="toggleDropdown(6)"><i class="fa fa-filter" aria-hidden="true"></i></a>
-                                            <div class="dropdown-content" id="dropdownContent6">
-                                                <label for="filterInput6" style="color: black; text-align: left;">Equal To</label>
-                                                <input type="text" id="filterInput6" />
-                                                <a class="btn" onclick="cleardropdown(6)">Clear</a> 
-                                                &nbsp;<a class="btn" onclick="filterTable(6)">Apply</a>
-                                            </div>
-                                        </th> 
-                                        <th style="background-color:rgb(61, 68, 101);" class=" text-black extra"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for p in credit %}
-                                    <tr>
-                                        <td class="nnum" style="text-align: center; color: black; width:2%"></td>
-                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.date | date:'d-m-Y'}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.returnno}}</td>
-                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.party.party_name}}</td>
-                                        <td class="clickable-row extra" style="color: black;" data-href="details_purchasebill/{{ p.id }}">Credit Note</td>
-                                        <td class="clickable-row" style="color: black;" data-href="details_purchasebill/{{ p.id }}">{{p.grandtotal}}</td>
-                                        <td class="pt-3 m-0 extra">
-                                            <div class="btn-group">
-                                                <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <span class="fa fa-ellipsis-v text-dark fs-1 ps-"></span>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url "template1" p.id %}"><span class="fa fa-eye pe-2 tg"></span> View </a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url "credithistory" p.id %}"><span class="fa fa-history pe-2 th"></span> History</a></li>
-                                                  <li><a class="dropdown-item fw-bold tb hide_table_text_d" href="{% url "delete_credit" p.id %}"><span class="fa fa-trash-alt tr" style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem ;"></span> Delete</a></li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                        <td style="color: black;" hidden>{{p.advance}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-
-                            <table id="excelcredittable" hidden>
-                                <thead >
-                                    <tr class="fs-2 tb" >
-                                        <th> DATE </th>
-                                        <th> REF NO </th>
-                                        <th> PARTY NAME </th>
-                                        <th> TYPE </th>
-                                        <th> Total </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for p in credit %}
-                                    <tr>
-                                        <td>{{p.date | date:'d-m-Y'}}</td>
-                                        <td>{{p.returnno}}</td>
-                                        <td>{{p.party.party_name}}</td>
-                                        <td>Credit Note</td>
-                                        <td>{{p.grandtotal}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-
-                            <table id="credittablemodel" hidden>
-                                <thead>
-                                    <tr>
-                                        <th>Customer Name</th>
-                                        <th>Customer Email</th>
-                                        <th>Bill Date</th>
-                                        <th>Supply State</th>
-                                        <th>Payment Method</th>
-                                        <th>Payment No</th>
-                                        <th>Adjustment</th>
-                                        <th>Advance</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>State/Other State</td>
-                                        <td>Cash/Cheque/UPI/Bank Name</td>
-                                        <td>Cheque ID/UPI ID/Bank no</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <table id="credittableitemmodel" hidden>
-                                <thead>
-                                    <tr>
-                                        <th>Credit Note</th>
-                                        <th>Product Name</th>
-                                        <th>Product HSN</th>
-                                        <th>Quantity</th>
-                                        <th>Discount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Corresponding Row no from Creditnotemodel </td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div> 
-                       
-            </div>
-        </div>
-        </div>
-    </div>
-</div>
-<div class="modal" id="excelModal" tabindex="-1" role="dialog" aria-labelledby="excelModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="excelModalLabel">Upload File
-                <label for="" style="color: red; font-size: x-small;" >* Refer Downloaded Sheet For Format </label><br></h5>
-                <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" style="font-size: x-large;">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="excelForm" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="file" style="color: black;">Choose Excel File for CreditNote- </label> <br>
-                        <input type="file" class="form-control-file" id="creditfile" name="creditfile" accept=".xls, .xlsx"><br><br>
-                        
-
-                        <label for="file" style="color: black;">Choose Excel File for CreditNote Products- </label> <br>
-                        <input type="file" class="form-control-file" id="prdfile" name="prdfile" accept=".xls, .xlsx"><br>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="uploadFile()" data-dismiss="modal">Upload</button>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-{% else %}
-<div class="container" style='background-color:white;'>
-    <br><br><br><br><br><br>
-    <div class="container col-10 mr-3">
-        <div class="container col -10" style='background-color:white;  box-shadow: 5px 5px 5px gray; border-radius:10px;'>
-            <div class="row">
-                
-                <div class="col">
-                    <img style="mix-blend-mode: multiply;" src="{% static 'images/credit/11.webp' %}" width="400" height="400" alt="">
-                </div>
-
-                <div class="col m-2">
-                    <br><br><br>
-                    <center><h3><img src="static/img/logo/logo3.png" alt="billing-software">MultiUser Billing Software</h3></center><br>
-                    <p>Welcome to MultiUser Billing Software.Our platform offers a range of features.You can manage all your credit actions here.</p>
-                    <center><a href="{% url "credit_add" %}" class="btn btn-primary">Add Your First Creditnote Here</a></center>
-                </div>
-
-            </div>
-        </div>
-        <br><br><br>
-    </div>
-</div>
-{% endif %}
-
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-
-<script>
-    // JavaScript to handle dropdown toggle
-    document.addEventListener("DOMContentLoaded", function() {
-        var dropdownToggle = document.querySelector('.dropdown-toggle-split');
-        var dropdownMenu = document.querySelector('.dropdown-menu');
-        
-        dropdownToggle.addEventListener('click', function() {
-            dropdownMenu.classList.toggle('show');
-        });
-    });
-</script>
-
-<script>
-document.getElementById('fromDate').addEventListener('change', updateMinDate);
-function updateMinDate() {
-    var selectedDate = document.getElementById('fromDate').value;
-    document.getElementById('toDate').min = selectedDate;
-}
-</script>
-
-<script>
-    $(document).ready(function() {
-        updateRowNumbers(); // Call the function initially to set serial numbers
-        
-        // Function to update row numbers
-        function updateRowNumbers() {
-            $('.nnum').each(function(index) {
-                $(this).text(index + 1);
-            });
+    @media print{
+        body{
+            visibility: hidden !important; /* hide everything in body when in print mode*/
         }
-    });
-</script>
+
+        .printContainer {
+            visibility: visible !important; /* Override the rule above to only show the printables*/
+            position: absolute;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: large;
+        } 
+
+        #calcdiv{
+            visibility: visible;
+            margin-top: -30vh;
+            margin-left: -9vh;
+            margin-bottom: 30vh;
+        }
+
+        #credittable{
+            margin-top: 20vh;
+            margin-bottom: 20vh;
+        }
+
+        #credittable th{
+            font-size: medium;
+        }
+
+        .extra{
+            display: none;
+        }
+    }
+    
+    ::-webkit-scrollbar{
+        display: none
+    }
+</style>
 
 
+<div class="body-wrapper" style="margin-left:20%;">
+    <br><br><br><br>
+    
+    <p></p>
+    <div class="row ps-3 pe-3 m-0" >
+        <div class="col-md-12 ps-2 pe-3">
+            <div class="row pt-0 m-0">
+                <div class="card p-0 bg-light bs"><br>
+                    <div class="row">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-3" style="margin-left: 7vh;">
+                                    <div class="form-group">
+                                        <label for="fromDate" style="color: black; margin-bottom: 1vh;">From Date:</label>
+                                        <input type="date" class="form-control h-100 border-secondary" id="fromDate" style="color: black; background-color: white;" onchange="filterDates()"> 
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="toDate" style="color: black; margin-bottom: 1vh;">To Date:</label>
+                                        <input type="date" class="form-control h-100 border-secondary" id="toDate" style="color: black; background-color: white;" onchange="filterDates()">
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-3 text-right" style="margin-left: 6vh;">
+                                    <button class="btn mt-3" type="button" onclick="ExportToExcel()" style="margin-right: 2vh; margin-left: 5vh;">
+                                        <span><img width="22px" src="{% static 'assets/excel2.png' %}" alt="no img"></span>
+                                        <br><span style="color: black; font-size: small; font-weight: bold;">Excel</span>
+                                    </button>
 
+                                    <button class="btn mt-3" type="button" onclick="printfunction()" style="margin-right: 2vh;">
+                                        <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
+                                        <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
+                                    </button>
+
+                                    <button class="btn mt-3" type="button">
+                                        <span><img width="20px" src="{% static 'images/import.png' %}" alt="no img"></span>
+                                        <br><span style="color: black; font-size: small; font-weight: bold;">Import</span>
+                                    </button>
+                                </div>
+                                    <br><br><br><br>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br><br>
+                    
+                    
+
+            <div class="row pt-0 m-0">
+                <div class="card p-0 bg-light bs" style="height: 36rem;">
+                    <div class="row m-0 p-0 pt-3">
+                        <div class="col-sm-12 col-lg-3">
+                            <h4 class="tb fw-bolder pt-2 " style="rgb(61, 68, 101);">Credit Notes</h4>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input id="search_input" style="padding-inline-start: 2rem; margin-left: 1vh; " class="w-100 border-secondary text-dark pt-1 pb-1 pe-1 rounded" type="text" placeholder=" Search">
+                        </div>
+                        <div class="col-md-6"></div>
+                        <div class="col-md-2">
+                            <a class="btn"  href="{% url 'credit_add' %}" style="color: white;background-color:rgb(61, 68, 101);margin-right:3%;"> 
+                                <i class="fa fa-plus border-dark " aria-hidden="true" style="color: white;"></i> &nbsp;Add Creditnote
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" style="margin-left: 2vh;">
+                            <div class="mt-3" style="overflow: scroll;height: 28rem; width: 97%;" id="tablediv">
+                                <table class="table table-bordered tb table-responsive w-100" id="credittable"  style="text-align: center;margin-left:3%;">
+                                    <thead >
+                                        <tr class="fs-2 tb">
+                                            <th class="text-white w-15" style="background-color:rgb(61,68,101);">
+                                                DATE 
+                                                <a class="extra text-white" onclick="toggleDropdown(0)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent0">
+                                                    <label for="filterInput0" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="date" id="filterInput0"  />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(0)">Clear</a> 
+                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(0)">Apply</a>
+                                                </div>
+                                            </th>
+                                            <th class="w-15 text-white"  style="background-color:rgb(61,68,101);">
+                                                REF NO 
+                                                <a class="extra text-white" onclick="toggleDropdown(1)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent1">
+                                                    <label for="filterInput1" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput1"  />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(1)">Clear</a> 
+                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(1)">Apply</a>
+                                                </div>
+                                            </th>
+                                            <th class="w-20 text-white" style="background-color:rgb(61,68,101);">
+                                                PARTY NAME 
+                                                <a class="extra text-white" onclick="toggleDropdown(2)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent2">
+                                                    <label for="filterInput2" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput2"  />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(2)">Clear</a> 
+                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(2)">Apply</a>
+                                                </div>
+                                            </th>
+                                          
+                                            <th class="w-15 text-white" style="background-color:rgb(61,68,101);">
+                                                TOTAL
+                                                <a class="extra text-white" onclick="toggleDropdown(3)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent3">
+                                                    <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput3" />
+                                                    <a class="btn " style="background-color:rgb(61,68,101);" onclick="cleardropdown(3)">Clear</a> 
+                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(3)">Apply</a>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);">
+                                                TYPE
+                                                &nbsp; <a onclick="toggleDropdown(4)"><i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent4">
+                                                    <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput4" />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(4)">Clear</a> 
+                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(4)">Apply</a>
+                                                </div>
+                                            </th>
+                                            {% comment %} <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);">
+                                                BY
+                                                &nbsp; <a onclick="toggleDropdown(5)"><i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent5">
+                                                    <label for="filterInput5" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput5" />
+                                                    <a class="btn " style="background-color:rgb(61,68,101);" onclick="cleardropdown(5)">Clear</a> 
+                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(5)">Apply</a>
+                                                </div>
+                                            </th> {% endcomment %}
+                                            <th class="w-25 text-white " style="background-color:rgb(61,68,101);"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in credit %}
+                                        <tr>
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.date | date:'d-m-Y'}}</td>
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.returnno}}</td>
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.party.party_name}}</td>
+                                            {% comment %} <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.pay_method}}</td> {% endcomment %}
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.grandtotal}}</td>
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">Credit Note</td>
+                                            {% comment %} <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td>
+                                            <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td> {% endcomment %}
+                                            <td class="pt-3 m-0 extra">
+                                                <div class="btn-group">
+                                                    <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <span class="fa fa-ellipsis-v text-dark  ps-"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'template1' p.id %}"><span class="fa fa-eye pe-2 tg"></span> View </a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'credithistory' p.id %}"><span class="fa fa-history pe-2 th"></span> History</a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_d" href="{% url 'delete_credit' p.id %}"><span  class="fa-solid fa-trash"  style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem; color:red;"></span> Delete</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td style="color: black;" hidden>{{p.advance}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    
+                                </table>
+
+                                <p id="emptyMessage" style="text-align: center;">
+                                    <br><br><br>
+                                    No Transactions to Show
+                                </p>
+
+                                <table id="excelcredittable" hidden>
+                                    <thead >
+                                        <tr class="fs-2 tb" >
+                                            <th> DATE </th>
+                                            <th> REF NO </th>
+                                            <th> PARTY NAME </th>
+                                            
+                                            <th> AMOUNT </th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in credit %}
+                                        <tr>
+                                            <td>{{p.date | date:'d-m-Y'}}</td>
+                                            <td>{{p.returnno}}</td>
+                                            <td>{{p.party.party_name}}</td>
+                                            
+                                            <td>{{p.grandtotal}}</td>
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                <table id="credittablemodel" hidden>
+                                    <thead>
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Customer Email</th>
+                                            <th>Date</th>
+                                            <th>Supply State</th>
+                                            
+                                            <th>Payment No</th>
+                                            <th>Adjustment</th>
+                                            <th>Advance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>State/Other State</td>
+                                            <td>Cash/Cheque/UPI/Bank Name</td>
+                                            <td>Cheque ID/UPI ID/Bank no</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table id="credittableitemmodel" hidden>
+                                    <thead>
+                                        <tr>
+                                            <th>Credit Note</th>
+                                            <th>Product Name</th>
+                                            <th>Product HSN</th>
+                                            <th>Quantity</th>
+                                            <th>Discount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Corresponding Row no from Creditnotemodel </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="modal" id="excelModal" tabindex="-1" role="dialog" aria-labelledby="excelModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="excelModalLabel">Upload File
+                    <label for="" style="color: red; font-size: x-small;" >* Refer Downloaded Sheet For Format </label><br></h5>
+                    <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="font-size: x-large;">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="excelForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="file" style="color: black;">Choose Excel File for Credit Note- </label> <br>
+                            <input type="file" class="form-control-file" id="billfile" name="billfile" accept=".xls, .xlsx"><br><br>
+                            
+
+                            <label for="file" style="color: black;">Choose Excel File for Credit Note Products- </label> <br>
+                            <input type="file" class="form-control-file" id="prdfile" name="prdfile" accept=".xls, .xlsx"><br>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadFile()" data-dismiss="modal">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-var table = document.getElementById('credittable');
-var rows = table.getElementsByTagName('tr');
-for (var i = 1; i < rows.length; i++) {
-    var pid = rows[i].getElementsByTagName('td')[1].innerText;
-    findhistory(i,pid)            
-}
-function findhistory( rowid,pid){
-    $.ajax({
-        type : 'POST',
-        url: "",
-        data: { 
-            id: pid ,
-            csrfmiddlewaretoken: '{{ csrf_token }}'
-        },
-        success: function(data){
-            rows[rowid].getElementsByTagName('td')[6].innerText=data.action;
-            rows[rowid].getElementsByTagName('td')[7].innerText=data.name;
-            if(data.action== 'Created'){
-                rows[rowid].getElementsByTagName('td')[6].style.color = 'Red'
-            }else{
-                rows[rowid].getElementsByTagName('td')[6].style.color = '#154c79'
+    document.getElementById('fromDate').addEventListener('change', updateMinDate);
+    function updateMinDate() {
+        var selectedDate = document.getElementById('fromDate').value;
+        document.getElementById('toDate').min = selectedDate;
+    }
+</script>
+
+<script>
+    function generatePDF() {
+        var elementToPrint = document.getElementById('tablediv');
+        if (elementToPrint.style.display === 'none') {
+            elementToPrint = document.getElementById('whatToPrint');
+        }
+
+        html2pdf(elementToPrint, {
+            margin: 10,
+            filename: 'document.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        });
+    }
+</script>
+
+{% comment %} <script>
+    var table = document.getElementById('credittable');
+    var rows = table.getElementsByTagName('tr');
+    for (var i = 1; i < rows.length; i++) {
+        var pid = rows[i].getElementsByTagName('td')[1].innerText;
+        findhistory(i,pid)            
+    }
+    function findhistory( rowid,pid){
+        $.ajax({
+            type : 'POST',
+            url: "{% url 'credithistory' p.id %}",
+            data: { 
+                id: pid ,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(data){
+                rows[rowid].getElementsByTagName('td')[4].innerText=data.action;
+                rows[rowid].getElementsByTagName('td')[5].innerText=data.name;
+                if(data.action== 'Created'){
+                    rows[rowid].getElementsByTagName('td')[4].style.color = 'Red'
+                }else{
+                    rows[rowid].getElementsByTagName('td')[4].style.color = '#154c79'
+                }
+            }
+        });
+    }
+</script> {% endcomment %}
+
+<script>
+    function uploadFile() {
+        const form = document.getElementById('excelForm');
+        const formData = new FormData(form);
+        fetch('import_purchase_bill', {
+            method: 'POST',
+            body: formData
+        })
+        .then(data => {
+            swal({
+                title: "Imported !",
+                text: "Credit Note Import Successfull!",
+                icon: "success",
+                buttons: false,
+            })
+        })
+        .then(response => {
+            setTimeout(function () {
+                location.reload();
+            }, 1250);
+        })
+        .catch(error => {
+            swal({
+                title: "Error !",
+                text: "Credit Note Import Unuccessfull!",
+                icon: "warning",
+                buttons: false,
+            })
+        });
+    }
+</script>
+
+<script>
+    function printfunction(){
+        print4 = document.getElementById('tablediv')
+        if (print4.style.display !== 'none'){
+            var printContents = document.getElementById("tablediv").innerHTML;
+        }else{
+            var printContents = document.getElementById("whatToPrint").innerHTML;
+        }
+        var $printerDiv = $('<div class="printContainer" id=printContainer></div>');
+        $printerDiv.html(printContents); 
+        $('body').append($printerDiv).addClass("printingContent"); 
+        var h1Element = document.createElement("h1");
+        h1Element.textContent = "Credit Notes";
+        var head = document.getElementById("printContainer");
+        head.insertBefore(h1Element, head.firstChild);
+        window.print();
+        $printerDiv.remove();
+        $('body').removeClass("printingContent");
+    }
+</script>
+
+<script>
+    calculatetotal()
+
+    function calculatetotal(){
+        var table = document.getElementById('credittable');
+        var rows = table.getElementsByTagName('tr');
+        tpaid = 0;
+        tunpaid = 0;
+        ttotal = 0; 
+        for (var i = 1; i < rows.length; i++) {
+            if(rows[i].style.display !='none'){
+                var pcells = rows[i].getElementsByTagName('td')[9];
+                var ptextValue = pcells.textContent || pcells.innerText;
+                tpaid += parseFloat(ptextValue)
+
+               
+
+                var tcells = rows[i].getElementsByTagName('td')[4];
+                var ttextValue = tcells.textContent || tcells.innerText;
+                ttotal += parseFloat(ttextValue)
             }
         }
-    });
-}
-</script>
-
-<script>
-function uploadFile() {
-    const form = document.getElementById('excelForm');
-    const formData = new FormData(form);
-    fetch('import_credit_note', {
-        method: 'POST',
-        body: formData
-    })
-    .then(data => {
-        swal({
-            title: "Imported !",
-            text: "CreditNote Import Successfull!",
-            icon: "success",
-            buttons: false,
-        })
-    })
-    .then(response => {
-        setTimeout(function () {
-            location.reload();
-        }, 1250);
-    })
-    .catch(error => {
-        swal({
-            title: "Error !",
-            text: "CreditNote Import Unuccessfull!",
-            icon: "warning",
-            buttons: false,
-        })
-    });
-}
-</script>
-
-<script>
-function printfunction(){
-    print4 = document.getElementById('credittable')
-    if (print4.style.display !== 'none'){
-        var printContents = document.getElementById("credittable").innerHTML;
-    }else{
-        var printContents = document.getElementById("whatToPrint").innerHTML;
+        document.getElementById('paidval').textContent = tpaid
+        document.getElementById('unpaidval').textContent = tunpaid
+        document.getElementById('totalval').textContent = ttotal
     }
-    var $printerDiv = $('<div class="printContainer" id=printContainer></div>');
-    $printerDiv.html(printContents); 
-    $('body').append($printerDiv).addClass("printingContent"); 
-    var h1Element = document.createElement("h1");
-    h1Element.textContent = "Credit Notes";
-    var head = document.getElementById("printContainer");
-    head.insertBefore(h1Element, head.firstChild);
-    window.print();
-    $printerDiv.remove();
-    $('body').removeClass("printingContent");
-}
 </script>
-
 
 <script>
     function cleardropdown(index){
@@ -546,7 +601,7 @@ function printfunction(){
             document.getElementById('filterInput'+index).value = null;
         }
     }
-    
+
     function toggleDropdown(index) {
         var dropdownContent = document.getElementById('dropdownContent' + index);
         var isVisible = dropdownContent.style.display === 'block';
@@ -565,7 +620,7 @@ function printfunction(){
         } else {
             input = document.getElementById('filterInput' + index).value.toUpperCase();
         }
-        var table = document.getElementById('billtable');
+        var table = document.getElementById('credittable');
         var rows = table.getElementsByTagName('tr');
         var emptyMessage = document.getElementById('emptyMessage');
         var isEmpty = true;
@@ -577,8 +632,8 @@ function printfunction(){
                 if (index === 0) {
                     if (input==''){
                         rows[i].style.display = 'table-row';
-                        isEmpty = false;
-                    } else {
+                            isEmpty = false;
+                    }else{
                         dateval  = textValue.replace(/(\d{2})-(\d{2})-(\d{2})/, "$2-$1-$3");
                         inputval  = input.replace(/(\d{2})-(\d{2})-(\d{2})/, "$2-$1-$3");
                         const formattedDate = formatDateString(input);
@@ -600,7 +655,7 @@ function printfunction(){
             }
         }
         emptyMessage.style.display = isEmpty ? 'block' : 'none';
-        calculatetotal();
+        calculatetotal()
     }
 
     function formatDateString(inputDate) {
@@ -612,131 +667,129 @@ function printfunction(){
         return formattedDate;
     }
 </script>
-    
 
 <script>
-        function filterDates() {
-            var fromDate = document.getElementById("fromDate").value;
-            var selectedDate = new Date(fromDate);
-            selectedDate.setDate(selectedDate.getDate() - 1);
-            var toDate = document.getElementById("toDate").value;
-            var table = document.getElementById("tablediv");
-            var rows = table.getElementsByTagName("tr");
-            var emptyMessage = document.getElementById('emptyMessage');
-            var isEmpty = true;
-            for (var i = 1; i < rows.length; i++) {
-                var currentDate = rows[i].getElementsByTagName("td")[1].innerText;
-                var date = new Date(currentDate.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")); // Assuming the date is in the format "dd-mm-yyyy"
-                if ((fromDate && date >= selectedDate) || !fromDate) {
-                    if ((toDate && date <= new Date(toDate)) || !toDate) {
-                        rows[i].style.display = "table-row";
-                        isEmpty = false;
-                    } else {
-                        rows[i].style.display = "none";
-                    }
+    function filterDates() {
+        var fromDate = document.getElementById("fromDate").value;
+        var selectedDate = new Date(fromDate);
+        selectedDate.setDate(selectedDate.getDate() - 1);
+        var toDate = document.getElementById("toDate").value;
+        var table = document.getElementById("credittable");
+        var rows = table.getElementsByTagName("tr");
+        var emptyMessage = document.getElementById('emptyMessage');
+        var isEmpty = true;
+        for (var i = 1; i < rows.length; i++) {
+            var currentDate = rows[i].getElementsByTagName("td")[0].innerText;
+            var date = new Date(currentDate.replace(/(\d{2})-(\d{2})-(\d{2})/, "$2/$1/$3"));
+            if ((fromDate && date >= selectedDate) || !fromDate) {
+                if ((toDate && date <= new Date(toDate)) || !toDate) {
+                    rows[i].style.display = "table-row";
+                    isEmpty = false;
                 } else {
                     rows[i].style.display = "none";
                 }
-            }
-            emptyMessage.style.display = isEmpty ? 'block' : 'none';
-            // Assuming calculatetotal() is defined elsewhere in your code
-            calculatetotal();
-        }
-</script>
-        
-
-<script>
-jQuery(document).ready(function($) {
-    $(".clickable-row").click(function() {
-        window.location = $(this).data("href");
-    });
-});
-</script>
-
-<script>
-function deletecredit(Id)
-{
-    swal({
-        title: "Confirmation !",
-        text: "Do you want to Delete this CreditNote?",
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-    })
-    .then((willDelete) => {
-        if (willDelete) {
-            swal({
-                title: "Deleted !",
-                text: "CreditNote Deleted Successfully!",
-                icon: "success",
-                buttons: false,
-            })
-            .then((willDelete) => {
-                if (willDelete) {
-                    window.location.href = "".replace('0', Id);
-                } else {
-                    window.location.href = "".replace('0', Id);
-                }
-            });
-        } else {
-            swal("Action Cancelled!");
-        }
-    });
-}
-</script>
-
-<script>
-document.getElementById("search_input").addEventListener("input", function() {
-    var input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById("search_input");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("tablediv");
-    tr = table.getElementsByTagName("tr");
-    var emptyMessage = document.getElementById("emptyMessage");
-    var anyMatch = false;
-    for (i = 1; i < tr.length; i++) {
-        tr[i].style.display = "table-row";
-        var found = false;
-        for (td of tr[i].getElementsByTagName("td")) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().includes(filter)) {
-                found = true;
-                anyMatch = true;
-                break;
+            } else {
+                rows[i].style.display = "none";
             }
         }
-        if (!found) {
-            tr[i].style.display = "none";
-        }
+        emptyMessage.style.display = isEmpty ? 'block' : 'none';
+        calculatetotal()
     }
-    emptyMessage.style.display = anyMatch ? "none" : "block";
-    calculatetotal()
-});
 </script>
 
 <script>
-function ExportToExcel(){
-    const table = document.querySelector('#excelcredittable');
-    const ws = XLSX.utils.table_to_sheet(table);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    XLSX.writeFile(wb, 'CreditNote.xlsx');
-}
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
 </script>
 
 <script>
-function excelmodel(){
-    const table1 = document.querySelector('#credittablemodel');
-    const ws1 = XLSX.utils.table_to_sheet(table1);
-    const wb1 = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb1, ws1, 'Sheet1');
-    XLSX.writeFile(wb1, 'CreditNoteModel.xlsx');
-
-    const table2 = document.querySelector('#credittableitemmodel');
-    const ws2 = XLSX.utils.table_to_sheet(table2);
-    const wb2 = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb2, ws2, 'Sheet1');
-    XLSX.writeFile(wb2, 'CreditNoteItemModel.xlsx');
-}
+    function deletepbill(Id)
+    {
+        swal({
+            title: "Confirmation !",
+            text: "Do you want to Delete this Credit Note?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                swal({
+                    title: "Deleted !",
+                    text: "Credit Note Deleted Successfully!",
+                    icon: "success",
+                    buttons: false,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        window.location.href = "{% url 'delete_credit' 0 %}".replace('0', Id);
+                    } else {
+                        window.location.href = "{% url 'delete_credit' 0 %}".replace('0', Id);
+                    }
+                });
+            } else {
+                swal("Action Cancelled!");
+            }
+        });
+    }
 </script>
-{% endblock %}
+
+<script>
+    document.getElementById("search_input").addEventListener("input", function() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search_input");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("credittable");
+        tr = table.getElementsByTagName("tr");
+        var emptyMessage = document.getElementById("emptyMessage");
+        var anyMatch = false;
+        for (i = 1; i < tr.length; i++) {
+            tr[i].style.display = "table-row";
+            var found = false;
+            for (td of tr[i].getElementsByTagName("td")) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().includes(filter)) {
+                    found = true;
+                    anyMatch = true;
+                    break;
+                }
+            }
+            if (!found) {
+                tr[i].style.display = "none";
+            }
+        }
+        emptyMessage.style.display = anyMatch ? "none" : "block";
+        calculatetotal()
+    });
+</script>
+
+<script>
+    function ExportToExcel(){
+        const table = document.querySelector('#excelcredittable');
+        const ws = XLSX.utils.table_to_sheet(table);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        XLSX.writeFile(wb, 'PurchaseBill.xlsx');
+    }
+</script>
+
+<script>
+    function excelmodel(){
+        const table1 = document.querySelector('#credittablemodel');
+        const ws1 = XLSX.utils.table_to_sheet(table1);
+        const wb1 = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb1, ws1, 'Sheet1');
+        XLSX.writeFile(wb1, 'PurchaseBillModel.xlsx');
+
+        const table2 = document.querySelector('#credittableitemmodel');
+        const ws2 = XLSX.utils.table_to_sheet(table2);
+        const wb2 = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb2, ws2, 'Sheet1');
+        XLSX.writeFile(wb2, 'PurchaseBillItemModel.xlsx');
+    }
+</script>
+
+{% endblock  %}
