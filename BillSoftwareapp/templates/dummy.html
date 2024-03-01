@@ -9185,3 +9185,2392 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
 
 
+{% comment %} transaction table final {% endcomment %}
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+{% comment %} <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> {% endcomment %}
+<script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+
+
+<style>
+
+    body{
+        background-color:rgb(130, 144, 199);
+    }
+    .bs{
+        box-shadow: 2px 2px 10px 3px rgba(0, 0, 0, 0.397);
+    }
+
+    .bs_sm{
+        box-shadow: inset 2px 2px 5px 3px rgba(0, 0, 0, 0.199);
+    }
+
+    .paiddiv{
+        color: black;
+        height: 10vh;
+        width: 20vh;
+        padding-left: 2vh;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        margin-left: 7vh;
+        border-radius: 8px;
+        background-color: lightgray;
+    }
+
+    .unpaiddiv{
+        color: black;
+        height: 10vh;
+        width: 20vh;
+        padding-left: 2vh;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        margin-left: 7vh;
+        border-radius: 8px;
+        background-color: lightsteelblue;
+    }
+
+    .totaldiv{
+        color: black;
+        height: 10vh;
+        width: 20vh;
+        padding-left: 2vh;
+        padding-top: 1vh;
+        padding-bottom: 1vh;
+        margin-left: 7vh;
+        border-radius: 8px;
+        background-color: lightgreen;
+    }
+
+    #credittable tbody{
+        cursor: pointer;
+    }
+
+    #emptyMessage {
+        display: none;
+        font-size: x-large;
+        font-weight: bold;
+        color: red;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+        padding: 10px;
+        z-index: 1;
+        width: 15%;
+    }
+
+    .dropdown-content label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .dropdown-content input {
+        width: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    .tplus{
+        margin-top: 3vh;
+        margin-left: 5vh;
+        margin-right: -2vh;
+    }
+
+    .tequal{
+        margin-top: 3vh;
+        margin-left: 5vh;
+        margin-right: -2vh;
+    }
+
+    .tg{
+        color: rgb(0, 140, 7);
+    }
+
+    .tr{
+        color: rgb(218, 0, 0);
+    }
+
+    .tj{
+        color:#E4A11B;
+    }
+
+    .th{
+        color: rgb(12, 79, 234);
+    }
+
+    @media print{
+        body{
+            visibility: hidden !important; /* hide everything in body when in print mode*/
+        }
+
+        .printContainer {
+            visibility: visible !important; /* Override the rule above to only show the printables*/
+            position: absolute;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            font-size: large;
+        } 
+
+        #calcdiv{
+            visibility: visible;
+            margin-top: -30vh;
+            margin-left: -9vh;
+            margin-bottom: 30vh;
+        }
+
+        #credittable{
+            margin-top: 20vh;
+            margin-bottom: 20vh;
+        }
+
+        #credittable th{
+            font-size: medium;
+        }
+
+        .extra{
+            display: none;
+        }
+    }
+    
+    ::-webkit-scrollbar{
+        display: none
+    }
+</style>
+
+
+<div class="body-wrapper" style="margin-left:20%;">
+    <br><br><br><br>
+    
+    <p></p>
+    <div class="row ps-3 pe-3 m-0" >
+        <div class="col-md-12 ps-2 pe-3">
+            <div class="row pt-0 m-0">
+                <div class="card p-0 bg-light bs"><br>
+                    <div class="row">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-3" style="margin-left: 7vh;">
+                                    <div class="form-group">
+                                        <label for="fromDate" style="color: black; margin-bottom: 1vh;">From Date:</label>
+                                        <input type="date" class="form-control h-100 border-secondary" id="fromDate" style="color: black; background-color: white;" onchange="filterDates()"> 
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="toDate" style="color: black; margin-bottom: 1vh;">To Date:</label>
+                                        <input type="date" class="form-control h-100 border-secondary" id="toDate" style="color: black; background-color: white;" onchange="filterDates()">
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-3 text-right" style="margin-left: 6vh;">
+                                    <button class="btn mt-3" type="button" onclick="ExportToExcel()" style="margin-right: 2vh; margin-left: 5vh;">
+                                        <span><img width="22px" src="{% static 'assets/excel2.png' %}" alt="no img"></span>
+                                        <br><span style="color: black; font-size: small; font-weight: bold;">Excel</span>
+                                    </button>
+
+                                    <button class="btn mt-3" type="button" onclick="printfunction()" style="margin-right: 2vh;">
+                                        <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
+                                        <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
+                                    </button>
+
+                                    <button class="btn mt-3" type="button">
+                                        <span><img width="20px" src="{% static 'images/import.png' %}" alt="no img"></span>
+                                        <br><span style="color: black; font-size: small; font-weight: bold;">Import</span>
+                                    </button>
+                                </div>
+                                    <br><br><br><br>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br><br>
+                    
+                    
+
+            <div class="row pt-0 m-0">
+                <div class="card p-0 bg-light bs" style="height: 36rem;">
+                    <div class="row m-0 p-0 pt-3">
+                        <div class="col-sm-12 col-lg-3">
+                            <h4 class="tb fw-bolder pt-2 " style="rgb(61, 68, 101);">Credit Notes</h4>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input id="search_input" style="padding-inline-start: 2rem; margin-left: 1vh; " class="w-100 border-secondary text-dark pt-1 pb-1 pe-1 rounded" type="text" placeholder=" Search">
+                        </div>
+                        <div class="col-md-6"></div>
+                        <div class="col-md-2">
+                            <a class="btn"  href="{% url 'credit_add' %}" style="color: white;background-color:rgb(61, 68, 101);margin-right:3%;"> 
+                                <i class="fa fa-plus border-dark " aria-hidden="true" style="color: white;"></i> &nbsp;Add Creditnote
+                            </a>
+                        </div>
+                    </div> 
+
+                    <div class="row">
+                        <div class="col-md-12" style="margin-left: 2vh;">
+                            <div class="mt-3" style="overflow: scroll;height: 28rem; width: 97%;" id="tablediv">
+                                <table class="table table-bordered tb table-responsive w-100" id="credittable"  style="text-align: center;margin-left:3%;">
+                                    <thead >
+                                        <tr class="fs-2 tb">
+                                            <th class="text-white w-15" style="background-color:rgb(61,68,101);">
+                                                DATE 
+                                                <a class="extra text-white" onclick="toggleDropdown(0)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent0">
+                                                    <label for="filterInput0" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="date" id="filterInput0"  />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(0)">Clear</a> 
+                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(0)">Apply</a>
+                                                </div>
+                                            </th>
+                                            <th class="w-15 text-white"  style="background-color:rgb(61,68,101);">
+                                                REF NO 
+                                                <a class="extra text-white" onclick="toggleDropdown(1)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent1">
+                                                    <label for="filterInput1" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput1"  />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(1)">Clear</a> 
+                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(1)">Apply</a>
+                                                </div>
+                                            </th>
+                                            <th class="w-20 text-white" style="background-color:rgb(61,68,101);">
+                                                PARTY NAME 
+                                                <a class="extra text-white" onclick="toggleDropdown(2)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent2">
+                                                    <label for="filterInput2" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput2"  />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(2)">Clear</a> 
+                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(2)">Apply</a>
+                                                </div>
+                                            </th>
+                                          
+                                            <th class="w-15 text-white" style="background-color:rgb(61,68,101);">
+                                                TOTAL
+                                                <a class="extra text-white" onclick="toggleDropdown(3)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent3">
+                                                    <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput3" />
+                                                    <a class="btn " style="background-color:rgb(61,68,101);" onclick="cleardropdown(3)">Clear</a> 
+                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(3)">Apply</a>
+                                                </div>
+                                            </th>
+                                            
+                                            <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);">
+                                                TYPE
+                                                &nbsp; <a onclick="toggleDropdown(4)"><i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent4">
+                                                    <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput4" />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(4)">Clear</a> 
+                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(4)">Apply</a>
+                                                </div>
+                                            </th>
+                                            {% comment %} <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);">
+                                                BY
+                                                &nbsp; <a onclick="toggleDropdown(5)"><i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent5">
+                                                    <label for="filterInput5" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput5" />
+                                                    <a class="btn " style="background-color:rgb(61,68,101);" onclick="cleardropdown(5)">Clear</a> 
+                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(5)">Apply</a>
+                                                </div>
+                                            </th> {% endcomment %}
+                                            <th class="w-25 text-white " style="background-color:rgb(61,68,101);"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in credit %}
+                                        <tr>
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.date | date:'d-m-Y'}}</td>
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.returnno}}</td>
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.party.party_name}}</td>
+                                            {% comment %} <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.pay_method}}</td> {% endcomment %}
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.grandtotal}}</td>
+                                            <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">Credit Note</td>
+                                            {% comment %} <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td>
+                                            <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td> {% endcomment %}
+                                            <td class="pt-3 m-0 extra">
+                                                <div class="btn-group">
+                                                    <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <span class="fa fa-ellipsis-v text-dark  ps-"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'template1' p.id %}"><span class="fa fa-eye pe-2 tg"></span> View </a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'credithistory' p.id %}"><span class="fa fa-history pe-2 th"></span> History</a></li>
+                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_d" href="{% url 'delete_credit' p.id %}"><span  class="fa-solid fa-trash"  style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem; color:red;"></span> Delete</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                            <td style="color: black;" hidden>{{p.advance}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    
+                                </table>
+
+                                <p id="emptyMessage" style="text-align: center;">
+                                    <br><br><br>
+                                    No Transactions to Show
+                                </p>
+
+                                <table id="excelcredittable" hidden>
+                                    <thead >
+                                        <tr class="fs-2 tb" >
+                                            <th> DATE </th>
+                                            <th> REF NO </th>
+                                            <th> PARTY NAME </th>
+                                            
+                                            <th> AMOUNT </th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for p in credit %}
+                                        <tr>
+                                            <td>{{p.date | date:'d-m-Y'}}</td>
+                                            <td>{{p.returnno}}</td>
+                                            <td>{{p.party.party_name}}</td>
+                                            
+                                            <td>{{p.grandtotal}}</td>
+                                            
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                <table id="credittablemodel" hidden>
+                                    <thead>
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Customer Email</th>
+                                            <th>Date</th>
+                                            <th>Supply State</th>
+                                            
+                                            <th>Payment No</th>
+                                            <th>Adjustment</th>
+                                            <th>Advance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>State/Other State</td>
+                                            <td>Cash/Cheque/UPI/Bank Name</td>
+                                            <td>Cheque ID/UPI ID/Bank no</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table id="credittableitemmodel" hidden>
+                                    <thead>
+                                        <tr>
+                                            <th>Credit Note</th>
+                                            <th>Product Name</th>
+                                            <th>Product HSN</th>
+                                            <th>Quantity</th>
+                                            <th>Discount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Corresponding Row no from Creditnotemodel </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>                        
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="modal" id="excelModal" tabindex="-1" role="dialog" aria-labelledby="excelModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="excelModalLabel">Upload File
+                    <label for="" style="color: red; font-size: x-small;" >* Refer Downloaded Sheet For Format </label><br></h5>
+                    <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="font-size: x-large;">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="excelForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="file" style="color: black;">Choose Excel File for Credit Note- </label> <br>
+                            <input type="file" class="form-control-file" id="billfile" name="billfile" accept=".xls, .xlsx"><br><br>
+                            
+
+                            <label for="file" style="color: black;">Choose Excel File for Credit Note Products- </label> <br>
+                            <input type="file" class="form-control-file" id="prdfile" name="prdfile" accept=".xls, .xlsx"><br>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="uploadFile()" data-dismiss="modal">Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('fromDate').addEventListener('change', updateMinDate);
+    function updateMinDate() {
+        var selectedDate = document.getElementById('fromDate').value;
+        document.getElementById('toDate').min = selectedDate;
+    }
+</script>
+
+{% comment %} <script>
+    function generatePDF() {
+        var elementToPrint = document.getElementById('tablediv');
+        if (elementToPrint.style.display === 'none') {
+            elementToPrint = document.getElementById('whatToPrint');
+        }
+
+        html2pdf(elementToPrint, {
+            margin: 10,
+            filename: 'document.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        });
+    }
+</script> {% endcomment %}
+
+{% comment %} <script>
+    var table = document.getElementById('credittable');
+    var rows = table.getElementsByTagName('tr');
+    for (var i = 1; i < rows.length; i++) {
+        var pid = rows[i].getElementsByTagName('td')[1].innerText;
+        findhistory(i,pid)            
+    }
+    function findhistory( rowid,pid){
+        $.ajax({
+            type : 'POST',
+            url: "{% url 'credithistory' p.id %}",
+            data: { 
+                id: pid ,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(data){
+                rows[rowid].getElementsByTagName('td')[4].innerText=data.action;
+                rows[rowid].getElementsByTagName('td')[5].innerText=data.name;
+                if(data.action== 'Created'){
+                    rows[rowid].getElementsByTagName('td')[4].style.color = 'Red'
+                }else{
+                    rows[rowid].getElementsByTagName('td')[4].style.color = '#154c79'
+                }
+            }
+        });
+    }
+</script> {% endcomment %}
+
+<script>
+    function uploadFile() {
+        const form = document.getElementById('excelForm');
+        const formData = new FormData(form);
+        fetch('import_purchase_bill', {
+            method: 'POST',
+            body: formData
+        })
+        .then(data => {
+            swal({
+                title: "Imported !",
+                text: "Credit Note Import Successfull!",
+                icon: "success",
+                buttons: false,
+            })
+        })
+        .then(response => {
+            setTimeout(function () {
+                location.reload();
+            }, 1250);
+        })
+        .catch(error => {
+            swal({
+                title: "Error !",
+                text: "Credit Note Import Unuccessfull!",
+                icon: "warning",
+                buttons: false,
+            })
+        });
+    }
+</script>
+
+<script>
+    function printfunction(){
+        print4 = document.getElementById('tablediv')
+        if (print4.style.display !== 'none'){
+            var printContents = document.getElementById("tablediv").innerHTML;
+        }else{
+            var printContents = document.getElementById("whatToPrint").innerHTML;
+        }
+        var $printerDiv = $('<div class="printContainer" id=printContainer></div>');
+        $printerDiv.html(printContents); 
+        $('body').append($printerDiv).addClass("printingContent"); 
+        var h1Element = document.createElement("h1");
+        h1Element.textContent = "Credit Notes";
+        var head = document.getElementById("printContainer");
+        head.insertBefore(h1Element, head.firstChild);
+        window.print();
+        $printerDiv.remove();
+        $('body').removeClass("printingContent");
+    }
+</script>
+
+<script>
+    calculatetotal()
+
+    function calculatetotal(){
+        var table = document.getElementById('credittable');
+        var rows = table.getElementsByTagName('tr');
+        tpaid = 0;
+        tunpaid = 0;
+        ttotal = 0; 
+        for (var i = 1; i < rows.length; i++) {
+            if(rows[i].style.display !='none'){
+                var pcells = rows[i].getElementsByTagName('td')[9];
+                var ptextValue = pcells.textContent || pcells.innerText;
+                tpaid += parseFloat(ptextValue)
+
+               
+
+                var tcells = rows[i].getElementsByTagName('td')[4];
+                var ttextValue = tcells.textContent || tcells.innerText;
+                ttotal += parseFloat(ttextValue)
+            }
+        }
+        document.getElementById('paidval').textContent = tpaid
+        document.getElementById('unpaidval').textContent = tunpaid
+        document.getElementById('totalval').textContent = ttotal
+    }
+</script>
+
+<script>
+    function cleardropdown(index){
+        if(index == 0){
+            document.getElementById('filterInput'+index).value = '';
+        }else{
+            document.getElementById('filterInput'+index).value = null;
+        }
+    }
+
+    function toggleDropdown(index) {
+        var dropdownContent = document.getElementById('dropdownContent' + index);
+        var isVisible = dropdownContent.style.display === 'block';
+        var allDropdowns = document.querySelectorAll('.dropdown-content');
+        allDropdowns.forEach(function (dropdown) {
+            dropdown.style.display = 'none';
+        });
+        dropdownContent.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function filterTable(index) {
+        var input;
+        document.getElementById('dropdownContent' + index).style.display = 'none';
+        if (index === 0) {
+            input = document.getElementById('filterInput' + index).value;
+        } else {
+            input = document.getElementById('filterInput' + index).value.toUpperCase();
+        }
+        var table = document.getElementById('credittable');
+        var rows = table.getElementsByTagName('tr');
+        var emptyMessage = document.getElementById('emptyMessage');
+        var isEmpty = true;
+        for (var i = 1; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var cell = cells[index];
+            if (cell) {
+                var textValue = cell.textContent || cell.innerText;
+                if (index === 0) {
+                    if (input==''){
+                        rows[i].style.display = 'table-row';
+                            isEmpty = false;
+                    }else{
+                        dateval  = textValue.replace(/(\d{2})-(\d{2})-(\d{2})/, "$2-$1-$3");
+                        inputval  = input.replace(/(\d{2})-(\d{2})-(\d{2})/, "$2-$1-$3");
+                        const formattedDate = formatDateString(input);
+                        if (dateval === formattedDate) {
+                            rows[i].style.display = 'table-row';
+                            isEmpty = false;
+                        } else {
+                            rows[i].style.display = 'none';
+                        }
+                    }
+                } else {
+                    if (textValue.toUpperCase().includes(input)) {
+                        rows[i].style.display = 'table-row';
+                        isEmpty = false;
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        }
+        emptyMessage.style.display = isEmpty ? 'block' : 'none';
+        calculatetotal()
+    }
+
+    function formatDateString(inputDate) {
+        const parsedDate = new Date(inputDate);
+        const day = parsedDate.getDate();
+        const month = parsedDate.getMonth() + 1;
+        const year = parsedDate.getFullYear();
+        const formattedDate = `${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}-${year}`;
+        return formattedDate;
+    }
+</script>
+
+<script>
+    function filterDates() {
+        var fromDate = document.getElementById("fromDate").value;
+        var selectedDate = new Date(fromDate);
+        selectedDate.setDate(selectedDate.getDate() - 1);
+        var toDate = document.getElementById("toDate").value;
+        var table = document.getElementById("credittable");
+        var rows = table.getElementsByTagName("tr");
+        var emptyMessage = document.getElementById('emptyMessage');
+        var isEmpty = true;
+        for (var i = 1; i < rows.length; i++) {
+            var currentDate = rows[i].getElementsByTagName("td")[0].innerText;
+            var date = new Date(currentDate.replace(/(\d{2})-(\d{2})-(\d{2})/, "$2/$1/$3"));
+            if ((fromDate && date >= selectedDate) || !fromDate) {
+                if ((toDate && date <= new Date(toDate)) || !toDate) {
+                    rows[i].style.display = "table-row";
+                    isEmpty = false;
+                } else {
+                    rows[i].style.display = "none";
+                }
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+        emptyMessage.style.display = isEmpty ? 'block' : 'none';
+        calculatetotal()
+    }
+</script>
+
+<script>
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+</script>
+
+<script>
+    function deletepbill(Id)
+    {
+        swal({
+            title: "Confirmation !",
+            text: "Do you want to Delete this Credit Note?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                swal({
+                    title: "Deleted !",
+                    text: "Credit Note Deleted Successfully!",
+                    icon: "success",
+                    buttons: false,
+                })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        window.location.href = "{% url 'delete_credit' 0 %}".replace('0', Id);
+                    } else {
+                        window.location.href = "{% url 'delete_credit' 0 %}".replace('0', Id);
+                    }
+                });
+            } else {
+                swal("Action Cancelled!");
+            }
+        });
+    }
+</script>
+
+<script>
+    document.getElementById("search_input").addEventListener("input", function() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search_input");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("credittable");
+        tr = table.getElementsByTagName("tr");
+        var emptyMessage = document.getElementById("emptyMessage");
+        var anyMatch = false;
+        for (i = 1; i < tr.length; i++) {
+            tr[i].style.display = "table-row";
+            var found = false;
+            for (td of tr[i].getElementsByTagName("td")) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().includes(filter)) {
+                    found = true;
+                    anyMatch = true;
+                    break;
+                }
+            }
+            if (!found) {
+                tr[i].style.display = "none";
+            }
+        }
+        emptyMessage.style.display = anyMatch ? "none" : "block";
+        calculatetotal()
+    });
+</script>
+
+<script>
+    function ExportToExcel(){
+        const table = document.querySelector('#excelcredittable');
+        const ws = XLSX.utils.table_to_sheet(table);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+        XLSX.writeFile(wb, 'PurchaseBill.xlsx');
+    }
+</script>
+
+<script>
+    function excelmodel(){
+        const table1 = document.querySelector('#credittablemodel');
+        const ws1 = XLSX.utils.table_to_sheet(table1);
+        const wb1 = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb1, ws1, 'Sheet1');
+        XLSX.writeFile(wb1, 'PurchaseBillModel.xlsx');
+
+        const table2 = document.querySelector('#credittableitemmodel');
+        const ws2 = XLSX.utils.table_to_sheet(table2);
+        const wb2 = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb2, ws2, 'Sheet1');
+        XLSX.writeFile(wb2, 'PurchaseBillItemModel.xlsx');
+    }
+</script>
+
+{% endblock  %}
+
+
+
+
+{% comment %} final edit {% endcomment %}
+
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/fbe819dd43.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-**********" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+     
+       
+    <style>
+        #input,select,textarea{
+            box-shadow: 2px 2px 2px gray;
+        }
+        #input:hover{
+            box-shadow: none;
+        }
+        #bno,#bdt,#ad,#ph,#ip,#dt{
+            box-shadow: 2px 2px 2px gray;
+        }
+        #bno:hover{
+            box-shadow: none;
+        }
+        #bdt:hover{
+            box-shadow: none;
+        }
+        #ad:hover{
+            box-shadow: none;
+        }
+        #ph:hover{
+            box-shadow: none;
+        }
+        #ip:hover{
+            box-shadow: none;
+        }
+        #dt:hover{
+            box-shadow: none;
+        }
+        #item_id:hover{
+            box-shadow: none;
+        }
+        
+        label{
+            color: black;
+        }
+        body{
+            background-color: rgb(130, 144, 199);
+            
+        }
+        .party {
+            margin: 20px; 
+          }
+      
+          .toggle-control {
+            display: inline-block;
+            position: relative;
+            width: 60px;
+            height: 34px;
+          }
+      
+          .abc {
+            opacity: 0;
+            width: 0;
+            height: 0;
+          }
+      
+          .control {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 17px; /* Half of the height for rounded appearance */
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+      
+          .control:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%; /* Rounded for the checkbox */
+            -webkit-transition: .4s;
+            transition: .4s;
+          }
+      
+          .abc:checked + .control {
+            background-color: #2196F3;
+          }
+      
+          .abc:focus + .control {
+            box-shadow: 0 0 1px #2196F3;
+          }
+      
+          .abc:checked + .control:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+          }
+          .search-box{
+            width:100px;
+            background:#fff;
+            margin:200px auto 0;
+            border-radius:5px;
+          }
+          th{
+            color:black;
+            font-weight:bold;
+          }
+    
+          small {
+            display: none; /* Ensures the text and input are on the same line */
+            margin-right: 5px; /* Adjust the margin as needed */
+        }
+    
+        #ab {
+            border: none; /* Removes the border */
+            outline: none; /* Removes the input focus border */
+            background: transparent; /* Makes the input background transparent */
+        }
+    
+        
+            
+          
+          
+    
+    </style>
+    <body>
+        
+    <div class="body-wrapper" style="margin-left:20%;">
+        <br><br><br><br><br>
+       
+        <div class="container" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
+                    <form action="{% url 'update_creditnote' crd.id %}" method="post" enctype="multipart/form-data" onsubmit="return validatecredit()" novalidate>
+                        {% csrf_token %}
+                        <div class="container col-md-12" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
+                            <h2>Edit Credit Note</h2><br>
+                            <div class="col-md-1">
+                                <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
+                            </div>
+                
+                            <div class='party'>
+                                <h3>Party</h3>
+                                <label class="toggle-control">
+                                    <input class='abc' type="checkbox" name="abc" id="partyCheckbox" checked>
+                                    <span class="control"></span>
+                                </label>
+                            </div>
+                            <div id="partyForm" class="form-group row">
+                                    <div class="col-md-4 custom-dropdown">
+                                        <label for=""> Party Name</label>
+                                        <div class="input-group">
+                                            <select name="partyname" id="employee" class="form-control border-secondary" style="color: black; background-color: white;">
+                                                <option value="{{ crd.party.id }}" selected hidden>{{crd.party.party_name}}</option>
+                                                {% for c in party %}
+                                                    {% if c.cid_id == cmp.cid %}
+                                                    <option value={{c.id}}> {{ c.party_name }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select> &nbsp;&nbsp;&nbsp;
+                                            {% comment %} <select name="partyname" id="employee" class="form-control border-secondary dropdown-list" style="color: black; background-color: white;">
+                                                <option value="{{ crd.party.id }}" selected hidden>{{crd.party.party_name}}</option>
+                                                {% for c in party %}
+                                                <option value="{{ c.id }}" data-party-name="{{ c.party_name }}"
+                                                        data-party-id="{{ c.id }}" data-phone="{{ c.phone_number }}" data-address="{{ c.billing_address }}" data-balance="{{ c.opening_balance }}">
+                                                        {{ c.party_name }}
+                                                </option>
+                                                {% endfor %}
+                                            </select> {% endcomment %}
+                                                {% comment %} <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();"> {% endcomment %}
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+    {% comment %} <ul id="employee" class="dropdown-list">
+    {% for p in party %}
+        <li class="dropdown-item"
+            data-value="{{ p.party_name }}"
+            data-party-id="{{ p.id }}" data-phone="{{ p.phone_number }}" data-address="{{ p.billing_address }}" data-balance="{{ p.opening_balance }}"
+            onclick="selectItem(this);"
+         >
+            {{ p.party_name }}
+        </li>
+    {% endfor %}
+    </ul> {% endcomment %}
+                                            {% comment %} <small id="availableBalanceSection" style='color:black'> 
+                                                
+                                                {% if party.to_pay == 1 %}
+                                                Available Balance:<input id="ab" style='color:red' value="{{crd.party.opening_balance}}" type="text" readonly>
+                                                {% else %}
+                                                Available Balance:<input id="ab" style='color:green' value="{{crd.party.opening_balance}}" type="text" readonly>
+                                                {% endif %}
+                                               
+                                            </small> {% endcomment %}
+                                    </div>
+                                    {% if crd.party.payment == 'To Pay' %}
+                                                <div class="mt-1 d-flex" >
+                                                    &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: red;">{{crd.party.opening_balance}}</span></span>
+                                                </div> 
+                                            {% else %}
+                                                <div class="mt-1 d-flex" >
+                                                    &nbsp;<span id="balancediv" style=" color: black;"> Available Balance : <span id="balval" style="color: green;">{{crd.party.opening_balance}}</span></span>
+                                                </div> 
+                                            {% endif %}
+                                    <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" placeholder="Bill Number" hidden></div>
+
+                                    <div class="col-md-4">
+                                        <div id="dbilldiv" style="display: none;">
+                                            <label class="col-form-label">Bill No.</label>
+                                            <input type="text" class="form-control" value="{{crd.invoice_no}}"  style="color: black;background-color: white;" readonly> <br>
+                                        </div>
+                                        <div id="daddressdiv" style="display: none;">
+                                            <label class="col-form-label">Billing Address</label>
+                                            <textarea class="form-control mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" readonly>{{crd.address}}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4" id="ddbilldiv" style="display: none;">
+                                        <label class="col-form-label">Bill No.</label>
+                                        <input type="text" class="form-control" value="{{crd.invoice_no}}"  style="color: black;background-color: white;" readonly> <br>
+                                    </div>
+                                    
+                                    <div class="col-md-3" id="phonediv"><label for=""> Phone Number</label><input id="ph" value="{{crd.contact}}" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
+                                    <div class="col-md-4" id="addressdiv"><label for="">Billing Address</label>
+                                        <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly>{{crd.address}}</textarea></div>
+                                
+                                    </div>
+                            
+                
+                            <div class="form-group row">
+                                <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{crd.returnno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
+                                <div class="col" id="dbilldiv"><label for=""> Bill No.</label><input id="bno" value="{{crd.invoice_no}}" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div>
+                                <div class="col" id=""><label for=""> Bill Date</label><input id="bdt" value="{{crd.idate|date:'Y-m-d'}}" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div>
+                                
+                            </div>
+                        
+                
+                            
+                
+                            <div class="row form-group">
+                                <div class="col"><label for="">Date</label>
+                                    <input id="bdt1" value="{{crd.date|date:'Y-m-d'}}" type="date" name="date1" class="form-control">
+        
+                                </div>
+                                <div class="col-md">
+                                    <label class="col-form-label ">Place of Supply</label>
+                                        <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">
+                                            <option value="{{crd.state_of_supply }}" selected hidden>{{crd.state_of_supply }}</option>
+                                                <option value="State">State</option>
+                                                <option value="Other State">Other State</option>
+                                        </select> 
+                                </div>
+                    
+                            </div>
+                        </div>
+                                    <br><br>
+                                   
+                                    <div class="container table-responsive col-md-12 mr-1">
+                                        <div class="col-md-12 table-responsive-md mt-3">
+                                            <table class="table table-bordered table-hover  mt-3" id="tab_logic" >
+                                                <thead style="background-color:rgb(61, 68, 101);">
+                                                    <tr style="color: white; ">
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">#</th>
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">PRODUCT</th>
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">HSN</th>
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">QTY</th>
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">PRICE</th>
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">TAX (%)</th>
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">DISCOUNT</th>
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">TOTAL</th>
+                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">FIELD</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="items-table-body">
+                                                    {% for j in crditem %}
+                                                        <tr id='addr0{{ forloop.counter }}'>
+                                                            <td style="text-align: center; width:2%" class="nnum">
+                                                                {{ forloop.counter }}<input type="text"  name='id[]' style="color:black;" value="{{ j.id }}" hidden>
+                                                            </td>
+     
+                                                            <td style="width:21%" >
+                                                                <div class="d-flex">
+                                                                    <select name='product[]' id="product{{ forloop.counter }}" class="form-control product border-secondary" onchange="changeprd(this.id,this.value)" style="color: black; background-color: white;">
+                                                                        <option value="{{ j.product.id }}" selected hidden>{{j.product}}</option>
+                                                                        {% for i in item %}
+                                                                            {% if i.cid_id == cmp.cid %}
+                                                                                <option value="{{ i.id }}" >{{ i.item_name  }} </option>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </select>&nbsp;&nbsp;&nbsp;
+                                                                    <button id="modal_closing" type="button" class="btn " style="background-color:rgb(61, 68, 101);" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
+                                                                        <span class="fa fa-plus"></span>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+    
+                                                            <td style="width:12%">
+                                                                <input type="text" name='hsn[]'  value="{{ j.hsn }}" id="hsn{{ forloop.counter }}" class="form-control border-secondary" style="color: black; background-color: white;"/>
+                                                            </td>
+    
+                                                            <td style="width: 13%;">
+                                                                <input type="number" name='qty[]' value="{{ j.qty }}"  placeholder='Enter Qty' id="qty{{ forloop.counter }}" value=0 class="form-control qty mb-1 border-secondary" step=0 min=0 style="color: black; background-color: white;" />
+                                                            </td>
+    
+                                                            <td style="width:12%">
+                                                                <input type="number" name='price[]' value="{{ j.price }}" id="unit{{ forloop.counter }}"class="form-control border-secondary price" step="0.00" min="0" style="color: black; background-color: white;" readonly />
+                                                            </td>
+    
+                                                            <td style="width: 15%;">
+                                                                <input type="text" id="intrataxval{{ forloop.counter }}" value="{{j.item.item_gst}}" hidden>
+                                                                <input type="text" id="intertaxval{{ forloop.counter }}" value="{{j.item.item_igst}}" hidden>
+                                                                {% if crd.state_of_supply  == 'State'  %}
+                                                                    <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.tax}}"   />
+                                                                {% else %}
+                                                                    <input type="text" name='tax[]' id="tax1" class="form-control border-secondary tax" style="color: black; background-color: white;" value="{{j.tax}}"   />
+                                                                {% endif %}
+                                                            </td>
+    
+                                                            <td style="width:10%">
+                                                                <input type="number" name='discount[]' placeholder='Enter Discount' id="disc{{forloop.counter}}" value="{{j.discount|default:0}}" class="form-control disc border-secondary" step=0 min=0 style="color: black; background-color: white;">
+                                                            </td>
+    
+                                                            <td style="width:13%">
+                                                                <input type="number" name='total[]' value="{{ j.total }}" id="total{{ forloop.counter }}" placeholder=0 class="form-control total border-secondary" value=0 step="any" readonly style="color: black; background-color: white;" />
+                                                            </td>
+    
+                                                            <td style="display: none;">
+                                                                <input type="number" step="any" name='taxamount1' id="taxamount{{ forloop.counter }}" class="form-control taxamount" />
+                                                            </td>
+    
+                                                            <td style="width:5%">
+                                                                <button type="button" id="{{forloop.counter}}" style="background-color:rgb(61, 68, 101);" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button><br>
+                                                                <button type="button" id="{{forloop.counter}}" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row"> </button>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                <tr >
+                                                    <td style="border: none;background-color:rgb(61, 68, 101); width=:2px;"><a class="btn-sm" role="button" id="add" ><span class="fa fa-plus"></span></a></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <br><br><br>
+                                    
+                                    <div class="container col-md-12 mr-5" style="margin-top:10px">
+                                        <div class="row" style="margin-left: 2vh;" >
+                                            <div class="col-md-6" id="tab_logic_total" style=" color: black; border: 1px solid rgba(128, 128, 128, 0.6); margin-left: 2vh; background-color: rgba(61, 68, 101); width:30px;">
+                                                <div class="p-2">
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label class="text-center">Sub Total</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                            <input type="number" step="any" name='subtotal' value="{{crd.subtotal}}" readonly style="color: black; background-color: white;" class="form-control border-secondary" id="sub_total">
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                    
+                                                    {% if crd.state_of_supply  == 'State' %}
+                                                        <div class="row container-fluid p-2 m-0" id="cgstdiv">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">CGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='cgst' step="any" id="cgst"  value="{{crd.cgst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                        <div class="row container-fluid p-2 m-0"  id="sgstdiv">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">SGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='sgst' step="any" id="sgst" value="{{crd.sgst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                        <div class="row container-fluid p-2 m-0" style="display: none;" id="igstdiv">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">IGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='igst' step="any" id="igst" value="{{crd.igst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="row container-fluid p-2 m-0" style="display: none;" id="cgst1">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">CGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='cgst' step="any" id="cgst"  value="{{crd.cgst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                        <div class="row container-fluid p-2 m-0" style="display: none;" id="sgst1">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">SGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='sgst' step="any" id="sgst" value="{{crd.sgst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                        <div class="row container-fluid p-2 m-0" id="igst1">
+                                                            <div class="col-sm-4 mt-2"><label for="a" class="text-center">IGST</label></div>
+                                                            <div class="col-sm-1 mt-2">:</div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" name='igst' step="any" id="igst" value="{{crd.igst}}"style="color: black; background-color: white;" readonly class="form-control"/>
+                                                            </div>
+                                                            <div class="col-sm-4 m-0 p-0"></div>
+                                                        </div>
+                                                    {% endif %}
+                                    
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Tax Amount</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                        <input type="number" step="any" name='taxamount' id="tax_amount" value="{{crd.taxamount}}" readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                    
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Round Off</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                        <input type="number" step="any" name='adj' id="adj" value="{{crd.roundoff}}" class="form-control border-secondary" style="color: black; background-color: white;"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                   
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Grand Total</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                        <input type="number" name='grandtotal' id="grandtotal" value="{{crd.grandtotal}}" readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                    
+                                                    <div class="row container-fluid p-2 m-0">
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Description</label></div>
+                                                        <div class="col-sm-1 mt-2">:</div>
+                                                        <div class="col-sm-7">
+                                                        <input type="text" name='des' id="des" value="{{crd.description}}" style="color: black; background-color: white;" class="form-control border-secondary"/>
+                                                        </div>
+                                                        <div class="col-sm-4 m-0 p-0"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                        
+                                    </div> 
+                               
+                                        <div class="row">
+                                            <div class="col-md-1 mt-4"></div>
+                                            <div class="col-md-5 mt-3 d-flex" style="margin-left:5vh">
+                                                <input type="submit" style="background-color:rgb(61, 68, 101); font-weight:bold;color:white;" class="btn  me-3" name="Next" value="SAVE"></input>
+                                                <input type="submit" style="background-color:rgb(61, 68, 101);font-weight:bold; color:white; margin-left:8px;" class="btn " name="Save" value="SAVE & NEW"></input>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+   
+            <!-- New Item Modal -->
+<div class="modal fade" id="newitem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add New Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Your form for adding new items goes here -->
+                <!-- Example form: -->
+                <form id="newItemForm" action="{% url "save_item" %}" method='post' id="modalItem">
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <div class="col">
+                            <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name" name="item_name" required>
+                        </div>
+                        <div class="col">
+                            <input style="color: black;" class="form-control border-dark fw-bolder" type="number" placeholder="ITEM HSN" id="hsn" name="hsn" onchange="checkhsn(this)" required>
+                            <div class="text-danger m-2" id="warnhsn"></div>
+                        </div>
+                        <div class="col">
+                            <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="QTY" autocomplete="off" id="qty" name="qty" required>
+                        </div>
+                    </div>
+                    <div id="pricing_template" style="background-color: rgba(144, 211, 117, 0.098);">
+                        <div class="row">
+                            <div class="col-sm-12  col-md-1"></div>
+                            <div class="col-sm-12 col-md-10 pb-4">
+                                <div class="text- pt-5">
+                                    <label class="fs-4 tb" for="item_tax_1" style=" user-select: none; color: black;">Taxable</label>
+                                    <input class="me-3" name="taxref" type="radio" id="inclusive" value="Taxable" required onclick="showTaxDropdowns()">
+                                    <label class="fs-4 tb" for="item_tax_2" style=" user-select: none; color: black;">Non Taxable</label>
+                                    <input name="taxref" type="radio" value="Non Taxable" id="check" required onclick="hideTaxDropdowns()">
+                                </div>
+                                
+                                <br>
+                                
+                                <div id="taxdiv" style="display: none;">
+                                    <div class="d-flex">
+                                        <div class="w-50 me-3">
+                                            <label class="fw-bold tb fs-3" for="" style="color: black;">GST</label><br>
+                                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary fs-3" id="intra_st" name="intra_st">
+                                                <option value="GST0[0%]" selected>GST0[0%]</option>
+                                                <option value="GST3[3%]">GST3[3%]</option>
+                                                <option value="GST5[5%]">GST5[5%]</option>
+                                                <option value="GST12[12%]">GST12[12%]</option>
+                                                <option value="GST18[18%]">GST18[18%]</option>
+                                                <option value="GST28[28%]">GST28[28%]</option>
+                                            </select>
+                                        </div>
+                                        <div class="w-50">
+                                            <label class="fw-bold tb fs-3" for="" style="color: black;">IGST</label><br>
+                                            <select style="color: black;background-color: white;" class="form-control fw- border-secondary tb fs-3" id="inter_st" name="inter_st">
+                                                <option value="IGST0[0%]" selected>IGST0[0%]</option>
+                                                <option value="IGST3[3%]">IGST3[3%]</option>
+                                                <option value="IGST5[5%]">IGST5[5%]</option>
+                                                <option value="IGST12[12%]">IGST12[12%]</option>
+                                                <option value="IGST18[18%]">IGST18[18%]</option>
+                                                <option value="IGST28[28%]">IGST28[28%]</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <br>
+                                </div>
+                                
+                                <div class="d-flex">
+                                    <div class="w-50 me-3">
+                                        <label class="tb fw-bold" for="" style="color: black;">SALES PRICE</label><br>
+                                        <input style="color: black;background-color: white;" id="saleprice" class="form-control fw-normal border-secondary  fs-3" type="number" name="saleprice" value="0">
+                                    </div>
+                                    <div class="w-50">
+                                        <label class="tb fw-bold" for="" style="color: black;">PURCHASE PRICE</label><br>
+                                        <input style="color: black;background-color: white;" id="purprice" class="form-control fw-normal border-secondary  fs-3" type="number" name="purprice" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><br><br>
+                    <!-- Add more fields as needed -->
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#employee').on('change', function() {
+            $.ajax({
+                type : 'POST',
+                url: "{% url 'get_party_details' %}",
+                data: {
+                    id: $('#employee').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function(data){
+                    if (data.phno == ''){
+                        if(data.address == ''){
+                            document.getElementById('daddressdiv').style.display = 'none';
+                            document.getElementById('addressdiv').style.display = 'none';
+                            document.getElementById('phonediv').style.display = 'none';
+                            document.getElementById('dbilldiv').style.display = 'block';
+                            document.getElementById('billdiv').style.display = 'none';
+                            document.getElementById('ddbilldiv').style.display = 'none';
+                        }else{
+                            document.getElementById('daddressdiv').style.display = 'block';
+                            document.getElementById('addressdiv').style.display = 'none';
+                            document.getElementById('phonediv').style.display = 'none';
+                            document.getElementById('billdiv').style.display = 'block';
+                            document.getElementById('dbilldiv').style.display = 'none';
+                            document.getElementById('ddbilldiv').style.display = 'none';
+                            document.getElementById('dbname').value = data.address;
+                        }
+                    }else{
+                        if(data.address == ''){
+                            document.getElementById('daddressdiv').style.display = 'none';
+                            document.getElementById('addressdiv').style.display = 'none';
+                            document.getElementById('phonediv').style.display = 'block';
+                            document.getElementById('ph').value = data.phno;
+                            document.getElementById('ddbilldiv').style.display = 'block';
+                            document.getElementById('dbilldiv').style.display = 'none';
+                            document.getElementById('billdiv').style.display = 'none';
+                        }else{
+                            document.getElementById('daddressdiv').style.display = 'none';
+                            document.getElementById('addressdiv').style.display = 'block';
+                            document.getElementById('phonediv').style.display = 'block';
+                            document.getElementById('bname').value = data.address;
+                            document.getElementById('ph').value = data.phno;
+                            document.getElementById('ddbilldiv').style.display = 'none';
+                            document.getElementById('dbilldiv').style.display = 'none';
+                            document.getElementById('billdiv').style.display = 'block';
+                        }
+                    }
+    
+                    if(data.pay == 'To Pay'){
+                        document.getElementById('balancediv').style.display = 'block';
+                        document.getElementById('balval').innerText = data.bal;
+                        document.getElementById('balval').style.color = 'red';
+                    }else{
+                        document.getElementById('balancediv').style.display = 'block';
+                        document.getElementById('balval').innerText = data.bal;
+                        document.getElementById('balval').style.color = 'green';
+                    }
+                }
+            });
+        });
+    });
+    
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var addressTextarea = document.getElementById("bname");
+            var addressDiv = document.getElementById("addressdiv");
+    
+            // Check if textarea value is empty
+            if (addressTextarea.value.trim() === "") {
+                addressDiv.style.display = "none"; // Hide the div
+            }
+        });
+    </script>
+
+<script>
+    function showTaxDropdowns() {
+        document.getElementById('taxdiv').style.display = 'block';
+    }
+
+    function hideTaxDropdowns() {
+        document.getElementById('taxdiv').style.display = 'none';
+    }
+</script>
+                     
+            {% comment %} -----party modal----- {% endcomment %}
+<div class="modal fade" id="partyModal" tabindex="-1" role="dialog" aria-labelledby="partyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="partyModalLabel">Add New Party</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Your form goes here -->
+                    <form id="form_action" action="{% url 'party_save' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                
+                        <div class="form-group row">
+                            <div class="col"><label id="partyname"> Party Name:</label><input id="input" type="text" name="partyname" class="form-control" placeholder="Party Name" required></div>
+                            <div class="col"><label id="mobilenumber"> Phone Number:</label><input id="input" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" required></div>
+                            <div class="col"><label for=""> GSTIN:</label><input id="input" type="text" name="gstin" class="form-control" placeholder="GSTIN" id="gstinInput" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}"> <small>#27ABCDE1234F1Z5</small></div>
+                            
+                        </div>
+                
+                        
+                
+                        <div class="row form-group">
+                
+                            <div class="col-md">
+                                <label for="">GST Type:</label>
+                                    <select name="gstintype" class="form-control">
+                                        <option value="">--Select GST type--</option>
+                                        <option value="Unregistered/Consumers">Unregistered/Consumers</option>
+                                        <option value="Registered Buisness - Regular">Registered Buisness - Regular</option>
+                                        <option value="Registered Buisness - Composition">Registered Buisness - Composition</option>
+                                    </select>
+                            </div>
+                            <div class="col-md">
+                                <label for="">State</label>
+                                    <select name="state" class="form-control">
+                                        <option value="">--Select State--</option>
+                                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                        <option value="Assam">Assam</option>
+                                        <option value="Bihar">Bihar</option>
+                                        <option value="Chhattisgarh">Chhattisgarh</option>
+                                        <option value="Goa">Goa</option>
+                                        <option value="Gujarat">Gujarat</option>
+                                        <option value="Haryana">Haryana</option>
+                                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                        <option value="Jharkhand">Jharkhand</option>
+                                        <option value="Karnataka">Karnataka</option>
+                                        <option value="Kerala">Kerala</option>
+                                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                        <option value="Maharashtra">Maharashtra</option>
+                                        <option value="Manipur">Manipur</option>
+                                        <option value="Meghalaya">Meghalaya</option>
+                                        <option value="Mizoram">`Mizoram</option>
+                                        <option value="Nagaland">Nagaland</option>
+                                        <option value="Odisha">Odisha</option>
+                                        <option value="Punjab">Punjab</option>
+                                        <option value="Rajasthan">Rajasthan</option>
+                                        <option value="Sikkim">Sikkim</option>
+                                        <option value="Tamil Nadu">Tamil Nadu</option>
+                                        <option value="Telangana">Telangana</option>
+                                        <option value="Tripura">Tripura</option>
+                                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                        <option value="Uttarakhand">Uttarakhand</option>
+                                        <option value="West Bengal">West Bengal</option>
+                                        
+                                    </select>
+                            </div>
+                
+                            <div class="col-md"><label for="">Email:</label><input id="input" type="email" name="email" class="form-control" placeholder="Email" ></div>
+                            <div class="col-md"><label for="">Date</label><input id="input" type="date" name="date" class="form-control" value="{{todaydate}}"  ></div>
+                 
+                        </div><br>
+                
+                        <div class="row form-group">
+                            <div class="col-md-6">
+                                <label for="">Billing Address</label>
+                                <textarea name="address" id="" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row form-group">
+                            <div class="col-md-4">
+                                <label for="">Balance</label>
+                                <input id="input" type="number" name="balance" class="form-control" placeholder="Balance" min="0">
+                            </div>
+                        </div>
+                        <div class="row form-group radio-buttons ml-1" style="display: none;">
+                            
+                            <input type="radio" name="pay_recieve" class="col-1" value="pay"><label style="color: black;">To Pay</label>
+                            <input type="radio" name="pay_recieve" class="col-1" value="receive"><label style="color: black;">To Receive</label>
+                            
+                        </div><br>
+                
+                        
+                            <center>
+                                {% comment %} <button id="checkk" style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="new" name="buttonn">Save & New</button>  {% endcomment %}
+                                <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="old" name="buttonn">Save </button> 
+                            </center>
+                
+                </form>
+                </div>
+            </div>
+        </div>
+</div>
+   
+        </div> 
+    </div>
+
+    <script>
+        function selectItem(element) {
+            var partyId = element.getAttribute('data-party-id');
+            var partyName = element.getAttribute('data-party-name');
+            var phone = element.getAttribute('data-phone');
+            var address = element.getAttribute('data-address');
+            var balance = element.getAttribute('data-balance');
+
+            // Update additional fields with party details
+            document.getElementById('ph').textContent = phone;
+            document.getElementById('ad').textContent = address;
+            document.getElementById('ab').textContent = balance;
+
+            // Now you have all the details of the selected party, you can use them as needed
+            console.log("Selected Party ID:", partyId);
+            console.log("Selected Party Name:", partyName);
+            console.log("Selected Party Phone:", ph);
+            console.log("Selected Party Address:", ad);
+            console.log("Selected Party Balance:", ab);
+        }
+        
+        document.getElementById('employee').addEventListener('change', function() {
+            var selectedOption = this.options[this.selectedIndex];
+            selectItem(selectedOption);
+        });
+    </script>
+
+
+   
+   
+   
+    <script>
+        document.getElementById('partyCheckbox').addEventListener('change', function() {
+            var partyForm = document.getElementById('partyForm');
+            partyForm.style.display = this.checked ? 'flex' : 'none';
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            var dateInput = document.getElementsByName('date')[0];
+            dateInput.value = ''; // Set the default value to an empty string
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var input = document.querySelector('.dropdown-input');
+            var dropdownList = document.querySelector('#employee');
+    
+            input.addEventListener('focus', function () {
+                dropdownList.style.display = 'block';
+            });
+    
+            document.addEventListener('mousedown', function (event) {
+                if (!event.target.closest('.custom-dropdown')) {
+                    dropdownList.style.display = 'none';
+                }
+            });
+    
+            dropdownList.addEventListener('click', function (event) {
+                if (event.target.classList.contains('dropdown-item')) {
+                    input.value = event.target.textContent;
+                    dropdownList.style.display = 'none';
+                    fillEmployeeDetails();
+                    clearErrorMessage();
+                }
+            });
+    
+            input.addEventListener('input', function () {
+                var filterValue = input.value.toLowerCase();
+                var items = dropdownList.querySelectorAll('.dropdown-item');
+    
+                items.forEach(function (item) {
+                    var itemText = item.textContent.toLowerCase();
+                    if (itemText.includes(filterValue)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+    // Function to fetch phone number and address based on selected party name
+
+
+
+    {% comment %} function getEmail() {
+        var selectedElement = document.querySelector(".dropdown-item.selected");
+        
+        if (selectedElement) {
+            var phone_number = selectedElement.getAttribute("data-phone");
+            var billing_address = selectedElement.getAttribute("data-address");
+            var opening_balance = selectedElement.getAttribute("data-balance");
+            var party_id = selectedElement.getAttribute("data-party-id");
+    
+            // Assuming you have input fields with IDs "ph" and "ad" in your HTML
+            document.getElementById("ph").value = phone_number;
+            document.getElementById("ad").value = billing_address;
+            document.getElementById("ab").value = opening_balance;
+            document.getElementById("pid").value = party_id
+            
+
+            // Show the Available Balance section
+            document.getElementById("availableBalanceSection").style.display = "inline-block";
+
+        }
+    } {% endcomment %}
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        var dropdownItems = document.querySelectorAll(".dropdown-item");
+    
+        dropdownItems.forEach(function(item) {
+            item.addEventListener("click", function() {
+                // Remove the "selected" class from all items
+                dropdownItems.forEach(function(dropdownItem) {
+                    dropdownItem.classList.remove("selected");
+                });
+    
+                // Add the "selected" class to the clicked item
+                item.classList.add("selected");
+    
+                // Trigger the getEmail function
+                getEmail();
+            });
+        });
+    });
+
+
+    function selectItem(item) {
+        var partyId = item.getAttribute("data-party-id");
+
+        var url = "/get_sales_invoice_details/" + partyId;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Update the "Bill No." and "Bill Date" fields with fetched data
+                document.getElementById("bno").value = data.billNo;
+                document.getElementById("bdt").value = data.billDate;
+            })
+            .catch(error => console.error("Error fetching sales invoice details:", error));
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        (function() {
+          // Get the current date in the format YYYY-MM-DD
+          const todayDate = new Date().toISOString().split('T')[0];
+          
+          // Set the value attribute of the input element with the ID "input"
+          document.getElementById('dt').value = todayDate;
+        })();
+      });
+        
+</script>
+
+
+{% comment %} script for modal {% endcomment %}
+<script>
+// --------------------------------------------------------------------------------------------------
+// Function to show/hide radio buttons based on the balance value
+function toggleRadioButtons() {
+    var balanceInput = document.querySelector('[name="balance"]');
+    var radioButtonsContainer = document.querySelector('.radio-buttons');
+
+    if (parseFloat(balanceInput.value) > 0) {
+        radioButtonsContainer.style.display = 'block';
+    } else {
+        radioButtonsContainer.style.display = 'none';
+    }
+}
+
+// Initial state on page load
+toggleRadioButtons();
+
+// Bind the function to the input's input event
+document.querySelector('[name="balance"]').addEventListener('input', toggleRadioButtons);
+
+
+// ------------------------------------------------------------------------------------------------------------
+
+
+    function validateGSTIN() {
+        // Get the input value
+        var gstinInput = document.getElementById('gstinInput').value.trim();
+
+        // Define the GSTIN pattern
+        var gstinPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}$/;
+
+        // Check if the input matches the pattern
+        if (!gstinPattern.test(gstinInput)) {
+            // Set a custom validation message
+            document.getElementById('gstinInput').setCustomValidity('Please enter a valid GSTIN number.');
+        } else {
+            // Clear the custom validation message
+            document.getElementById('gstinInput').setCustomValidity('');
+        }
+    }
+
+// ------------------------------------------------------------------------------------------------------------
+</script>
+<script>
+    $(document).ready(function(){
+        $('#gsthead').css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
+        $('#gsthead a').addClass('text-dark')
+        $('#gsttemp').attr('hidden',false)
+        $('#credithead').css({'border-bottom': 'none'})
+        $('#credithead a').removeClass('text-dark')
+        $('#fieldhead').css({'border-bottom': 'none'})
+        $('#fieldhead a').removeClass('text-dark')
+
+        $('#gsthead').on('click',function(){
+            $(this).css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
+            $('#gsthead a').addClass('text-dark')
+            $('#gsttemp').attr('hidden',false)
+            $('#credithead').css({'border-bottom': 'none'})
+            $('#credithead a').removeClass('text-dark')
+            $('#credittemp').attr('hidden',true)
+            $('#fieldhead').css({'border-bottom': 'none'})
+            $('#fieldtemp a').removeClass('text-dark')
+            $('#fieldtemp').attr('hidden',true)
+        })
+
+        $('#credithead').on('click',function(){
+            $('#credithead').css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
+            $('#credithead a').addClass('text-dark')
+            $('#credittemp').attr('hidden',false)
+            $('#gsthead').css({'border-bottom': 'none'})
+            $('#gsthead a').removeClass('text-dark')
+            $('#gsttemp').attr('hidden',true)
+            $('#fieldhead').css({'border-bottom': 'none'})
+            $('#fieldhead a').removeClass('text-dark')
+            $('#fieldtemp').attr('hidden',true)
+        })
+
+        $('#fieldhead').on('click',function(){
+            $('#fieldhead').css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
+            $('#fieldhead a').addClass('text-dark')
+            $('#fieldtemp').attr('hidden',false)
+            $('#gsthead').css({'border-bottom': 'none'})
+            $('#gsthead a').removeClass('text-dark')
+            $('#gsttemp').attr('hidden',true)
+            $('#credithead').css({'border-bottom': 'none'})
+            $('#credithead a').removeClass('text-dark')
+            $('#credittemp').attr('hidden',true)
+        })
+    })
+
+    $(document).ready(function(){
+        $('#gstnxt').on('click',function(){
+            $('#credithead').click()
+        })
+
+        $('#creditnxt').on('click',function(){
+            $('#fieldhead').click()
+        })
+    })
+
+    $(document).ready(function(){
+        $('#fieldprev').on('click',function(){
+            $('#credithead').click()
+        })
+        $('#creditprev').on('click',function(){
+            $('#gsthead').click()
+        })
+    })
+</script>
+
+<script>
+    $(document).ready(function(){
+        $('#prc_').css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
+        $('#stk_ a').removeClass('text-dark')
+        $('#prc_ a').addClass('text-dark')
+        $('#stk_').css({'border-bottom': 'none'})
+        $('#pricing_template').attr('hidden',false)
+
+        $('#prc_').on('click',function(){
+            $(this).css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
+            $('#stk_ a').removeClass('text-dark')
+            $('#prc_ a').addClass('text-dark')
+            $('#stk_').css({'border-bottom': 'none'})
+            $('#pricing_template').attr('hidden',false)
+            $('#stock_template').attr('hidden',true)
+        })
+    })
+
+    $(document).ready(function(){
+        $('#stk_').on('click',function(){
+            $('#stk_').css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
+            $('#prc_ a').removeClass('text-dark')
+            $('#stk_ a').addClass('text-dark')
+            $('#prc_').css({'border-bottom': 'none'})
+            $('#pricing_template').attr('hidden',true)
+            $('#stock_template').attr('hidden',false)
+        })
+    })
+
+    $(document).ready(function(){
+        $('#next_btn').on('click',function(){
+            $('#stk_').click()
+        })
+    })
+
+    $(document).ready(function(){
+        $('#prev_btn').on('click',function(){
+            $('#prc_').click()
+        })
+    })
+</script>
+
+<script>
+    function validatepurchasebill() {
+        var customer = document.getElementById('customer').value;
+        var plosu = document.getElementById('plosu').value;
+        var pay_method = document.getElementById('pay_method').value;
+        var cheque_id = document.getElementById('cheque_id').value;
+        var upi_id = document.getElementById('upi_id').value;
+
+        if (customer === '') {
+            alert('Please select a customer');
+            return false;
+        } else if(plosu === ''){
+            alert('Please select place of supply');
+            return false;
+        }
+        if (pay_method === ''){
+            alert('Please select a Payment Method');
+            return false;
+        }else if(pay_method === 'Cheque'){
+            if (cheque_id === ''){
+                alert('Add a cheque number');
+                return false;
+            }
+        }else if(pay_method === 'UPI'){
+            if (upi_id === ''){
+                alert('Add a UPI number');
+                return false;
+            }
+        }
+        var table = document.getElementById('tab_logic');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 1; i <= rows.length; i++) {
+            var product = document.getElementById('product'+i).value;
+            var qty = document.getElementById('qty'+i).value;
+            if(product === ''){
+                alert('Select a product on row '+ i);
+                return false;
+            }
+            if(qty === '' || qty =='0'){
+                alert('Add quantity in row '+ i);
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#employee').selectize({
+            sortField: 'value',
+            items: [''],
+            render: {
+                item: function (item, escape) {
+                    if (item.value === '') {
+                        return '';
+                    }
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $('.product').selectize({
+            sortField: 'value',
+            items: [''],
+            render: {
+                item: function (item, escape) {
+                    if (item.value === '') {
+                        return '';
+                    }
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+        });
+    });
+
+    function productsearch(roinc){
+        $(`#product${roinc}`).selectize({
+            sortField: 'value',
+            render: {
+                item: function (item, escape) {
+                    if (item.value === '') {
+                        return '';
+                    }
+                    return '<div>' + escape(item.text) + '</div>';
+                }
+            }
+        });
+    }
+</script>
+
+
+
+<script>
+    function changeprd(id,value){
+        var n = id.slice(7);
+        $.ajax({
+            url: "{% url 'itemdetails' %}",
+            type : 'GET',
+            data:{
+                id : value,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+           
+            success: function(response) {
+                data = response.hsn
+                data2 = response.qty
+                data3 = response.price
+                data4 = response.gst
+                data5 = response.igst
+                var bc = document.getElementById("psu").value;
+                if (bc == 'State') {
+                    document.getElementById('intrataxval'+n).value = data4;
+                    document.getElementById('intertaxval'+n).value = data5;
+                    document.getElementById('hsn'+n).value = data;
+                    document.getElementById('unit'+n).value = data3;
+                    document.getElementById('tax'+n).value = data4;
+                    calc()
+                } else if (bc == 'Other State') {
+                    document.getElementById('intrataxval'+n).value = data4;
+                    document.getElementById('intertaxval'+n).value = data5;
+                    document.getElementById('hsn'+n).value = data;
+                    document.getElementById('unit'+n).value = data3;
+                    document.getElementById('tax'+n).value = data5;
+                    calc()
+                }else{
+                    alert('Please Select Place of Supply')
+                    var $select = $(document.getElementById('product'+n));
+                    var selectize = $select[0].selectize;
+                    selectize.setValue("");
+                }
+            },
+        });
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+        $("#advance").change(function() {
+            tot_val = parseFloat($('#grandtotal').val())
+            adv_val = parseFloat($('#advance').val())
+            if (tot_val<adv_val){
+                $('#advance').val(0)
+                $('#balance').val(tot_val.toFixed(2));
+                alert("Advance Greater than Total Amount")
+            }else{
+                tot_val = tot_val - adv_val
+                $('#balance').val(tot_val.toFixed(2));
+            }
+        })
+    })
+</script>
+
+<script>
+    $(document).on("change", "#psu", function(){
+        var table = document.getElementById("items-table-body");
+        var numberOfRows = table.rows.length;
+        var bc = document.getElementById("psu").value;
+        if (bc == 'State' ) {
+            document.getElementById('cgstdiv').style.display = 'flex';
+            document.getElementById('sgstdiv').style.display = 'flex';
+            document.getElementById('igstdiv').style.display = 'none';
+            for (var l = 1; l <= numberOfRows; l++){
+                val = document.getElementById('intrataxval'+l).value;
+                document.getElementById('tax'+l).value = val
+            }
+        } else {
+            document.getElementById('cgstdiv').style.display = 'none';
+            document.getElementById('sgstdiv').style.display = 'none';
+            document.getElementById('igstdiv').style.display = 'flex';
+            for (var l = 1; l <= numberOfRows; l++){
+                val = document.getElementById('intertaxval'+l).value;
+                document.getElementById('tax'+l).value = val
+            }
+        }
+        calc()
+    });
+
+   
+    $(document).on("click","#itemsave",function(){
+        var item_name = document.getElementById('item_name').value;
+
+        if ($('#inclusive').prop('checked')) {
+            tax= $('#inclusive').val();
+        }
+        else{
+            tax = $('#check').val();
+        }
+
+        if (item_name === ''){
+            alert('Please provide an Item Name');
+        }else{
+            $.ajax({
+                type : 'POST',
+                url:"{% url 'saveitem' %}",
+                data:{
+                    name : $("#item_name").val(),
+                    unit : $("#unit").val(),
+                    hsn : $("#hsn").val(),
+                    taxref : tax,
+                    sell_price : $("#saleprice").val(),
+                    cost_price : $("#purprice").val(),
+                    intra_st : $("#intra_st").val(),
+                    inter_st : $("#inter_st").val(),
+                    itmdate : $("#itmdate").val(),
+                    stock : $("#stock").val(),
+                    itmprice : $("#itmprice").val(),
+                    minstock : $("#minstock").val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+           
+                success: function(response) {
+                    document.getElementById("modalItem").reset();
+                    $('#newitem').modal('hide');
+                    reloadItem();
+                },
+            });  
+        }      
+    });
+
+    function reloadItem() {
+        $.ajax({
+            url: "{% url 'item_dropdown' %}",
+            type: "GET",
+            dataType: "json",
+            data: $(this).serialize(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+
+            success: function(data) {
+                id_list = data.id_list
+                product_list = data.product_list
+                var table = document.getElementById('tab_logic');
+                var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 1; i <= rows.length; i++) {
+                    var $select = $(document.getElementById('product'+i));
+                    var selectize = $select[0].selectize;
+                    for(let i=0; i<id_list.length;i++){
+                        selectize.addOption({value:id_list[i],text:product_list[i]});
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        $('#add').click(function(){
+            var roinc = $("#items-table-body tr").length;
+            roinc++
+            $('#items-table-body').append(
+                `<tr id='addr0${roinc}'>
+                    <td class = 'nnum' style="text-align: center; width:2%"">${roinc}</td>
+
+                    <td style="width:21%">
+                        <div class="d-flex">
+                            <select name='product[]' id="product${roinc}" class="form-control border-secondary product"  onchange="changeprd(this.id,this.value)" style="color: black; background-color: white;">
+                                <option value="" selected hidden>Select Product</option>
+                                {% for i in item %}
+                                    {% if i.cid_id == cmp.cid %}
+                                        <option  value="{{ i.id  }}">{{ i.item_name  }} </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>&nbsp;&nbsp;&nbsp;
+
+                            <button type="button" class="btn btn-outline-success" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#newitem" class="text-capitalize">
+                                <span class="fa fa-plus"></span>
+                            </button>
+                        </div>
+                    </td>
+
+                    <td tyle="width:12%">
+                        <input type="text" name='hsn[]' id="hsn${roinc}" class="form-control border-secondary" style="color: black; background-color: white;" readonly />
+                    </td>
+
+                    <td style="width:13%">
+                        <input type="number" name='qty[]' value=0 id="qty${roinc}" class="form-control border-secondary qty mb-1" step=0 min=0 style="color: black; background-color: white;" />
+                    </td>
+
+                    <td tyle="width:12%">
+                        <input type="number" name='price[]' id="unit${roinc}" value=0 class="form-control border-secondary price" step="0.00" min="0" style="color: black; background-color: white;" readonly/>
+                    </td>
+
+                    <td style='width:15%;'>
+                        <input type="text" id="intrataxval${roinc}" hidden>
+                        <input type="text" id="intertaxval${roinc}" hidden>
+                        <input type="text" name='tax[]' id="tax${roinc}"  class="form-control border-secondary tax" style="color: black; background-color: white;" placeholder="GST" readonly/>
+                    </td>  
+
+                    <td tyle="width:10%">
+                        <input type="number" name='discount[]' placeholder='Enter Discount' value=0 id="disc${roinc}" class="form-control border-secondary disc" step=0 min=0 style="color: black; background-color: white;">
+                    </td>
+
+                    <td style="width:13%">
+                        <input type="number" name='total[]' id="total${roinc}" placeholder=0 class="form-control border-secondary total" value=0 step="any" style="color: black; background-color: white;" readonly />
+                    </td>
+
+                    <td hidden><input type="number" step="any" name='taxamount1' id="taxamount${roinc}" class="form-control border-secondary taxamount" /></td>
+                   
+                    <td style="width:13%">
+                        <button type="button" id="${roinc}" style="background-color:rgb(61, 68, 101);" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button>
+                        <br>
+                        <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row"><i class="fa-solid fa-xmark"></i></button>
+                    </td>
+                </tr>`
+            );
+            productsearch(roinc)
+        });
+    });
+
+    $(document).on('click','.remove_row',function(){
+        var row_id = $(this).attr("id");
+        $('#addr0'+row_id+'').remove();
+        var table = document.getElementById('tab_logic');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            cells[0].innerText = i + 1;
+        }
+        calc();
+    });
+       
+    $(document).on('click','.clone_row',function(){
+        var roinc = $("#items-table-body tr").length;
+        var originalRow = $(this).closest('#items-table-body tr');
+        var clonedRow = originalRow.clone();
+
+        clonedRow.attr('id', 'addr0' +(roinc+1));
+
+        clonedRow.find('.nnum').text(roinc+1);
+
+        clonedRow.find('[id]').each(function() {
+            var oldId = $(this).attr('id');
+            var newId = oldId.replace(/\d+/, roinc+1);
+            $(this).attr('id', newId );
+        });
+        clonedRow.find('.product').each(function() {
+            $(this).val(originalRow.find('.product').val());
+        });
+        clonedRow.find('.tax').each(function() {
+            $(this).val(originalRow.find('.tax').val());
+        });
+        originalRow.after(clonedRow);
+        var table = document.getElementById('tab_logic');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            cells[0].innerText = i + 1;
+        }
+        calc();
+    });
+
+    $(document).ready(function(){
+        $('#items-table-body').on('keyup change', function () {
+            calc();
+        });
+
+        $('#tax').on('keyup change', function () {
+            calc_total();
+        });
+    });
+       
+    function calc() {
+        $('#tab_logic tbody tr').each(function () {
+            var html = $(this).html();
+            if (html != '') {
+                var qty = $(this).find('.qty').val();
+                var price = $(this).find('.price').val();
+                var dis = $(this).find('.disc').val();
+                var bc = $("#plosu").val();
+                if(bc=='State'){
+                    taxval = $(this).find('.tax').val().slice(3);
+                    var tax = parseInt(taxval.match(/\d+/)[0], 10);
+                }
+                else{
+                    taxval = $(this).find('.tax').val().slice(4);
+                    var tax = parseInt(taxval.match(/\d+/)[0], 10);
+                }
+                $(this).find('.total').val((parseFloat(qty) *parseFloat(price))-parseFloat(dis));
+                $(this).find('.taxamount').val(((qty * price)-dis) * (tax / 100));
+                calc_total();
+            }
+        });
+    }
+
+    function calc_total() {
+        total = 0;
+        $('.total').each(function () {
+            total += parseFloat($(this).val());
+        });
+        taxamount = 0;
+        $('.taxamount').each(function () {
+            taxamount += parseFloat($(this).val());
+        });
+        $('#sub_total').val(total.toFixed(2));
+        $('#tax_amount').val(taxamount.toFixed(2));
+        adj_val = parseFloat($('#adj').val())
+        gtot = taxamount + total + adj_val;
+        $('#grandtotal').val(gtot.toFixed(2));
+        $('#baldue').val(gtot.toFixed(2));
+        adv_val = parseFloat($('#advance').val())
+        adv_val = gtot - adv_val
+        $('#balance').val(adv_val.toFixed(2));
+        taxfun()
+    }
+
+    function taxfun(){
+        var bc = $("#psu").val();
+        d=0
+        if (bc == 'State'  ) {
+            gst = taxamount/2
+            $('#cgst').val(parseFloat(gst.toFixed(2)));
+            $('#sgst').val(parseFloat(gst.toFixed(2)));
+            $('#igst').val(parseFloat(d.toFixed(2)));
+        } else {
+            $('#igst').val(taxamount.toFixed(2));
+            $('#cgst').val(d.toFixed(2));
+            $('#sgst').val(d.toFixed(2));
+        }
+    }        
+
+    $(document).on("change", "#adj", function(){
+        var subtot = $('#sub_total').val();
+        var tax = $('#tax_amount').val();
+        var adj = $("#adj").val();
+        var adv = $("#advance").val();
+        $('#grandtotal').val((parseFloat(subtot)+parseFloat(tax)+parseFloat(adj)).toFixed(2));
+        $('#balance').val((parseFloat(subtot)+parseFloat(tax)+parseFloat(adj)-parseFloat(adv)).toFixed(2));
+    });
+ 
+    function checkhsn(element){
+        var hsninput = element.value;
+        var gstregexp = "[0-9]{6}";
+        if (hsninput.match(gstregexp)) {
+            document.getElementById('warnhsn').innerHTML = '';
+        } else {
+            document.getElementById('warnhsn').innerHTML = 'Please provide a valid HSN Number';
+            alert('Please provide a valid HSN Number');
+        }
+    }
+
+    function checkgst(element) {
+        var gstinput = element.value;
+        var gstregexp = "[0-9]{2}[a-zA-Z]{5}[0-9]{4}[a-zA-Z]{1}[1-9A-Za-z]{1}[Z]{1}[0-9a-zA-Z]{1}";
+        if (gstinput.match(gstregexp)) {
+            document.getElementById('warngst').innerHTML = '';
+        } else {
+            document.getElementById('warngst').innerHTML = 'Please provide a valid GST Number';
+            alert('Please provide a valid GST Number');
+        }
+    }
+
+    function checkphone(element) {
+        var phoneinput = element.value;
+        var phoneregexp = "[0-9]{10}";
+        if (phoneinput.match(phoneregexp)) {
+            document.getElementById('warnphone').innerHTML = '';
+        } else {
+            document.getElementById('warnphone').innerHTML = 'Please provide a valid Phone Number';
+            alert('Please provide a valid Phone Number')
+        }
+    }
+
+</script>
+
+<script>
+    var checkbox1 = document.getElementById('inclusive');
+    checkbox1.addEventListener('click', function () {
+        if (checkbox1.checked) {
+            document.getElementById('taxdiv').style.display = 'block';
+            document.getElementById('check').checked = false;
+        } else {
+            document.getElementById('taxdiv').style.display = 'none';
+            document.getElementById('intra_st').value = ' ';
+            document.getElementById('inter_st').value = ' ';
+        }
+    });
+
+    var checkbox = document.getElementById('check');
+    checkbox.addEventListener('click', function () {
+        if (checkbox.checked) {
+            document.getElementById('taxdiv').style.display = 'none';
+            document.getElementById('inclusive').checked = false;
+            document.getElementById('intra_st').value = ' ';
+            document.getElementById('inter_st').value = ' ';
+        }
+
+    });
+</script>
+   
+
+</body>
+
+{% endblock %}   
+
+
+
+

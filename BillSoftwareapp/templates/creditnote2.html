@@ -65,13 +65,61 @@
         display: grid;
         grid-template-columns: 80% 20%;
     }
+
+    {% comment %} .printContainer {
+        visibility: visible !important; /* Override the rule above to only show the printables*/
+        position: absolute;
+        z-index: 99999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        font-size: large;
+    } {% endcomment %}
+
+    .credit-head-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 500px;
+    }
+
+    .pagination {
+        margin: auto;
+        display: flex;
+    }
+
+    @media print {
+        body * {
+            visibility: hidden;
+          }
+       
+        .credit-container, .credit-container * {
+          visibility: visible !important;
+        }
+        .print-area{
+            visibility: visible;
+            width: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            overflow: hidden;
+        }
+        .overflow-view{
+            overflow-x: hidden;
+        }
+    
+        .credit-btns{
+            display: none;
+        }
+      }
+    
       
 </style>
 <body>
     
 
     <br><br><br><br><br><br>
-    <div class="row ps-3 pe-3 m-0" >
+    <div class="row ps-3 pe-3 m-0" id="print-area">
     <div class="col-sm-12 ps-2 pe-3" style="margin-left:23%;">
         <div class="row pt-0 m-0">
             <div class="card p-0 bg-light bs col-md-9"><br>
@@ -124,11 +172,11 @@
     
     
 
-  <div class="credit" id = "print-area">
+  <div class="credit" id = "whatToPrint1">
     <div class="text-end ml-auto">
         <a href="{% url "transactiontable" %}" class="close-icon" style="text-align: right; font-size: large;"><i class="fa fa-times" aria-hidden="true"></i></a>
     </div>
-    <div class='hdr'>
+    <div class="hdr credit-container">
         <h2 style='color:white;'>Credit Note</h2>
     </div><br>
     <div class='hr'></div>
@@ -136,23 +184,23 @@
       <p style='color:black;'>CreditNote No: <span id="creditNumber">{{cd.returnno}}</span></p>
       <p style='color:black;'>Date: <span id="creditDate">{{cd.date}}</span></p>
     </div>
-    <div class = "credit-head-bottom">
-        <div class = "credit-head-bottom-left">
-            <ul>
-                <li class = 'text-bold' style='color:black;'>From:</li>
-                <li style='color:black;'>{{cd.company.company_name}}</li>
-                <li style='color:black;'>{{cd.company.address}}</li>
-            </ul>
-        </div><br>
-        <div class = "credit-head-bottom-right text-end">
-            <ul class = "text-end">
-                <li class = 'text-bold' style='color:black;'>To:</li>
-                <li style='color:black;'>{{cd.party_name}}</li>
-                {% comment %} <li style='color:black;'>{{cd.address}}</li>
-                <li style='color:black;'>{{cd.contact}}</li> {% endcomment %}
-            </ul>
+    <div class="credit-head-bottom">
+        <div class="credit-head-row">
+            <div class="credit-head-bottom-left">
+                <ul>
+                    <li class='text-bold' style="color:black; font-weight:bold;">From:</li>
+                    <li style="color:black;">{{cd.company.company_name}}</li>
+                    <li style="color:black;">{{cd.company.address}}</li>
+                </ul>
+            </div>
+            <div class="credit-head-bottom-right">
+                <ul class="text-end">
+                    <li class='text-bold' style="color:black; font-weight:bold;">To:</li>
+                    <li style="color:black;">{{cd.party_name}}</li>
+                </ul>
+            </div>
         </div>
-     </div><br>
+    </div><br>
     <table>
       <thead>
         <tr style='color:black;background-color:rgb(130, 144, 199);'>
@@ -193,17 +241,102 @@
             <div class = "info-item-td text-end" style='color:black;'>{{cd.grandtotal}}</div>
         </div>
     </div>
-  </div>
+  </div><br>
 
   
 
-    <ul class="pagination pagination-sm justify-content-center">
-        <li class="page-item"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
-        <li class="page-item active"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
-        <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
-      </ul><br><br>
+  <div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <ul class="pagination pagination-sm">
+                <li class="page-item"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
+                <li class="page-item active"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
+                <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
+            </ul>
+        </div>
+    </div>
+  </div>
+
+<br><br>
     </div>
     </div>
+
+    <div id="emailModal" class="modal col-md-6" style="margin-left:25%; height:125%">
+        <div class="modal-content">
+            <span class="close" style="cursor: pointer;" onclick="closeEmailModal()">&times;</span>
+            <div class="modal-header" style="background: rgb(130, 144, 199);">
+                <h5 class="m-3 text-uppercase" style="color:white;" id="shareBillEmailLabel">Share Credit Note Via Email</h5>
+            </div>
+            <div class="modal-body" style="background: rgb(130, 144, 199);">
+                <div class="card p-3 m-3">
+                    <form action="{% url 'sharepdftomail' cd.id %}" method="post" class="needs-validation" id="share_to_email_form" autocomplete="off">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="emailIds">Email IDs</label>
+                            <textarea class="form-control text-dark" name="email_ids" id="emailIds" rows="3" placeholder="Multiple emails can be added by separating with a comma." required></textarea>
+                        </div>
+                        <div class="form-group mt-2">
+                            <label for="item_unitname">Message(optional)</label>
+                            <textarea name="email_message" id="email_message" class="text-dark form-control" cols="" rows="2" placeholder="This message will be sent along with credit note details."></textarea>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-center" style="border-top: 2px solid #ffff;">
+                            <input type="submit" id="share_with_email" class="submitShareEmailBtn rounded-pill text-grey w-40 my-4 mx-3" value="SEND">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <script>
+        // Function to open the email modal
+        function toggleEmailModal() {
+            document.getElementById("emailModal").style.display = "block";
+        }
+    
+        // Function to close the email modal
+        function closeEmailModal() {
+            document.getElementById("emailModal").style.display = "none";
+        }
+    
+        // Handle the submission of the email form
+        $(document).ready(function () {
+        $('#share_with_email').on('click', function () {
+          var emailsInput = document.getElementById('emailIds');
+          var emailsString = emailsInput.value.trim();
+    
+          var emails = emailsString.split(',').map(function (email) {
+            return email.trim();
+          });
+    
+          var emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+    
+          var invalidEmails = []
+          if (emailsString == "") {
+            alert('Enter valid email addresses..')
+          }
+          else {
+            for (var i = 0; i < emails.length; i++) {
+              var currentEmail = emails[i];
+    
+              if (currentEmail != "" && !emailRegex.test(currentEmail)) {
+                console.log(currentEmail + ' is invalid!');
+                invalidEmails.push(currentEmail)
+              }
+            }
+    
+            if (invalidEmails.length > 0) {
+              alert('Invalid emails..Please check!\n' + invalidEmails)
+              // alert(invalidEmails)
+            } else {
+              $('#share_to_email_form').submit();
+            }
+          }
+        })
+      });
+       
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 
@@ -220,24 +353,37 @@
             html2pdf().set(opt).from(element).save();
         });
     </script>
-    <iframe id="printFrame" style="display:none;"></iframe>
+    
     
 
     
+    
+
     <script>
-       
-
         function printContent() {
-            var content = document.getElementById('print-area').outerHTML;
-            var printFrame = document.getElementById('printFrame');
-            var printDocument = printFrame.contentWindow || printFrame.contentDocument;
-            if (printDocument.document) printDocument = printDocument.document;
-            printDocument.write(content);
-            printDocument.close();
-            printFrame.focus();
-            printFrame.contentWindow.print();
-          }
+            var printContents = document.getElementById("whatToPrint1").innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            var printCSS = "<style>\
+                            body { font-family: Arial, sans-serif;margin: 0; background-color: rgb(130, 144, 199); } \
+                            .credit { max-width: 900px; background-color: white; padding: 30px 70px 70px 70px; border: 1px solid rgba(0, 0, 0, 0.2); border-radius: 5px; min-height: 700px; }\
+                            .credit h2 { text-align: center; } \
+                            .credit-details { margin-bottom: 20px; } \
+                            .credit-details p { margin: 5px 0; } \
+                            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; } \
+                            table th, table td { border: 1px solid #ddd; padding: 8px; text-align: left; } \
+                            .credit-total { text-align: right; } \
+                            .hdr{ background-color:rgb(130, 144, 199); padding:20px;} \
+                            .text-end { display: flex; justify-content: space-between; align-items: center; } \
+                            .credit-body-info-item{ display: grid; grid-template-columns: 80% 20%; } \
+                            .credit-head-row { display: flex; justify-content: space-between; gap: 500px;}\
+                            </style>";
+            document.body.innerHTML += printCSS;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
     </script>
+    
     
     
     </body>

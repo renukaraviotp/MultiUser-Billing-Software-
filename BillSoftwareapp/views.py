@@ -834,7 +834,7 @@ def sharepdftomail(request,pk):
                 email.attach(filename, pdf, "application/pdf")
                 email.send(fail_silently=False)
 
-                msg = messages.success(request, 'Credit note file has been shared via email successfully..!')
+                # msg = messages.success(request, 'Credit note file has been shared via email successfully..!')
                 return redirect('template1',pk=pk)
 
         except Exception as e:
@@ -842,86 +842,23 @@ def sharepdftomail(request,pk):
             messages.error(request, f'{e}')
             return redirect('template1',pk=pk)
 
-# def sharepdftomail(request,pk):
-#  if request.user:
+# def get_party_details(request):
+#     if request.method == 'POST' and request.is_ajax():
+#         party_id = request.POST.get('id')
 #         try:
-#             if request.method == 'POST':
-#                 emails_string = request.POST['email_ids']
-                
+#             party = Parties.objects.get(id=party_id)
+#             party_details = {
+#                 'phno': party.phone_number,
+#                 'address': party.billing_address,
+#                 'pay': party.to_pay,
+#                 'bal': party.opening_balance
+#             }
+#             return JsonResponse(party_details)
+#         except Parties.DoesNotExist:
+#             return JsonResponse({'error': 'Party not found'}, status=404)
+#     else:
+#         return JsonResponse({'error': 'Invalid request'}, status=400)
 
-#                 # Split the string by commas and remove any leading or trailing whitespace
-#                 emails_list = [email.strip() for email in emails_string.split(',')]
-#                 email_message = request.POST['email_message']
-#                 if request.user.is_company:
-#                   cmp = request.user.company
-#                 else:
-#                   cmp = request.user.employee.company  
-#                 usr = User.objects.get(username=request.user)
-#                 # print(emails_list)
-#                 cd = Creditnote.objects.get(id=pk,company=cmp)
-#                 itm = CreditnoteItem.objects.filter(credit=cd)
-#                 dis = 0
-#                 for itm in itm:
-#                   dis += int(itm.discount)
-#                 itm_len = len(itm)
-#                 context={'cd':cd,'itm':itm,'itm_len':itm_len,'dis':dis}
-#                 template_path = 'creditpdf.html'
-#                 template = get_template(template_path)
-
-#                 html  = template.render(context)
-#                 result = BytesIO()
-#                 pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)#, link_callback=fetch_resources)
-#                 pdf = result.getvalue()
-#                 filename = f'Credit Note - {cd.returnno}.pdf'
-#                 subject = f"Credit Note - {cd.returnno}"
-#                 email = EmailMessage(subject, f"Hi,\nPlease find the Credit Note - No-{cd.returnno}. \n{email_message}\n\n--\nRegards,\n{cd.company.company_name}\n{cd.company.address}\n - {cd.company.city}\n{cd.company.contact}", from_email=settings.EMAIL_HOST_USER,to=emails_list)
-#                 email.attach(filename, pdf, "application/pdf")
-#                 email.send(fail_silently=False)
-
-#                 msg = messages.success(request, 'Credit Note has been shared via email successfully..!')
-#                 return redirect('template1',id=pk)
-#         except Exception as e:
-#             print(e)
-#             messages.error(request, f'{e}')
-#             return redirect('template1', id=pk)
-
-# def sharepdftomail(request,pk):
-#   if request.user:
-#         try:
-#             if request.method == 'POST':
-#                 emails_string = request.POST['email_ids'] 
-
-             
-#                 emails_list = [email.strip() for email in emails_string.split(',')]
-#                 email_message = request.POST['email_message']
-#                 print(emails_list)
-#                 sid = request.session.get('staff_id')
-#                 staff = staff_details.objects.get(id=sid)
-#                 cmp = company.objects.get(id=staff.company.id) 
-                
-#                 crd = Creditnote.objects.get(id=id,company=cmp)
-#                 citm = CreditnoteItem.objects.filter(credit=crd,company=cmp)
-#                 context = {'crd':crd, 'cmp':cmp,'citm':citm}
-#                 template_path = 'creditmail.html'
-#                 template = get_template(template_path)
-
-#                 html  = template.render(context)
-#                 result = BytesIO()
-#                 pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-#                 pdf = result.getvalue()
-#                 filename = f'CREDIT NOTE - {crd.id}.pdf'
-#                 subject = f"CREDIT NOTE - {crd.id}"
-#                 email = EmailMessage(subject, f"Hi,\nPlease find the attached CREDIT NOTE - File-{crd.id}. \n{email_message}\n\n--\nRegards,\n{cmp.company_name}\n{cmp.address}\n{cmp.state} - {cmp.country}\n{cmp.contact}", from_email=settings.EMAIL_HOST_USER, to=emails_list)
-#                 email.attach(filename, pdf, "application/pdf")
-#                 email.send(fail_silently=False)
-
-#                 msg = messages.success(request, 'Credit note file has been shared via email successfully..!')
-#                 return redirect('transactiontable', id=pk)
-
-#         except Exception as e:
-#             print(e)
-#             messages.error(request, f'{e}')
-#             return redirect('transactiontable', id=pk)
 
 # def credit_details(request,pk):
 #   cd=Creditnote.objects.get(id=pk)

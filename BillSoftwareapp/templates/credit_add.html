@@ -502,6 +502,7 @@
     </div>
 </div>
 
+
 <script>
     function showTaxDropdowns() {
         document.getElementById('taxdiv').style.display = 'block';
@@ -903,52 +904,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     })
 </script>
 
-<script>
-    function validatepurchasebill() {
-        var customer = document.getElementById('customer').value;
-        var plosu = document.getElementById('plosu').value;
-        var pay_method = document.getElementById('pay_method').value;
-        var cheque_id = document.getElementById('cheque_id').value;
-        var upi_id = document.getElementById('upi_id').value;
 
-        if (customer === '') {
-            alert('Please select a customer');
-            return false;
-        } else if(plosu === ''){
-            alert('Please select place of supply');
-            return false;
-        }
-        if (pay_method === ''){
-            alert('Please select a Payment Method');
-            return false;
-        }else if(pay_method === 'Cheque'){
-            if (cheque_id === ''){
-                alert('Add a cheque number');
-                return false;
-            }
-        }else if(pay_method === 'UPI'){
-            if (upi_id === ''){
-                alert('Add a UPI number');
-                return false;
-            }
-        }
-        var table = document.getElementById('tab_logic');
-        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-        for (var i = 1; i <= rows.length; i++) {
-            var product = document.getElementById('product'+i).value;
-            var qty = document.getElementById('qty'+i).value;
-            if(product === ''){
-                alert('Select a product on row '+ i);
-                return false;
-            }
-            if(qty === '' || qty =='0'){
-                alert('Add quantity in row '+ i);
-                return false;
-            }
-        }
-        return true;
-    }
-</script>
 
 <script>
     $(document).ready(function () {

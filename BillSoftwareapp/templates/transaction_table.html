@@ -169,21 +169,25 @@
     ::-webkit-scrollbar{
         display: none
     }
+    .button-row {
+        display: flex;
+        gap:2px;
+    }
 </style>
 
-
+{% if item %}
 <div class="body-wrapper" style="margin-left:20%;">
     <br><br><br><br>
     
     <p></p>
-    <div class="row ps-3 pe-3 m-0" >
-        <div class="col-md-12 ps-2 pe-3">
-            <div class="row pt-0 m-0">
-                <div class="card p-0 bg-light bs"><br>
+    <div class="row ps-3 pe-3 m-0 w-100" style="width:100%;">
+        <div class="col-md-12 ps-2 pe-3" style="width:100%;">
+            <div class="row pt-0 m-0" style="width:100%;">
+                <div class="card p-0 bg-light w-100 bs"><br>
                     <div class="row">
-                        <div class="container">
+                        <div class="container" style="width:100%;">
                             <div class="row">
-                                <div class="col-md-3" style="margin-left: 7vh;">
+                                <div class="" style="margin-left: 7vh;">
                                     <div class="form-group">
                                         <label for="fromDate" style="color: black; margin-bottom: 1vh;">From Date:</label>
                                         <input type="date" class="form-control h-100 border-secondary" id="fromDate" style="color: black; background-color: white;" onchange="filterDates()"> 
@@ -220,8 +224,8 @@
                     
                     
 
-            <div class="row pt-0 m-0">
-                <div class="card p-0 bg-light bs" style="height: 36rem;">
+            <div class="row pt-0 m-0" style="width:100%;">
+                <div class="card p-0 bg-light bs" style="height: 36rem; width:100%;">
                     <div class="row m-0 p-0 pt-3">
                         <div class="col-sm-12 col-lg-3">
                             <h4 class="tb fw-bolder pt-2 " style="rgb(61, 68, 101);">Credit Notes</h4>
@@ -238,22 +242,24 @@
                                 <i class="fa fa-plus border-dark " aria-hidden="true" style="color: white;"></i> &nbsp;Add Creditnote
                             </a>
                         </div>
-                    </div>
+                    </div> 
 
                     <div class="row">
                         <div class="col-md-12" style="margin-left: 2vh;">
-                            <div class="mt-3" style="overflow: scroll;height: 28rem; width: 97%;" id="tablediv">
-                                <table class="table table-bordered tb table-responsive w-100" id="credittable"  style="text-align: center;margin-left:3%;">
+                            <div class="mt-3" style="overflow: hidden;height: 28rem; width: 95%;" id="tablediv">
+                                <table class="table table-bordered tb table-responsive w-100" id="credittable"  style="text-align: center;margin-left:3%; width: 1000px;">
                                     <thead >
                                         <tr class="fs-2 tb">
-                                            <th class="text-white w-15" style="background-color:rgb(61,68,101);">
+                                            <th class="text-white" style="background-color:rgb(61,68,101);">
                                                 DATE 
                                                 <a class="extra text-white" onclick="toggleDropdown(0)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
                                                 <div class="dropdown-content" id="dropdownContent0">
                                                     <label for="filterInput0" style="color: black; text-align: left;">Equal To</label>
                                                     <input type="date" id="filterInput0"  />
-                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(0)">Clear</a> 
-                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(0)">Apply</a>
+                                                    <div class="button-row">
+                                                        <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(0)">Clear</a>
+                                                        <a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(0)">Apply</a>
+                                                    </div>
                                                 </div>
                                             </th>
                                             <th class="w-15 text-white"  style="background-color:rgb(61,68,101);">
@@ -262,8 +268,10 @@
                                                 <div class="dropdown-content" id="dropdownContent1">
                                                     <label for="filterInput1" style="color: black; text-align: left;">Equal To</label>
                                                     <input type="text" id="filterInput1"  />
-                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(1)">Clear</a> 
-                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(1)">Apply</a>
+                                                    <div class="button-row">
+                                                        <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(1)">Clear</a> 
+                                                        &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(1)">Apply</a>
+                                                    </div>
                                                 </div>
                                             </th>
                                             <th class="w-20 text-white" style="background-color:rgb(61,68,101);">
@@ -272,8 +280,10 @@
                                                 <div class="dropdown-content" id="dropdownContent2">
                                                     <label for="filterInput2" style="color: black; text-align: left;">Equal To</label>
                                                     <input type="text" id="filterInput2"  />
-                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(2)">Clear</a> 
-                                                    &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(2)">Apply</a>
+                                                    <div class="button-row">
+                                                        <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(2)">Clear</a> 
+                                                        &nbsp;<a class="btn" style="background-color:rgb(61,68,101);" onclick="filterTable(2)">Apply</a>
+                                                    </div>
                                                 </div>
                                             </th>
                                           
@@ -283,8 +293,10 @@
                                                 <div class="dropdown-content" id="dropdownContent3">
                                                     <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
                                                     <input type="text" id="filterInput3" />
-                                                    <a class="btn " style="background-color:rgb(61,68,101);" onclick="cleardropdown(3)">Clear</a> 
-                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(3)">Apply</a>
+                                                    <div class="button-row">
+                                                        <a class="btn " style="background-color:rgb(61,68,101);" onclick="cleardropdown(3)">Clear</a> 
+                                                        &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(3)">Apply</a>
+                                                    </div>
                                                 </div>
                                             </th>
                                             
@@ -294,8 +306,10 @@
                                                 <div class="dropdown-content" id="dropdownContent4">
                                                     <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
                                                     <input type="text" id="filterInput4" />
-                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(4)">Clear</a> 
-                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(4)">Apply</a>
+                                                    <div class="button-row">
+                                                        <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(4)">Clear</a> 
+                                                        &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(4)">Apply</a>
+                                                    </div>
                                                 </div>
                                             </th>
                                             {% comment %} <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);">
@@ -324,14 +338,14 @@
                                             <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td> {% endcomment %}
                                             <td class="pt-3 m-0 extra">
                                                 <div class="btn-group">
-                                                    <button style="border: none;background: none;" type="button" class="ropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <span class="fa fa-ellipsis-v text-dark  ps-"></span>
+                                                    <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                        <span class="fa fa-ellipsis-v text-dark ps-"></span>
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'template1' p.id %}"><span class="fa fa-eye pe-2 tg"></span> View </a></li>
-                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
-                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'credithistory' p.id %}"><span class="fa fa-history pe-2 th"></span> History</a></li>
-                                                      <li><a class="dropdown-item fw-bold tb hide_table_text_d" href="{% url 'delete_credit' p.id %}"><span  class="fa-solid fa-trash"  style="padding-inline-start: 0.1rem;padding-inline-end:0.7rem; color:red;"></span> Delete</a></li>
+                                                        <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'template1' p.id %}"><span class="fa fa-eye pe-2 tg"></span> View</a></li>
+                                                        <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'edit_credit' p.id %}"><span class="fa fa-edit pe-2 tj"></span> Edit</a></li>
+                                                        <li><a class="dropdown-item fw-bold tb hide_table_text_v" href="{% url 'credithistory' p.id %}"><span class="fa fa-history pe-2 th"></span> History</a></li>
+                                                        <li><a class="dropdown-item fw-bold tb hide_table_text_d" href="{% url 'delete_credit' p.id %}"><span class="fa-solid fa-trash" style="color:red;"></span> Delete</a></li>
                                                     </ul>
                                                 </div>
                                             </td>
@@ -458,6 +472,30 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="container" style='background-color:white;'>
+    <br><br><br><br><br><br>
+    <div class="container col-10 mr-3">
+        <div class="container col -10" style='background-color:white;  box-shadow: 5px 5px 5px gray; border-radius:10px;'>
+            <div class="row">
+                
+                <div class="col">
+                    <img style="mix-blend-mode: multiply;" src="{% static 'images/credit/11.webp' %}" width="400" height="400" alt="">
+                </div>
+
+                <div class="col m-2">
+                    <br><br><br>
+                    <center><h3><img src="static/img/logo/logo3.png" alt="billing-software">MultiUser Billing Software</h3></center><br>
+                    <p>Welcome to MultiUser Billing Software.Our platform offers a range of features.You can manage all your credit actions here.</p>
+                    <center><a href="{% url "credit_add" %}" class="btn btn-primary">Add Your First Creditnote Here</a></center>
+                </div>
+
+            </div>
+        </div>
+        <br><br><br>
+    </div>
+</div>
+{% endif %}
 
 <script>
     document.getElementById('fromDate').addEventListener('change', updateMinDate);
@@ -467,7 +505,7 @@
     }
 </script>
 
-<script>
+{% comment %} <script>
     function generatePDF() {
         var elementToPrint = document.getElementById('tablediv');
         if (elementToPrint.style.display === 'none') {
@@ -482,7 +520,7 @@
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         });
     }
-</script>
+</script> {% endcomment %}
 
 {% comment %} <script>
     var table = document.getElementById('credittable');

@@ -22,6 +22,21 @@ body{
     .credit-container, .credit-container * {
       visibility: visible !important;
     }
+    .print-area{
+        visibility: visible;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        overflow: hidden;
+    }
+    .overflow-view{
+        overflow-x: hidden;
+    }
+
+    .credit-btns{
+        display: none;
+    }
   }
 
 :root{
@@ -149,31 +164,24 @@ body{
     }
 }
 
-.overflow-view{
+{% comment %} .overflow-view{
     overflow-x: scroll;
-}
+} {% endcomment %}
 .credit-body{
     min-width: 600px;
 }
 
-@media print{
-    .print-area{
-        visibility: visible;
-        width: 100%;
-        position: absolute;
-        left: 0;
-        top: 0;
-        overflow: hidden;
-    }
 
-    .overflow-view{
-        overflow-x: hidden;
-    }
-
-    .credit-btns{
-        display: none;
-    }
-}
+{% comment %} .printContainer {
+    visibility: visible !important; /* Override the rule above to only show the printables*/
+    position: absolute;
+    z-index: 99999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: large;
+} {% endcomment %}
 </style>
 
 <body>
@@ -326,27 +334,43 @@ body{
         
         
         
-        <iframe id="printFrame" style="display:none;"></iframe>
-        
-        <script> 
-        function printContent() {
-          var content = document.getElementById('slipdiv').outerHTML;
-          var printFrame = document.getElementById('printFrame');
-          var printDocument = printFrame.contentWindow || printFrame.contentDocument;
-          if (printDocument.document) printDocument = printDocument.document;
-          printDocument.write(content);
-          printDocument.close();
-          printFrame.focus();
-          printFrame.contentWindow.print();
-        }
+
+        <script>
+            function printContent() {
+                // Get the HTML content of the entire section you want to print
+                var contentToPrint = document.getElementById("print-area").innerHTML;
+            
+                // Create a div to contain the content to be printed
+                var printerDiv = document.createElement('div');
+                printerDiv.classList.add('printContainer');
+                printerDiv.innerHTML = contentToPrint;
+            
+                // Append the container div to the body
+                document.body.appendChild(printerDiv);
+            
+                // Trigger the print dialog
+                window.print();
+            
+                // Remove the container div after printing
+                printerDiv.remove();
+            }
+            
         </script>
+
     </div>
 </div><br><br>
-<ul class="pagination pagination-sm justify-content-center">
-    <li class="page-item active"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
-    <li class="page-item"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
-    <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
-  </ul><br><br>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <ul class="pagination pagination-sm">
+                <li class="page-item active"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
+                <li class="page-item"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
+                <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<br><br>
 </div>
 </div>
 
@@ -368,11 +392,7 @@ body{
 
 
 
-<script>
-    function printcredit(){
-        window.print();
-    }
-</script>
+
 <script type="text/javascript">
     $(document).ready(function ($) {
         $(document).on('click', '#pdflink', function (event) {

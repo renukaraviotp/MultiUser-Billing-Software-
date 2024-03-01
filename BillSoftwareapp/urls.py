@@ -52,6 +52,7 @@ urlpatterns = [
     path('credithistory/<int:pk>',views.credithistory,name='credithistory'),
     path('delete_credit/<int:pk>',views.delete_credit,name='delete_credit'),
     path('sharepdftomail/<int:pk>',views.sharepdftomail,name='sharepdftomail'),
+    # path('get_party_details',views.get_party_details,name='get_party_details'),
     
     
     # path('credit_details/<int:pk>',views.credit_details,name='credit_details'),
