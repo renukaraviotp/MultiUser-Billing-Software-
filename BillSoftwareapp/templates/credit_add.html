@@ -2,24 +2,19 @@
 {% block content %}
 {% load static %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/fbe819dd43.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-**********" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -175,12 +170,22 @@
                                     <div class="col-md-4 custom-dropdown">
                                         <label for=""> Party Name</label>
                                         <div class="input-group">
-                                            <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();">
+                                            <select name="partyname" id="employee" class="form-control border-secondary" onchange="getPartyDetails(this);">
+                                                <option value="" selected hidden>Select</option>
+                                                {% for c in party %}
+                                                    {% if c.cid_id == cmp.cid %}
+                                                        <option value="{{ c.id }}" data-party-id="{{ c.id }}" data-phone="{{ c.phone_number }}" data-address="{{ c.billing_address }}" data-balance="{{ c.opening_balance }}"
+                                                        onclick="selectItem(this);"> {{ c.party_name }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                             &nbsp;&nbsp;&nbsp;
+                                            {% comment %} <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();"> {% endcomment %}
                                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
                                         </div>
-<ul id="employee" class="dropdown-list">
+{% comment %} <ul id="employee" class="dropdown-list">
 {% for p in party %}
     <li class="dropdown-item"
         data-value="{{ p.party_name }}"
@@ -190,25 +195,34 @@
         {{ p.party_name }}
     </li>
 {% endfor %}
-</ul>
+</ul> {% endcomment %}
+
+
                                             
-                                            <small id="availableBalanceSection" style='color:black'> 
-                                                
-                                                {% if party.to_pay == 1 %}
-                                                Available Balance:<input id="ab" style='color:red' type="text" readonly>
-                                                {% else %}
-                                                Available Balance:<input id="ab" style='color:green' type="text" readonly>
-                                                {% endif %}
-                                               
-                                            </small>
+<div class="mt-1 d-flex" >
+    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
+</div>
                                     </div>
                                     <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" placeholder="Bill Number" hidden></div>
-                                    
-                                    <div class="col-md-3"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
-                                    <div class="col-md-4"><label for="">Billing Address</label>
-                                        <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly></textarea></div>
-                                
+
+                                    <div class="col-md-3" id="phonediv">
+                                        <label class="col-form-label" >Phone No. </label>
+                                        <input class="form-control border-secondary" name="number"  id="ph"  style="color: black;background-color: white;" readonly>
+                                    </div>
+                                <div class="col-md-4" id="addressdiv">
+                                    <label class="col-form-label">Billing Address</label>
+                                    <textarea class="form-control border-secondary mb-3" name="address" id="bname" rows="6" type="text" style="color: black;background-color: white;" readonly></textarea>
                                 </div>
+                            </div>
+                                    <div id="daddressdiv" style="display: none;">
+                                        <label class="col-form-label">Billing Address</label>
+                                        <textarea class="form-control border-secondary mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" readonly></textarea>
+                                    </div>
+                                    
+                                    {% comment %} <div class="col-md-3" id="phonediv"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
+                                    <div class="col-md-4" id="addressdiv"><label for="">Billing Address</label>
+                                        <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly></textarea></div> {% endcomment %}
+                                
                             
                 
                             <div class="form-group row">
@@ -302,8 +316,8 @@
                                                         <td hidden><input type="number" name='taxamount1' id="taxamount1" class="form-control border-secondary taxamount" /></td>
                                                        
                                                         <td style="width:5%">
-                                                            <button type="button" id="1" style="background-color:rgb(61, 68, 101);" class="btn font-weight-bold  clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button>
-                                                            <br>
+                                                            {% comment %} <button type="button" id="1" style="background-color:rgb(61, 68, 101);" class="btn font-weight-bold  clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button> {% endcomment %}
+                                                            
                                                             <button type="button" id="1" class="btn btn-danger remove_row px-2 py-1 mx-1" title="Remove Row"><i class="fa-solid fa-xmark"></i> </button>
                                                         </td>
                                                     </tr>
@@ -502,6 +516,23 @@
     </div>
 </div>
 
+<script>
+    function getPartyDetails(selectElement) {
+        console.log("Party selected");
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var billNumber = selectedOption.getAttribute('data-bill-number');
+        var billDate = selectedOption.getAttribute('data-bill-date');
+        var availableBalance = selectedOption.getAttribute('data-balance');
+    
+        // Update input fields with the fetched data
+        document.getElementById('bno').value = billNumber;
+        document.getElementById('bdt').value = billDate;
+        document.getElementById('ab').value = availableBalance;
+    }
+    </script>
+    
+    
+
 
 <script>
     function showTaxDropdowns() {
@@ -693,7 +724,7 @@
             document.getElementById("ph").value = phone_number;
             document.getElementById("ad").value = billing_address;
             document.getElementById("ab").value = opening_balance;
-            document.getElementById("pid").value = party_id
+            document.getElementById("pid").value = party_id;
             
 
             // Show the Available Balance section
@@ -724,18 +755,24 @@
 
     function selectItem(item) {
         var partyId = item.getAttribute("data-party-id");
-
         var url = "/get_sales_invoice_details/" + partyId;
-
+    
         fetch(url)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
-                // Update the "Bill No." and "Bill Date" fields with fetched data
+                // Update the "Bill No.", "Bill Date", and "Available Balance" fields with fetched data
                 document.getElementById("bno").value = data.billNo;
                 document.getElementById("bdt").value = data.billDate;
+                document.getElementById("balval").value = data.balance;
             })
             .catch(error => console.error("Error fetching sales invoice details:", error));
     }
+    
 
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -1040,46 +1077,6 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     });
 
    
-    $(document).on("click","#itemsave",function(){
-        var item_name = document.getElementById('item_name').value;
-
-        if ($('#inclusive').prop('checked')) {
-            tax= $('#inclusive').val();
-        }
-        else{
-            tax = $('#check').val();
-        }
-
-        if (item_name === ''){
-            alert('Please provide an Item Name');
-        }else{
-            $.ajax({
-                type : 'POST',
-                url:"{% url 'saveitem' %}",
-                data:{
-                    name : $("#item_name").val(),
-                    unit : $("#unit").val(),
-                    hsn : $("#hsn").val(),
-                    taxref : tax,
-                    sell_price : $("#saleprice").val(),
-                    cost_price : $("#purprice").val(),
-                    intra_st : $("#intra_st").val(),
-                    inter_st : $("#inter_st").val(),
-                    itmdate : $("#itmdate").val(),
-                    stock : $("#stock").val(),
-                    itmprice : $("#itmprice").val(),
-                    minstock : $("#minstock").val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
-                },
-           
-                success: function(response) {
-                    document.getElementById("modalItem").reset();
-                    $('#newitem').modal('hide');
-                    reloadItem();
-                },
-            });  
-        }      
-    });
 
     function reloadItem() {
         $.ajax({
@@ -1109,12 +1106,12 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     }
 
     $(document).ready(function () {
-        $('#customer').on('change', function() {
+        $('#employee').on('change', function() {
             $.ajax({
                 type : 'POST',
-                url: "",
+                url: "{% url 'partydata' %}",
                 data: {
-                    id: $('#customer').val(),
+                    id: $('#employee').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
              
@@ -1141,7 +1138,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                             document.getElementById('daddressdiv').style.display = 'none';
                             document.getElementById('addressdiv').style.display = 'none';
                             document.getElementById('phonediv').style.display = 'block';
-                            document.getElementById('cust_phno').value = data.phno;
+                            document.getElementById('ph').value = data.phno;
                             document.getElementById('ddbilldiv').style.display = 'block';
                             document.getElementById('dbilldiv').style.display = 'none';
                             document.getElementById('billdiv').style.display = 'none';
@@ -1150,14 +1147,14 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                             document.getElementById('addressdiv').style.display = 'block';
                             document.getElementById('phonediv').style.display = 'block';
                             document.getElementById('bname').value = data.address;
-                            document.getElementById('cust_phno').value = data.phno;
+                            document.getElementById('ph').value = data.phno;
                             document.getElementById('ddbilldiv').style.display = 'none';
                             document.getElementById('dbilldiv').style.display = 'none';
                             document.getElementById('billdiv').style.display = 'block';
                         }
                     }
 
-                    if(data.pay == 'To Pay'){
+                    if(data.pay){
                         document.getElementById('balancediv').style.display = 'block';
                         document.getElementById('balval').innerText = data.bal;
                         document.getElementById('balval').style.color = 'red';
@@ -1170,6 +1167,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             });
         });
     });
+    
 
     $(document).ready(function(){
         $('#add').click(function(){
@@ -1225,8 +1223,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                     <td hidden><input type="number" step="any" name='taxamount1' id="taxamount${roinc}" class="form-control border-secondary taxamount" /></td>
                    
                     <td style="width:13%">
-                        <button type="button" id="${roinc}" style="background-color:rgb(61, 68, 101);" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button>
-                        <br>
+                        
                         <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row"><i class="fa-solid fa-xmark"></i></button>
                     </td>
                 </tr>`
@@ -1286,7 +1283,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             calc_total();
         });
     });
-       
+        
     function calc() {
         $('#tab_logic tbody tr').each(function () {
             var html = $(this).html();
@@ -1294,7 +1291,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                 var qty = $(this).find('.qty').val();
                 var price = $(this).find('.price').val();
                 var dis = $(this).find('.disc').val();
-                var bc = $("#plosu").val();
+                var bc = $("#psu").val();
                 if(bc=='State'){
                     taxval = $(this).find('.tax').val().slice(3);
                     var tax = parseInt(taxval.match(/\d+/)[0], 10);
@@ -1344,7 +1341,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             $('#cgst').val(d.toFixed(2));
             $('#sgst').val(d.toFixed(2));
         }
-    }        
+    }         
 
     $(document).on("change", "#adj", function(){
         var subtot = $('#sub_total').val();

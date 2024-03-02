@@ -227,6 +227,7 @@
                                 <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" value={{crd.invoice_no}} class="form-control" placeholder="Bill Number" ></div>
                                 <div class="col"><label for=""> Bill Date</label><input id="bdt" type="date" value="{{crd.idate|date:'Y-m-d'}}" name="billDate" class="form-control" placeholder="Bill Date"> </div>
                                 
+                                
                             </div>
                         
                 
@@ -321,7 +322,7 @@
                                                         </td>
                                                        
                                                         <td style="width:5%">
-                                                            <button type="button" id="{{forloop.counter}}" style="background-color:rgb(61, 68, 101);" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button><br>
+                                                            {% comment %} <button type="button" id="{{forloop.counter}}" style="background-color:rgb(61, 68, 101);" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button><br> {% endcomment %}
                                                             <button type="button" id="{{forloop.counter}}" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row"> </button>
                                                         </td>
                                                     </tr>
@@ -782,15 +783,6 @@
     }
 
 
-    {% comment %} document.addEventListener('DOMContentLoaded', function() {
-        (function() {
-          // Get the current date in the format YYYY-MM-DD
-          const todayDate = new Date().toISOString().split('T')[0];
-          
-          // Set the value attribute of the input element with the ID "input"
-          document.getElementById('dt').value = todayDate;
-        })();
-      }); {% endcomment %}
         
 </script>
 
@@ -1269,8 +1261,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                     <td hidden><input type="number" step="any" name='taxamount1' id="taxamount${roinc}" class="form-control border-secondary taxamount" /></td>
                    
                     <td style="width:13%">
-                        <button type="button" id="${roinc}" style="background-color:rgb(61, 68, 101);" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" ></button>
-                        <br>
+                        
                         <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row"><i class="fa-solid fa-xmark"></i></button>
                     </td>
                 </tr>`
@@ -1463,7 +1454,3 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 </body>
 
 {% endblock %}   
-
-
-
-

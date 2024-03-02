@@ -143,9 +143,14 @@
     </div>
 
     <div class="credit" style='background-color:white;' id="whatToPrint1">
-      <div class="text-end ml-auto">
-        <a href="{% url "transactiontable" %}" class="close-icon" style="text-align: right; font-size: large;"><i class="fa fa-times" aria-hidden="true"></i></a>
+      <div class="d-flex justify-content-end">
+        <div class="ml-auto">
+            <a href="{% url "transactiontable" %}" class="close-icon" style="font-size: large;">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </a>
+        </div>
     </div>
+    
     <div class="credit-container">
         <div class="credit-header" style="background-color:rgb(130, 144, 199); padding:10px;"> 
           <h1>Credit Note</h1>

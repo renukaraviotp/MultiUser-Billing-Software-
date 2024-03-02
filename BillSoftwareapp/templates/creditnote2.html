@@ -173,9 +173,14 @@
     
 
   <div class="credit" id = "whatToPrint1">
-    <div class="text-end ml-auto">
-        <a href="{% url "transactiontable" %}" class="close-icon" style="text-align: right; font-size: large;"><i class="fa fa-times" aria-hidden="true"></i></a>
+    <div class="d-flex justify-content-end">
+        <div class="ml-auto">
+            <a href="{% url "transactiontable" %}" class="close-icon" style="font-size: large;">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </a>
+        </div>
     </div>
+    
     <div class="hdr credit-container">
         <h2 style='color:white;'>Credit Note</h2>
     </div><br>
@@ -342,7 +347,7 @@
 
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
-            var element = document.getElementById('print-area');
+            var element = document.getElementById('whatToPrint1');
             var opt = {
                 margin: 1,
                 filename: 'CreditNote.pdf',

@@ -370,16 +370,31 @@ def credit_add(request):
   return render(request, 'credit_add.html',context) 
 
 
+# def get_sales_invoice_details(request, party_id):
+#     try:
+#         sales_invoice = SalesInvoice.objects.get(party_id=party_id)
+#         data = {
+#             'billNo': sales_invoice.invoice_no,
+#             'billDate': sales_invoice.date.strftime('%Y-%m-%d'),  # Format the date as needed
+#         }
+#         return JsonResponse(data)
+#     except SalesInvoice.DoesNotExist:
+#         return JsonResponse({'error': 'Sales invoice not found'}, status=404)
+      
 def get_sales_invoice_details(request, party_id):
     try:
+        # Assuming SalesInvoice model has fields 'bill_no', 'bill_date', and 'balance'
         sales_invoice = SalesInvoice.objects.get(party_id=party_id)
         data = {
             'billNo': sales_invoice.invoice_no,
-            'billDate': sales_invoice.date.strftime('%Y-%m-%d'),  # Format the date as needed
+            'billDate': sales_invoice.date.strftime('%Y-%m-%d'),  # Format date as string
+            'balance': sales_invoice.party.opening_balance
         }
         return JsonResponse(data)
     except SalesInvoice.DoesNotExist:
-        return JsonResponse({'error': 'Sales invoice not found'}, status=404)
+        return JsonResponse({'error': 'Sales invoice details not found for the given party ID'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def item_details(request):
@@ -553,17 +568,13 @@ def credit_save(request):
         staff = staff_details.objects.get(id=sid)
         cmp = company.objects.get(id=staff.company.id)
 
-        # Retrieve party details if available
-        party = None
-        party_id = request.POST.get('pid')
-        if party_id:
-            party = Parties.objects.get(id=party_id)
+        partys=Parties.objects.get(id=request.POST.get('partyname'))
 
         # Create an instance of Creditnote model and save the data
         credit_note = Creditnote(
-            party_name=party.party_name if party else None,
-            contact=party.phone_number if party else None,
-            address=party.billing_address if party else None,
+            party_name=partys if partys else None,
+            contact=partys.phone_number if partys else None,
+            address=partys.billing_address if partys else None,
             invoice_no=request.POST.get('billNo'),
             idate=request.POST.get('billDate'),
             state_of_supply=request.POST.get('placosupply'),
@@ -580,7 +591,7 @@ def credit_save(request):
             returnno=request.POST.get('returnno'),
             staff=staff,
             company=cmp,
-            party=party
+            party=partys
         )
 
         # Save the instance
@@ -706,6 +717,7 @@ def edit_credit(request,pk):
   crd = Creditnote.objects.get(id=pk,company=cmp)
   crditem = CreditnoteItem.objects.filter(credit=crd,company=cmp)
   cdate = crd.date.strftime("%Y-%m-%d")
+  print(crd.idate)
   context = {
     'staff':staff,  
     'crd':crd, 
@@ -715,6 +727,7 @@ def edit_credit(request,pk):
     'tod':tod,
     'cdate':cdate
     }
+  
   return render(request,'creditnote_edit.html',context)
 
 def update_creditnote(request,pk):
@@ -722,12 +735,16 @@ def update_creditnote(request,pk):
     sid = request.session.get('staff_id')
     staff = staff_details.objects.get(id=sid)
     cmp = company.objects.get(id=staff.company.id)  
-    party = Parties.objects.get(id=request.POST.get('partyname'))
+    party = None
+    party_id = request.POST.get('pid')
+    if party_id:
+      party = Parties.objects.get(id=party_id)
     crd = Creditnote.objects.get(id=pk,company=cmp)
     crd.party = party if party else None
+    crd.party_name = request.POST.get('partyname') if party else None
     crd.date = request.POST.get('date1')
     crd.invoice_no = request.POST.get('billNo')
-    crd.idate = request.POST.get('billdate')
+    crd.idate = request.POST.get('billDate')
     crd.state_of_supply  = request.POST.get('placosupply')
     crd.subtotal =float(request.POST.get('subtotal'))
     crd.grandtotal = request.POST.get('grandtotal')
@@ -748,18 +765,21 @@ def update_creditnote(request,pk):
     tax = request.POST.getlist("tax[]")
     price = request.POST.getlist("price[]")
 
-    CreditnoteItem.objects.filter(credit=crd,company=cmp).delete()
+    CreditnoteItem.objects.filter(credit=crd).delete()
     if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax) == len(price):
       mapped=zip(product, qty, discount, total, hsn, tax, price)
       mapped=list(mapped)
       for ele in mapped:
         itm = ItemModel.objects.get(id=ele[0])
-        CreditnoteItem.objects.create(product =itm.item_name,qty=ele[1],discount=ele[2],total=ele[3],credit=crd,company=cmp,item=itm,staff=staff)
+        CreditnoteItem.objects.create(product =itm.item_name,qty=ele[1],discount=ele[2],total=ele[3],hsn=ele[4],tax=ele[5],price=ele[6],credit=crd,company=cmp,item=itm,staff=staff)
 
     CreditnoteHistory.objects.create(credit=crd,company=cmp,staff=staff,action='Updated')
     return redirect('transactiontable')
 
   return redirect('transactiontable')
+
+
+
 
 def template1(request,pk):
   sid = request.session.get('staff_id')
@@ -841,6 +861,18 @@ def sharepdftomail(request,pk):
             print(e)
             messages.error(request, f'{e}')
             return redirect('template1',pk=pk)
+          
+def partydata(request):
+    if request.method == 'POST':
+        cid = request.POST.get('id')
+        part = Parties.objects.get(id=cid)
+        phno = part.phone_number
+        address = part.billing_address
+        pay = part.to_pay
+        bal = part.opening_balance
+        return JsonResponse({'phno': phno, 'address': address, 'pay': pay, 'bal': bal})
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
 
 # def get_party_details(request):
 #     if request.method == 'POST' and request.is_ajax():

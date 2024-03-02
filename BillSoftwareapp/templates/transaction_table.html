@@ -187,7 +187,7 @@
                     <div class="row">
                         <div class="container" style="width:100%;">
                             <div class="row">
-                                <div class="" style="margin-left: 7vh;">
+                                <div class="col-md-3" style="margin-left: 7vh;">
                                     <div class="form-group">
                                         <label for="fromDate" style="color: black; margin-bottom: 1vh;">From Date:</label>
                                         <input type="date" class="form-control h-100 border-secondary" id="fromDate" style="color: black; background-color: white;" onchange="filterDates()"> 
@@ -312,16 +312,6 @@
                                                     </div>
                                                 </div>
                                             </th>
-                                            {% comment %} <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);">
-                                                BY
-                                                &nbsp; <a onclick="toggleDropdown(5)"><i class="fa fa-filter" aria-hidden="true"></i></a>
-                                                <div class="dropdown-content" id="dropdownContent5">
-                                                    <label for="filterInput5" style="color: black; text-align: left;">Equal To</label>
-                                                    <input type="text" id="filterInput5" />
-                                                    <a class="btn " style="background-color:rgb(61,68,101);" onclick="cleardropdown(5)">Clear</a> 
-                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(5)">Apply</a>
-                                                </div>
-                                            </th> {% endcomment %}
                                             <th class="w-25 text-white " style="background-color:rgb(61,68,101);"></th>
                                         </tr>
                                     </thead>
@@ -334,8 +324,6 @@
                                             {% comment %} <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.pay_method}}</td> {% endcomment %}
                                             <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.grandtotal}}</td>
                                             <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">Credit Note</td>
-                                            {% comment %} <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td>
-                                            <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td> {% endcomment %}
                                             <td class="pt-3 m-0 extra">
                                                 <div class="btn-group">
                                                     <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -386,53 +374,7 @@
                                     </tbody>
                                 </table>
 
-                                <table id="credittablemodel" hidden>
-                                    <thead>
-                                        <tr>
-                                            <th>Customer Name</th>
-                                            <th>Customer Email</th>
-                                            <th>Date</th>
-                                            <th>Supply State</th>
-                                            
-                                            <th>Payment No</th>
-                                            <th>Adjustment</th>
-                                            <th>Advance</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>State/Other State</td>
-                                            <td>Cash/Cheque/UPI/Bank Name</td>
-                                            <td>Cheque ID/UPI ID/Bank no</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                                <table id="credittableitemmodel" hidden>
-                                    <thead>
-                                        <tr>
-                                            <th>Credit Note</th>
-                                            <th>Product Name</th>
-                                            <th>Product HSN</th>
-                                            <th>Quantity</th>
-                                            <th>Discount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Corresponding Row no from Creditnotemodel </td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                
                             </div>
                         </div>
                     </div>                        
@@ -441,36 +383,6 @@
         </div>
     </div>
         
-    <div class="modal" id="excelModal" tabindex="-1" role="dialog" aria-labelledby="excelModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="excelModalLabel">Upload File
-                    <label for="" style="color: red; font-size: x-small;" >* Refer Downloaded Sheet For Format </label><br></h5>
-                    <button type="button" class="btn close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true" style="font-size: x-large;">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form id="excelForm" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="file" style="color: black;">Choose Excel File for Credit Note- </label> <br>
-                            <input type="file" class="form-control-file" id="billfile" name="billfile" accept=".xls, .xlsx"><br><br>
-                            
-
-                            <label for="file" style="color: black;">Choose Excel File for Credit Note Products- </label> <br>
-                            <input type="file" class="form-control-file" id="prdfile" name="prdfile" accept=".xls, .xlsx"><br>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="uploadFile()" data-dismiss="modal">Upload</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 {% else %}
 <div class="container" style='background-color:white;'>
@@ -505,82 +417,8 @@
     }
 </script>
 
-{% comment %} <script>
-    function generatePDF() {
-        var elementToPrint = document.getElementById('tablediv');
-        if (elementToPrint.style.display === 'none') {
-            elementToPrint = document.getElementById('whatToPrint');
-        }
 
-        html2pdf(elementToPrint, {
-            margin: 10,
-            filename: 'document.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        });
-    }
-</script> {% endcomment %}
 
-{% comment %} <script>
-    var table = document.getElementById('credittable');
-    var rows = table.getElementsByTagName('tr');
-    for (var i = 1; i < rows.length; i++) {
-        var pid = rows[i].getElementsByTagName('td')[1].innerText;
-        findhistory(i,pid)            
-    }
-    function findhistory( rowid,pid){
-        $.ajax({
-            type : 'POST',
-            url: "{% url 'credithistory' p.id %}",
-            data: { 
-                id: pid ,
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            },
-            success: function(data){
-                rows[rowid].getElementsByTagName('td')[4].innerText=data.action;
-                rows[rowid].getElementsByTagName('td')[5].innerText=data.name;
-                if(data.action== 'Created'){
-                    rows[rowid].getElementsByTagName('td')[4].style.color = 'Red'
-                }else{
-                    rows[rowid].getElementsByTagName('td')[4].style.color = '#154c79'
-                }
-            }
-        });
-    }
-</script> {% endcomment %}
-
-<script>
-    function uploadFile() {
-        const form = document.getElementById('excelForm');
-        const formData = new FormData(form);
-        fetch('import_purchase_bill', {
-            method: 'POST',
-            body: formData
-        })
-        .then(data => {
-            swal({
-                title: "Imported !",
-                text: "Credit Note Import Successfull!",
-                icon: "success",
-                buttons: false,
-            })
-        })
-        .then(response => {
-            setTimeout(function () {
-                location.reload();
-            }, 1250);
-        })
-        .catch(error => {
-            swal({
-                title: "Error !",
-                text: "Credit Note Import Unuccessfull!",
-                icon: "warning",
-                buttons: false,
-            })
-        });
-    }
-</script>
 
 <script>
     function printfunction(){
@@ -810,24 +648,10 @@
         const ws = XLSX.utils.table_to_sheet(table);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-        XLSX.writeFile(wb, 'PurchaseBill.xlsx');
+        XLSX.writeFile(wb, 'CreditNote.xlsx');
     }
 </script>
 
-<script>
-    function excelmodel(){
-        const table1 = document.querySelector('#credittablemodel');
-        const ws1 = XLSX.utils.table_to_sheet(table1);
-        const wb1 = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb1, ws1, 'Sheet1');
-        XLSX.writeFile(wb1, 'PurchaseBillModel.xlsx');
 
-        const table2 = document.querySelector('#credittableitemmodel');
-        const ws2 = XLSX.utils.table_to_sheet(table2);
-        const wb2 = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb2, ws2, 'Sheet1');
-        XLSX.writeFile(wb2, 'PurchaseBillItemModel.xlsx');
-    }
-</script>
 
 {% endblock  %}
