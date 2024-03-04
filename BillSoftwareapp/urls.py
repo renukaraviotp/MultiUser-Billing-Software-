@@ -56,6 +56,9 @@ urlpatterns = [
     path('get_bill_details',views.get_bill_details,name='get_bill_details'),
     path('creditbilldata',views.creditbilldata,name='creditbilldata'),
     path('credit_bill_date',views.credit_bill_date,name='credit_bill_date'),
+    path('saveparty',views.saveparty,name='saveparty'),
+    path('party_dropdown',views.party_dropdown,name='party_dropdown'),
+    
     
     
     

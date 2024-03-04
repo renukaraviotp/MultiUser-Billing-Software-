@@ -589,42 +589,95 @@ def itemdetails(request):
   qty = itm.item_current_stock
   return JsonResponse({'hsn':hsn, 'gst':gst, 'igst':igst, 'price':price, 'qty':qty})
 
+def saveparty(request):
+    if request.method == 'POST':
+        sid = request.session.get('staff_id')
+        staff = staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
+        user = cmp.id
+
+        partyname = request.POST['partyname'].capitalize()
+        mobilenumber = request.POST['mobilenumber']
+        gstin = request.POST['gstin']
+        gstintype = request.POST['gstintype']
+        state = request.POST['state']
+        email = request.POST['email']
+        Date = request.POST['date']
+        address = request.POST['address']
+        balance = request.POST['balance']
+        buttonn = request.POST['buttonn']
+
+        
+
+        # Check if contact already exists
+        if Parties.objects.filter(phone_number=mobilenumber,company=cmp).exists():
+            messages.info(request, 'Sorry, Contact Number already exists')
+            return redirect('add_debitnote')
+        
+        elif Parties.objects.filter(email=email, company=cmp).exists():
+            messages.info(request, 'Sorry, Email already exists')
+            return redirect('add_debitnote')
+        elif Parties.objects.filter(gstin=gstin, company=cmp).exists():
+            messages.info(request, 'Sorry, GST number already exists')
+            return redirect('add_debitnote')
+        else:
+            part = Parties(party_name=partyname, gstin=gstin, phone_number=mobilenumber, gstintype=gstintype, state=state, address=address,
+                         email=email, opening_balance=balance, date=Date, company=cmp, user=cmp.user)
+
+            part.save()
+            return JsonResponse({'success': True, 'id':part.id})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+def party_dropdown(request):
+  sid = request.session.get('staff_id')
+  staff =  staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  part = Parties.objects.filter(company=cmp,user=cmp.user)
+
+  id_list = []
+  party_list = []
+  for p in part:
+    id_list.append(p.id)
+    party_list.append(p.party_name)
+
+  return JsonResponse({'id_list':id_list, 'party_list':party_list })
+
 def saveitem(request):
-  if request.method == 'POST':
     sid = request.session.get('staff_id')
     staff =  staff_details.objects.get(id=sid)
     cmp = company.objects.get(id=staff.company.id)
+    if request.method == 'POST':
+        item_name = request.POST.get('item_name')
+        hsn = request.POST.get('hsn')
+        qty = request.POST.get('qty')
+        tax_ref = request.POST.get('taxref')
+        intra_st = request.POST.get('intra_st')
+        inter_st = request.POST.get('inter_st')
+        sale_price = request.POST.get('saleprice')
+        purchase_price = request.POST.get('purprice')
 
-    name = request.POST['name']
-    unit = request.POST['unit']
-    hsn = request.POST['hsn']
-    taxref = request.POST['taxref']
-    sell_price = request.POST['sell_price']
-    cost_price = request.POST['cost_price']
-    intra_st = request.POST['intra_st']
-    inter_st = request.POST['inter_st']
 
-    if taxref != 'Taxable':
-        intra_st = 'GST0[0%]'
-        inter_st = 'IGST0[0%]'
-
-    itmdate = request.POST.get('itmdate')
-    stock = request.POST.get('stock')
-    itmprice = request.POST.get('itmprice')
-    minstock = request.POST.get('minstock')
-
-    # Check if the HSN already exists
-    if ItemModel.objects.filter(item_hsn=hsn,company=cmp).exists():
-       messages.info(request, 'Sorry, HSN Number already exists')
-       return redirect('add_debitnote')
-    else:
-        itm = ItemModel(item_name=name,item_hsn=hsn,item_unit=unit,item_taxable=taxref, item_gst=intra_st,item_igst=inter_st, item_sale_price=sell_price, 
-                    item_purchase_price=cost_price,item_opening_stock=stock,item_current_stock=stock,item_at_price=itmprice,item_date=itmdate,
-                    item_min_stock_maintain=minstock,company=cmp,user=cmp.user)
-        itm.save() 
+        # Check if the HSN already exists
+        if ItemModel.objects.filter(item_hsn=hsn).exists():
+            return JsonResponse({'success': False, 'message': 'HSN Number already exists'})
+        else:
+            # Save new item
+            item = ItemModel(
+            item_name=item_name,
+            item_hsn=hsn,
+            item_current_stock=qty,
+            item_taxable=tax_ref,
+            item_gst=intra_st,
+            item_igst=inter_st,
+            item_sale_price=sale_price,
+            item_purchase_price=purchase_price,
+            staff=staff,
+            company=cmp
+        )
+        item.save()
         return JsonResponse({'success': True})
-    
-  else:
+    else:
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 def item_dropdown(request):

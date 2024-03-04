@@ -455,7 +455,7 @@
             <div class="modal-body">
                 <!-- Your form for adding new items goes here -->
                 <!-- Example form: -->
-                <form id="newItemForm" action="{% url "save_item" %}" method='post' id="modalItem">
+                <form action="" method='post' id="modalItem">
                     {% csrf_token %}
                     <div class="form-group row">
                         <div class="col">
@@ -524,7 +524,8 @@
                         </div>
                     </div><br><br>
                     <!-- Add more fields as needed -->
-                    <button type="submit" class="btn btn-primary">Save Item</button>
+                    {% comment %} <button type="submit" class="btn btn-primary">Save Item</button> {% endcomment %}
+                    <button class="btn btn-primary" type="button" id="itemsave" onclick="history.go(0)">SAVE</button>
                 </form>
             </div>
         </div>
@@ -583,12 +584,12 @@
                 </div>
                 <div class="modal-body">
                     <!-- Your form goes here -->
-                    <form id="form_action" action="{% url 'party_save' %}" method="post" enctype="multipart/form-data">
+                    <form id="customercreation" action="{% url "party_save" %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                 
                         <div class="form-group row">
-                            <div class="col"><label id="partyname"> Party Name:</label><input id="input" type="text" name="partyname" class="form-control" placeholder="Party Name" required></div>
-                            <div class="col"><label id="mobilenumber"> Phone Number:</label><input id="input" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" required></div>
+                            <div class="col"><label id="partyname"> Party Name:</label><input id="partyname" type="text" name="partyname" class="form-control" placeholder="Party Name" required></div>
+                            <div class="col"><label id="mobilenumber"> Phone Number:</label><input id="contact" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" required></div>
                             <div class="col"><label for=""> GSTIN:</label><input id="input" type="text" name="gstin" class="form-control" placeholder="GSTIN" id="gstinInput" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}"> <small>#27ABCDE1234F1Z5</small></div>
                             
                         </div>
@@ -608,7 +609,7 @@
                             </div>
                             <div class="col-md">
                                 <label for="">State</label>
-                                    <select name="state" class="form-control">
+                                    <select name="state" class="form-control" id="state">
                                         <option value="">--Select State--</option>
                                         <option value="Andhra Pradesh">Andhra Pradesh</option>
                                         <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -642,35 +643,35 @@
                                     </select>
                             </div>
                 
-                            <div class="col-md"><label for="">Email:</label><input id="input" type="email" name="email" class="form-control" placeholder="Email" ></div>
-                            <div class="col-md"><label for="">Date</label><input id="input" type="date" name="date" class="form-control" value="{{todaydate}}"  ></div>
+                            <div class="col-md"><label for="">Email:</label><input id="email" type="email" name="email" class="form-control" placeholder="Email" ></div>
+                            <div class="col-md"><label for="">Date</label><input id="date1" type="date" name="date" class="form-control" value="{{todaydate}}"  ></div>
                  
                         </div><br>
                 
                         <div class="row form-group">
                             <div class="col-md-6">
                                 <label for="">Billing Address</label>
-                                <textarea name="address" id="" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
+                                <textarea name="address" id="baddress" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
                             </div>
                         </div>
                         <br>
                         <div class="row form-group">
                             <div class="col-md-4">
                                 <label for="">Balance</label>
-                                <input id="input" type="number" name="balance" class="form-control" placeholder="Balance" min="0">
+                                <input id="balance" type="number" name="balance" class="form-control" placeholder="Balance" min="0">
                             </div>
                         </div>
                         <div class="row form-group radio-buttons ml-1" style="display: none;">
                             
-                            <input type="radio" name="pay_recieve" class="col-1" value="pay"><label style="color: black;">To Pay</label>
-                            <input type="radio" name="pay_recieve" class="col-1" value="receive"><label style="color: black;">To Receive</label>
+                            <input type="radio" id="toPayRadio" name="pay_recieve" class="col-1" value="pay"><label style="color: black;">To Pay</label>
+                            <input type="radio" id="toReceiveRadio" name="pay_recieve" class="col-1" value="receive"><label style="color: black;">To Receive</label>
                             
                         </div><br>
                 
                         
                             <center>
                                 {% comment %} <button id="checkk" style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="new" name="buttonn">Save & New</button>  {% endcomment %}
-                                <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="old" name="buttonn">Save </button> 
+                                <button style="background-color: #3d4465;color: white;" id="customersave" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="old" name="buttonn">Save </button> 
                             </center>
                 
                 </form>
@@ -1512,6 +1513,138 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         }
 
     });
+</script>
+<script>
+
+    $(document).on("click", "#customersave", function(){
+        if ($('#toPayRadio').is(':checked')) {
+            pay = $('#toPayRadio').val()
+        } else {
+            pay = $('#toReceiveRadio').val()
+        }
+        $.ajax({
+
+            type : 'POST',
+            url:"{% url 'saveparty' %}",
+            data:{
+                name : $('#partyname').val(),
+                email : $("#email").val(),
+                contact :$("#contact").val(),
+                splystate : $("#state").val(),
+                baddress : $("#baddress").val(),
+                gsttype :$("#gstintype").val(),
+                gstin :$("#gstin").val(),
+                partydate : $("#date1").val(),
+                paytype : pay,
+                openbalance : $("#balance").val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(response) {
+                if(response.id != ""){
+                    var partyId = response.id
+                }
+                document.getElementById("customercreation").reset();
+                $('#partyModal').modal('hide');
+                reloadCustomer(partyId);
+            
+            },
+       
+        });   
+        
+    });
+
+    
+
+
+
+    function reloadCustomer(id) {
+        $.ajax({
+            url: "{% url 'party_dropdown' %}",
+            type: "GET",
+            dataType: "json",
+            data: $(this).serialize(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+
+            success: function(response) {
+                id_list = response.id_list
+                party_list = response.party_list
+                
+                var $select = $(document.getElementById('customer'));
+                var selectize = $select[0].selectize;
+                for(let i=0; i<id_list.length;i++){
+                    selectize.addOption({value:id_list[i],text:party_list[i]});
+                }
+                selectize.setValue(id);
+            },
+        });
+    }
+
+
+    $(document).on("click", "#itemsave", function() {
+        var item_name = $("#item_name").val();
+        var qty = $("#qty").val();
+        var hsn = $("#hsn").val();
+        var taxref = $("input[name='taxref']:checked").val();
+        var sell_price = $("#saleprice").val();
+        var cost_price = $("#purprice").val();
+        var intra_st = $("#intra_st").val();
+        var inter_st = $("#inter_st").val();
+        
+        if (item_name === '') {
+            alert('Please provide an Item Name');
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'saveitem' %}",
+                data: {
+                    item_name: item_name,
+                    qty: qty,
+                    hsn: hsn,
+                    taxref: taxref,
+                    saleprice: sell_price,
+                    purprice: cost_price,
+                    intra_st: intra_st,
+                    inter_st: inter_st,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function(response) {
+                    $('#newitem').modal('hide');
+                    reloadItem();
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+    });
+    
+
+    function reloadItem() {
+        $.ajax({
+            url: "{% url 'item_dropdown' %}",
+            type: "GET",
+            dataType: "json",
+            data: $(this).serialize(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+
+            success: function(data) {
+                id_list = data.id_list
+                product_list = data.product_list
+                var table = document.getElementById('tab_logic');
+                var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                for (var i = 1; i <= rows.length; i++) {
+                    var $select = $(document.getElementById('product'+i));
+                    var selectize = $select[0].selectize;
+                    for(let i=0; i<id_list.length;i++){
+                        selectize.addOption({value:id_list[i],text:product_list[i]});
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
+        });
+    }
 </script>
    
 

@@ -507,18 +507,18 @@
             <div class="modal-body">
                 <!-- Your form for adding new items goes here -->
                 <!-- Example form: -->
-                <form id="newItemForm" action="" method='post' id="modalItem">
+                <form action="" method='post' id="modalItem">
                     {% csrf_token %}
                     <div class="form-group row">
                         <div class="col">
-                            <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name" name="item_name" required>
+                            <input style="color: black;" class="form-control border-dark" type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name" name="item_name" required>
                         </div>
                         <div class="col">
-                            <input style="color: black;" class="form-control border-dark fw-bolder" type="number" placeholder="ITEM HSN" id="hsn" name="hsn" onchange="checkhsn(this)" required>
+                            <input style="color: black;" class="form-control border-dark" type="number" placeholder="ITEM HSN" id="hsn" name="hsn" onchange="checkhsn(this)" required>
                             <div class="text-danger m-2" id="warnhsn"></div>
                         </div>
                         <div class="col">
-                            <input style="color: black;" class="form-control border-dark fw-bolder" type="text" placeholder="QTY" autocomplete="off" id="qty" name="qty" required>
+                            <input style="color: black;" class="form-control border-dark" type="text" placeholder="QTY" autocomplete="off" id="qty" name="qty" required>
                         </div>
                     </div>
                     <div id="pricing_template" style="background-color: rgba(144, 211, 117, 0.098);">
@@ -607,13 +607,14 @@
                 </div>
                 <div class="modal-body">
                     <!-- Your form goes here -->
-                    <form id="form_action" action="{% url 'party_save' %}" method="post" enctype="multipart/form-data">
+                    <form id="customercreation" action="" method="post" enctype="multipart/form-data">
+
                         {% csrf_token %}
                 
                         <div class="form-group row">
-                            <div class="col"><label id="partyname"> Party Name:</label><input id="input" type="text" name="partyname" class="form-control" placeholder="Party Name" required></div>
-                            <div class="col"><label id="mobilenumber"> Phone Number:</label><input id="input" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" required></div>
-                            <div class="col"><label for=""> GSTIN:</label><input id="input" type="text" name="gstin" class="form-control" placeholder="GSTIN" id="gstinInput" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}"> <small>#27ABCDE1234F1Z5</small></div>
+                            <div class="col"><label id="partyname"> Party Name:</label><input id="partyname" type="text" name="partyname" class="form-control" placeholder="Party Name" required></div>
+                            <div class="col"><label id="mobilenumber"> Phone Number:</label><input id="partyphno" type="text" name="mobilenumber" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" required></div>
+                            <div class="col"><label for=""> GSTIN:</label><input id="gstin" type="text" name="gstin" class="form-control" placeholder="GSTIN" id="gstinInput" pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}Z[0-9]{1}"> <small>#27ABCDE1234F1Z5</small></div>
                             
                         </div>
                 
@@ -623,7 +624,7 @@
                 
                             <div class="col-md">
                                 <label for="">GST Type:</label>
-                                    <select name="gstintype" class="form-control">
+                                    <select name="gstintype" class="form-control" id="modalgsttype">
                                         <option value="">--Select GST type--</option>
                                         <option value="Unregistered/Consumers">Unregistered/Consumers</option>
                                         <option value="Registered Buisness - Regular">Registered Buisness - Regular</option>
@@ -632,7 +633,7 @@
                             </div>
                             <div class="col-md">
                                 <label for="">State</label>
-                                    <select name="state" class="form-control">
+                                    <select name="state" class="form-control" id="splystate">
                                         <option value="">--Select State--</option>
                                         <option value="Andhra Pradesh">Andhra Pradesh</option>
                                         <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -666,35 +667,35 @@
                                     </select>
                             </div>
                 
-                            <div class="col-md"><label for="">Email:</label><input id="input" type="email" name="email" class="form-control" placeholder="Email" ></div>
-                            <div class="col-md"><label for="">Date</label><input id="input" type="date" name="date" class="form-control" value="{{todaydate}}"  ></div>
+                            <div class="col-md"><label for="">Email:</label><input id="partyemail" type="email" name="email" class="form-control" placeholder="Email" ></div>
+                            <div class="col-md"><label for="">Date</label><input id="partydate" type="date" name="date" class="form-control" value="{{todaydate}}"  ></div>
                  
                         </div><br>
                 
                         <div class="row form-group">
                             <div class="col-md-6">
                                 <label for="">Billing Address</label>
-                                <textarea name="address" id="" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
+                                <textarea name="address" id="baddress" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
                             </div>
                         </div>
                         <br>
                         <div class="row form-group">
                             <div class="col-md-4">
                                 <label for="">Balance</label>
-                                <input id="input" type="number" name="balance" class="form-control" placeholder="Balance" min="0">
+                                <input id="openbalance" type="number" name="balance" class="form-control" placeholder="Balance" min="0">
                             </div>
                         </div>
                         <div class="row form-group radio-buttons ml-1" style="display: none;">
                             
-                            <input type="radio" name="pay_recieve" class="col-1" value="pay"><label style="color: black;">To Pay</label>
-                            <input type="radio" name="pay_recieve" class="col-1" value="receive"><label style="color: black;">To Receive</label>
+                            <input type="radio" name="pay_recieve" id="toPayRadio" class="col-1" value="pay"><label style="color: black;">To Pay</label>
+                            <input type="radio" name="pay_recieve" id="toReceiveRadio" class="col-1" value="receive"><label style="color: black;">To Receive</label>
                             
                         </div><br>
                 
                         
                             <center>
                                 {% comment %} <button id="checkk" style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="new" name="buttonn">Save & New</button>  {% endcomment %}
-                                <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="old" name="buttonn">Save </button> 
+                                <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " id="customersave" value="old" name="buttonn">Save </button> 
                             </center>
                 
                 </form>
@@ -1047,38 +1048,6 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         $('#prc_ a').addClass('text-dark')
         $('#stk_').css({'border-bottom': 'none'})
         $('#pricing_template').attr('hidden',false)
-
-        $('#prc_').on('click',function(){
-            $(this).css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
-            $('#stk_ a').removeClass('text-dark')
-            $('#prc_ a').addClass('text-dark')
-            $('#stk_').css({'border-bottom': 'none'})
-            $('#pricing_template').attr('hidden',false)
-            $('#stock_template').attr('hidden',true)
-        })
-    })
-
-    $(document).ready(function(){
-        $('#stk_').on('click',function(){
-            $('#stk_').css({'border-bottom': '3px solid rgba(0, 0, 0, 0.548)'})
-            $('#prc_ a').removeClass('text-dark')
-            $('#stk_ a').addClass('text-dark')
-            $('#prc_').css({'border-bottom': 'none'})
-            $('#pricing_template').attr('hidden',true)
-            $('#stock_template').attr('hidden',false)
-        })
-    })
-
-    $(document).ready(function(){
-        $('#next_btn').on('click',function(){
-            $('#stk_').click()
-        })
-    })
-
-    $(document).ready(function(){
-        $('#prev_btn').on('click',function(){
-            $('#prc_').click()
-        })
     })
 </script>
 
@@ -1217,48 +1186,99 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         calc()
     });
 
-   
-    $(document).on("click","#itemsave",function(){
-        var item_name = document.getElementById('item_name').value;
-
-        if ($('#inclusive').prop('checked')) {
-            tax= $('#inclusive').val();
-        } 
-        else{
-            tax = $('#check').val();
+    $(document).on("click", "#customersave", function(){
+        var pay;
+        if ($('#toPayRadio').is(':checked')) {
+            pay = $('#toPayRadio').val();
+        } else {
+            pay = $('#toReceiveRadio').val();
         }
+        $.ajax({
+            type : 'POST',
+            url: "{% url 'saveparty' %}",
+            data:{
+                partyname : $('#partyname').val(),
+                email : $("#partyemail").val(),
+                mobilenumber :$("#partyphno").val(),
+                state : $("#splystate").val(),
+                address : $("#baddress").val(),
+                gstintype :$("#modalgsttype").val(),
+                gstin :$("#gstin").val(),
+                date : $("#partydate").val(),
+                buttonn : $("#buttonn").val(),
+                balance : $("#openbalance").val(),
+                pay_recieve: pay,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+            success: function(response) {
+                document.getElementById("customercreation").reset();
+                $('#partyModal').modal('hide');
+                reloadCustomer();
+            },
+        });   
+    });
+    
 
-        if (item_name === ''){
+    function reloadCustomer() {
+        $.ajax({
+            url: "{% url 'party_dropdown' %}",
+            type: "GET",
+            dataType: "json",
+            data: $(this).serialize(),
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+
+            success: function(response) {
+                id_list = response.id_list
+                party_list = response.party_list
+                var $select = $(document.getElementById('employee'));
+                var selectize = $select[0].selectize;
+                for(let i=0; i<id_list.length;i++){
+                    selectize.addOption({value:id_list[i],text:party_list[i]});
+                }
+                selectize.setValue("");
+            },
+        });
+    }
+
+   
+    $(document).on("click", "#itemsave", function() {
+        var item_name = $("#item_name").val();
+        var qty = $("#qty").val();
+        var hsn = $("#hsn").val();
+        var taxref = $("input[name='taxref']:checked").val();
+        var sell_price = $("#saleprice").val();
+        var cost_price = $("#purprice").val();
+        var intra_st = $("#intra_st").val();
+        var inter_st = $("#inter_st").val();
+        
+        if (item_name === '') {
             alert('Please provide an Item Name');
-        }else{
+        } else {
             $.ajax({
-                type : 'POST',
-                url:"{% url 'saveitem' %}",
-                data:{
-                    name : $("#item_name").val(),
-                    unit : $("#unit").val(),
-                    hsn : $("#hsn").val(),
-                    taxref : tax,
-                    sell_price : $("#saleprice").val(),
-                    cost_price : $("#purprice").val(),
-                    intra_st : $("#intra_st").val(),
-                    inter_st : $("#inter_st").val(),
-                    itmdate : $("#itmdate").val(),
-                    stock : $("#stock").val(),
-                    itmprice : $("#itmprice").val(),
-                    minstock : $("#minstock").val(),
+                type: 'POST',
+                url: "{% url 'saveitem' %}",
+                data: {
+                    item_name: item_name,
+                    qty: qty,
+                    hsn: hsn,
+                    taxref: taxref,
+                    saleprice: sell_price,
+                    purprice: cost_price,
+                    intra_st: intra_st,
+                    inter_st: inter_st,
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
-            
                 success: function(response) {
-                    document.getElementById("modalItem").reset();
                     $('#newitem').modal('hide');
                     reloadItem();
-                 
                 },
-            });  
-        }      
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
     });
+    
 
     function reloadItem() {
         $.ajax({
