@@ -3,8 +3,6 @@
 {% load static %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="https://kit.fontawesome.com/fbe819dd43.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-**********" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -184,12 +182,27 @@
                                     <div class="col-md-4 custom-dropdown">
                                         <label for=""> Party Name</label>
                                         <div class="input-group">
-                                            <input type="text" value="{{ crd.party.party_name }}" class="dropdown-input form-control" id="ip" name='partyname' oninput="getEmail();">
+                                            <select name="partyname" id="employee" class="form-control" style="color:black;">
+                                                
+                                                {% comment %} <option value="{{ crd.party }}" selected>{{crd.party_name}}</option> {% endcomment %}
+                                                <option value="" selected hidden>{{crd.party.party_name}}</option>
+                                                {% for c in party %}
+                                                    {% if c.cid_id == cmp.cid %}
+                                                        <option value="{{ c.id }}" data-party-id="{{ c.id }}" data-balance="{{ c.opening_balance }}" onclick="selectItem(this);">
+                                                            {{ c.party_name }}
+                                                        </option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                            </select>
+                                            
+                                             &nbsp;&nbsp;&nbsp;
+                                            {% comment %} <input type="text" value="{{ crd.party.party_name }}" class="dropdown-input form-control" id="ip" name='partyname' oninput="getEmail();"> {% endcomment %}
                                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
                                         </div>
-<ul id="employee" class="dropdown-list">
+{% comment %} <ul id="employee" class="dropdown-list">
 {% for p in party %}
 {% if c.cid_id == cmp.cid %}
     <li class="dropdown-item"
@@ -201,31 +214,54 @@
     </li>
     {% endif %}
 {% endfor %}
-</ul>
+</ul> {% endcomment %}
                                             
-                                            <small id="availableBalanceSection" style='color:black'> 
-                                                
-                                                {% if party.to_pay == 1 %}
-                                                Available Balance:<input id="ab" value="{{crd.party.opening_balance}}" style='color:red' type="text" readonly>
-                                                {% else %}
-                                                Available Balance:<input id="ab" value="{{crd.party.opening_balance}}" style='color:green' type="text" readonly>
-                                                {% endif %}
-                                               
-                                            </small>
+<div class="mt-1 d-flex" >
+    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval">{{crd.party.opening_balance}}</span></span>
+</div>
                                     </div>
                                     <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" placeholder="Bill Number" hidden></div>
+
+                                    <div class="col-md-3" id="phonediv">
+                                        <label class="col-form-label" >Phone No. </label>
+                                        <input class="form-control" name="number" value="{{crd.contact}}"  id="ph"  style="color: black;background-color: white;" pattern="[0-9]{10}" placeholder="Phone number" readonly>
+                                    </div>
+                                <div class="col-md-4" id="addressdiv">
+                                    <label class="col-form-label">Billing Address</label>
+                                    <textarea class="form-control mb-3" name="address" id="bname" rows="6" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly>{{crd.address}}</textarea>
+                                </div>
+                            </div>
+                                    <div id="daddressdiv" style="display: none;">
+                                        <label class="col-form-label">Billing Address</label>
+                                        <textarea class="form-control mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly>{{crd.address}}</textarea>
+                                    </div>
                                     
-                                    <div class="col-md-3"><label for=""> Phone Number</label><input id="ph" type="text" name="number" value="{{crd.contact}}" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
+                                    {% comment %} <div class="col-md-3"><label for=""> Phone Number</label><input id="ph" type="text" name="number" value="{{crd.contact}}" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
                                     <div class="col-md-4"><label for="">Billing Address</label>
                                         <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly>{{crd.address}}</textarea></div>
                                 
-                                </div>
+                                </div> {% endcomment %}
                             
                 
                             <div class="form-group row">
                                 <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{crd.returnno}}" type="text" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
-                                <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" value={{crd.invoice_no}} class="form-control" placeholder="Bill Number" ></div>
-                                <div class="col"><label for=""> Bill Date</label><input id="bdt" type="date" value="{{crd.idate|date:'Y-m-d'}}" name="billDate" class="form-control" placeholder="Bill Date"> </div>
+                                <div class="col"><label for=""> Bill No.</label>
+                                    <select class="form-control" name="billNo" id="bno" style="color: black;background-color: white;">
+                                        <option value="" selected hidden>{{crd.invoice_no}}</option>
+                                        {% for bill_number in bill_numbers %}
+                                            <option value="{{ bill_number }}">{{ bill_number }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                    {% comment %} <input id="bno" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div> {% endcomment %}
+                                <div class="col"><label for=""> Bill Date</label>
+                                    <select class="form-control" name="billDate" id="bdt" style="color: black;background-color: white;">
+                                        <option value="" selected hidden>{{crd.idate|date:'Y-m-d'}}</option>
+                                        <!-- Options will be dynamically added here using JavaScript -->
+                                    </select>
+                                </div>
+                                {% comment %} <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" value={{crd.invoice_no}} class="form-control" placeholder="Bill Number" ></div>
+                                <div class="col"><label for=""> Bill Date</label><input id="bdt" type="date" value="{{crd.idate|date:'Y-m-d'}}" name="billDate" class="form-control" placeholder="Bill Date"> </div> {% endcomment %}
                                 
                                 
                             </div>
@@ -471,7 +507,7 @@
             <div class="modal-body">
                 <!-- Your form for adding new items goes here -->
                 <!-- Example form: -->
-                <form id="newItemForm" action="{% url "save_item" %}" method='post' id="modalItem">
+                <form id="newItemForm" action="" method='post' id="modalItem">
                     {% csrf_token %}
                     <div class="form-group row">
                         <div class="col">
@@ -540,7 +576,8 @@
                         </div>
                     </div><br><br>
                     <!-- Add more fields as needed -->
-                    <button type="submit" class="btn btn-primary">Save Item</button>
+                    <button class="btn btn-primary" type="button" id="itemsave" onclick="history.go(0)">SAVE</button>
+                    {% comment %} <button type="submit" class="btn btn-primary">Save Item</button> {% endcomment %}
                 </form>
             </div>
         </div>
@@ -784,6 +821,111 @@
 
 
         
+</script>
+
+<script>
+
+    $(document).ready(function () {
+        // Event listener for the 'customer' dropdown
+        $('#employee').on('change', function () {
+            var customerId = $('#employee').val();
+    
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'creditbilldata' %}",
+                data: {
+                    id: customerId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function (data) {
+                    // Clear existing options in the dropdowns
+                    $('#bno').empty();
+                    $('#bdt').empty();
+    
+                    if (data.bill_numbers && data.bill_dates) {
+                        for (var i = 0; i < data.bill_numbers.length; i++) {
+                            var optionText = data.bill_numbers[i];
+                            var optionTexts = data.bill_dates[i];
+                            $('#bno').append($('<option>', {
+                                value: data.bill_numbers[i],
+                                text: optionText
+                            }));
+                            $('#bdt').append($('<option>', {
+                                value: data.bill_dates[i],
+                                text: optionTexts
+                            }));
+                        }
+                    } else {
+                        $('#bno').append($('<option>', {
+                            value: 'No bill',
+                            text: 'No bills available'
+                        }));
+                        $('#bdt').append($('<option>', {
+                            value: 'No date',
+                            text: 'No date available'
+                        }));
+                    }
+                }
+            });
+        });
+    
+        // Event listener for the 'bill_no' dropdown
+        $('#bno').on('change', function () {
+            
+            var selectedBillNo = $(this).val();
+            console.log(selectedBillNo);
+            
+        
+            // Make an AJAX request to get the date for the selected bill number
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'credit_bill_date' %}",  // Replace with the actual URL to fetch date
+                data: {
+                    
+                    billNo: selectedBillNo,  // Ensure the key matches the one expected by the server
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function (dateData) {
+                    // Clear existing options in the 'billdate' dropdown
+                    $('#bdt').empty();
+        
+                    if (dateData && dateData.bill_date) {
+                        // Append the date option to the 'billdate' dropdown
+                        $('#bdt').append($('<option>', {
+                            value: dateData.bill_date,
+                            text: dateData.bill_date
+                        }));
+                    } else {
+                        // If no date is available, add a default option
+                        $('#bdt').append($('<option>', {
+                            value: 'No date',
+                            text: 'No date available'
+                        }));
+                    }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.log("Error:", errorThrown);
+                    // Handle error here if needed
+                }
+            });
+        });
+    });
+
+
+    function selectItem(item) {
+        var partyId = item.getAttribute("data-party-id");
+
+        var url = "/get_sales_invoice_details/" + partyId;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Update the "Bill No." and "Bill Date" fields with fetched data
+                document.getElementById("bno").value = data.billNo;
+                document.getElementById("bdt").value = data.billDate;
+            })
+            .catch(error => console.error("Error fetching sales invoice details:", error));
+    }
 </script>
 
 
@@ -1081,7 +1223,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
         if ($('#inclusive').prop('checked')) {
             tax= $('#inclusive').val();
-        }
+        } 
         else{
             tax = $('#check').val();
         }
@@ -1107,11 +1249,12 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                     minstock : $("#minstock").val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
-           
+            
                 success: function(response) {
                     document.getElementById("modalItem").reset();
                     $('#newitem').modal('hide');
                     reloadItem();
+                 
                 },
             });  
         }      
@@ -1145,12 +1288,12 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     }
 
     $(document).ready(function () {
-        $('#customer').on('change', function() {
+        $('#employee').on('change', function() {
             $.ajax({
                 type : 'POST',
-                url: "",
+                url: "{% url 'partydata' %}",
                 data: {
-                    id: $('#customer').val(),
+                    id: $('#employee').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
              
@@ -1160,16 +1303,10 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                             document.getElementById('daddressdiv').style.display = 'none';
                             document.getElementById('addressdiv').style.display = 'none';
                             document.getElementById('phonediv').style.display = 'none';
-                            document.getElementById('dbilldiv').style.display = 'block';
-                            document.getElementById('billdiv').style.display = 'none';
-                            document.getElementById('ddbilldiv').style.display = 'none';
                         }else{
                             document.getElementById('daddressdiv').style.display = 'block';
                             document.getElementById('addressdiv').style.display = 'none';
                             document.getElementById('phonediv').style.display = 'none';
-                            document.getElementById('billdiv').style.display = 'block';
-                            document.getElementById('dbilldiv').style.display = 'none';
-                            document.getElementById('ddbilldiv').style.display = 'none';
                             document.getElementById('dbname').value = data.address;
                         }
                     }else{
@@ -1177,23 +1314,17 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                             document.getElementById('daddressdiv').style.display = 'none';
                             document.getElementById('addressdiv').style.display = 'none';
                             document.getElementById('phonediv').style.display = 'block';
-                            document.getElementById('cust_phno').value = data.phno;
-                            document.getElementById('ddbilldiv').style.display = 'block';
-                            document.getElementById('dbilldiv').style.display = 'none';
-                            document.getElementById('billdiv').style.display = 'none';
+                            document.getElementById('ph').value = data.phno;
                         }else{
                             document.getElementById('daddressdiv').style.display = 'none';
                             document.getElementById('addressdiv').style.display = 'block';
                             document.getElementById('phonediv').style.display = 'block';
                             document.getElementById('bname').value = data.address;
-                            document.getElementById('cust_phno').value = data.phno;
-                            document.getElementById('ddbilldiv').style.display = 'none';
-                            document.getElementById('dbilldiv').style.display = 'none';
-                            document.getElementById('billdiv').style.display = 'block';
+                            document.getElementById('ph').value = data.phno;
                         }
                     }
 
-                    if(data.pay == 'To Pay'){
+                    if(data.pay){
                         document.getElementById('balancediv').style.display = 'block';
                         document.getElementById('balval').innerText = data.bal;
                         document.getElementById('balval').style.color = 'red';
@@ -1447,6 +1578,17 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             document.getElementById('inter_st').value = ' ';
         }
 
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // document.getElementById('customersave').addEventListener('click', function() {
+        //     history.go(0);
+        // });
+
+        document.getElementById('itemsave').addEventListener('click', function() {
+            history.go(0);
+        });
     });
 </script>
    

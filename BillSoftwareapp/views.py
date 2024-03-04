@@ -16,6 +16,7 @@ from django.conf import settings
 from io import BytesIO
 from xhtml2pdf import pisa
 from django.core.mail import send_mail
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 
@@ -370,31 +371,105 @@ def credit_add(request):
   return render(request, 'credit_add.html',context) 
 
 
-# def get_sales_invoice_details(request, party_id):
-#     try:
-#         sales_invoice = SalesInvoice.objects.get(party_id=party_id)
-#         data = {
-#             'billNo': sales_invoice.invoice_no,
-#             'billDate': sales_invoice.date.strftime('%Y-%m-%d'),  # Format the date as needed
-#         }
-#         return JsonResponse(data)
-#     except SalesInvoice.DoesNotExist:
-#         return JsonResponse({'error': 'Sales invoice not found'}, status=404)
-      
 def get_sales_invoice_details(request, party_id):
     try:
-        # Assuming SalesInvoice model has fields 'bill_no', 'bill_date', and 'balance'
-        sales_invoice = SalesInvoice.objects.get(party_id=party_id)
+        # Assuming 'party_id' is the foreign key to the Party model in your SalesInvoice model
+        sales_invoice = SalesInvoice.objects.filter(party__id=party_id).latest('date')
+
+        # Assuming 'invoice_no' and 'date' are fields in your SalesInvoice model
         data = {
             'billNo': sales_invoice.invoice_no,
-            'billDate': sales_invoice.date.strftime('%Y-%m-%d'),  # Format date as string
-            'balance': sales_invoice.party.opening_balance
+            'billDate': sales_invoice.date.strftime('%Y-%m-%d'),  # Format the date as needed
         }
         return JsonResponse(data)
     except SalesInvoice.DoesNotExist:
-        return JsonResponse({'error': 'Sales invoice details not found for the given party ID'}, status=404)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        return JsonResponse({'error': 'Sales invoice not found'}, status=404)
+      
+def creditbilldata(request):
+    try:
+        partyid = request.POST['id']
+        party_instance = Parties.objects.get(id=partyid)
+
+        # Initialize lists to store multiple bill numbers and dates
+        bill_numbers = []
+        bill_dates = []
+
+        try:
+            # Retrieve all instances for the party
+            bill_instances = SalesInvoice.objects.filter(party=party_instance)
+
+            # Loop through each instance and collect bill numbers and dates
+            for bill_instance in bill_instances:
+                bill_numbers.append(bill_instance.invoice_no)
+                bill_dates.append(bill_instance.date)
+
+        except SalesInvoice.DoesNotExist:
+            pass
+
+        # Return a JSON response with the list of bill numbers and dates
+        if not bill_numbers and not bill_dates:
+            return JsonResponse({'bill_numbers': ['nobill'], 'bill_dates': ['nodate']})
+
+        return JsonResponse({'bill_numbers': bill_numbers, 'bill_dates': bill_dates})
+
+    except KeyError:
+        return JsonResponse({'error': 'The key "id" is missing in the POST request.'})
+
+    except Parties.DoesNotExist:
+        return JsonResponse({'error': 'Party not found.'})
+    
+def credit_bill_date(request):
+    selected_bill_no = request.POST.get('billNo', None)
+    print(selected_bill_no)
+
+    try:
+
+        # Get the latest SalesInvoice with the specified bill_number and party
+        bill = SalesInvoice.objects.filter(invoice_no=selected_bill_no).latest('date')
+        bill_date = bill.date.strftime('%Y-%m-%d')
+        print(bill_date)
+        
+    except SalesInvoice.DoesNotExist:
+        return JsonResponse({'error': 'Bill number not found'}, status=400)
+    except SalesInvoice.MultipleObjectsReturned:
+        return JsonResponse({'error': 'Multiple SalesInvoices found for the same bill number'}, status=400)
+
+    return JsonResponse({'bill_date': bill_date})
+
+      
+# def get_sales_invoice_details(request):
+#     if request.method == 'POST':
+#         pid = request.POST.get('pid')
+        
+#         # Fetch bill details from the database based on the party_id
+#         try:
+#             invoice = SalesInvoice.objects.get(party=pid)
+#             response_data = {
+#                 'bill_number': invoice.invoice_no,
+#                 'bill_date': invoice.date.strftime('%Y-%m-%d'),  # Assuming date is a DateTimeField
+#             }
+#             return JsonResponse(response_data)
+#         except SalesInvoice.DoesNotExist:
+#             return JsonResponse({'error': 'Invoice not found'}, status=404)
+#     else:
+#         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@csrf_exempt
+def get_bill_details(request):
+    if request.method == 'POST' and request.is_ajax():
+        party_id = request.POST.get('party_id')
+        try:
+            # Assuming SalesInvoice has a ForeignKey to the Party model and fields invoice_no and date
+            invoice = SalesInvoice.objects.filter(party=party_id).latest('id')  # Get the latest invoice for the party
+            bill_details = {
+                'billNo': invoice.invoice_no,
+                'billDate': invoice.date.strftime('%Y-%m-%d'),  # Convert date to string format if needed
+            }
+            return JsonResponse(bill_details)
+        except SalesInvoice.DoesNotExist:
+            return JsonResponse({'error': 'No bill found for this party.'}, status=404)
+    else:
+        return JsonResponse({'error': 'Invalid request.'}, status=400)
 
 
 def item_details(request):
@@ -414,12 +489,12 @@ def item_details(request):
     print(qty)
     return JsonResponse({'hsn': hsn, 'price': price, 'gst': gst, 'igst': igst, 'qty': qty})
   
-def item_dropdown(request):
-    options={}
-    option_objects=ItemModel.objects.all()
-    for option in option_objects:
-      options[option.id]=[option.item_name]
-    return JsonResponse(options)
+# def item_dropdown(request):
+#     options={}
+#     option_objects=ItemModel.objects.all()
+#     for option in option_objects:
+#       options[option.id]=[option.item_name]
+#     return JsonResponse(options)
       
 
 
@@ -515,50 +590,53 @@ def itemdetails(request):
   return JsonResponse({'hsn':hsn, 'gst':gst, 'igst':igst, 'price':price, 'qty':qty})
 
 def saveitem(request):
-  sid = request.session.get('staff_id')
-  staff =  staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
+  if request.method == 'POST':
+    sid = request.session.get('staff_id')
+    staff =  staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
 
-  name = request.POST['name']
-  unit = request.POST['unit']
-  hsn = request.POST['hsn']
-  taxref = request.POST['taxref']
-  sell_price = request.POST['sell_price']
-  cost_price = request.POST['cost_price']
-  intra_st = request.POST['intra_st']
-  inter_st = request.POST['inter_st']
+    name = request.POST['name']
+    unit = request.POST['unit']
+    hsn = request.POST['hsn']
+    taxref = request.POST['taxref']
+    sell_price = request.POST['sell_price']
+    cost_price = request.POST['cost_price']
+    intra_st = request.POST['intra_st']
+    inter_st = request.POST['inter_st']
 
-  if taxref != 'Taxable':
-    intra_st = 'GST0[0%]'
-    inter_st = 'IGST0[0%]'
+    if taxref != 'Taxable':
+        intra_st = 'GST0[0%]'
+        inter_st = 'IGST0[0%]'
 
-  itmdate = request.POST.get('itmdate')
-  stock = request.POST.get('stock')
-  itmprice = request.POST.get('itmprice')
-  minstock = request.POST.get('minstock')
+    itmdate = request.POST.get('itmdate')
+    stock = request.POST.get('stock')
+    itmprice = request.POST.get('itmprice')
+    minstock = request.POST.get('minstock')
 
-  if not hsn:
-    hsn = None
-
-  itm = ItemModel(item_name=name, item_hsn=hsn,item_unit=unit,item_taxable=taxref, item_gst=intra_st,item_igst=inter_st, item_sale_price=sell_price, 
-                item_purchase_price=cost_price,item_current_stock=stock,item_at_price=itmprice,item_date=itmdate,
-              company=cmp,user=cmp.user,staff=staff)
-  itm.save() 
-  return JsonResponse({'success': True})
-
+    # Check if the HSN already exists
+    if ItemModel.objects.filter(item_hsn=hsn,company=cmp).exists():
+       messages.info(request, 'Sorry, HSN Number already exists')
+       return redirect('add_debitnote')
+    else:
+        itm = ItemModel(item_name=name,item_hsn=hsn,item_unit=unit,item_taxable=taxref, item_gst=intra_st,item_igst=inter_st, item_sale_price=sell_price, 
+                    item_purchase_price=cost_price,item_opening_stock=stock,item_current_stock=stock,item_at_price=itmprice,item_date=itmdate,
+                    item_min_stock_maintain=minstock,company=cmp,user=cmp.user)
+        itm.save() 
+        return JsonResponse({'success': True})
+    
+  else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 def item_dropdown(request):
   sid = request.session.get('staff_id')
   staff =  staff_details.objects.get(id=sid)
   cmp = company.objects.get(id=staff.company.id)
-  product = ItemModel.objects.filter(company=cmp,user=cmp.user)
-
-  id_list = []
-  product_list = []
-  for p in product:
-    id_list.append(p.id)
-    product_list.append(p.item_name)
-  return JsonResponse({'id_list':id_list, 'product_list':product_list})
+  print(sid, staff, cmp)
+  options = {}
+  option_objects = ItemModel.objects.filter(company=cmp)
+  for option in option_objects:
+      options[option.id] = [option.id, option.item_name]
+  return JsonResponse(options)
   
 
 
@@ -735,13 +813,10 @@ def update_creditnote(request,pk):
     sid = request.session.get('staff_id')
     staff = staff_details.objects.get(id=sid)
     cmp = company.objects.get(id=staff.company.id)  
-    party = None
-    party_id = request.POST.get('pid')
-    if party_id:
-      party = Parties.objects.get(id=party_id)
+    partys = Parties.objects.get(id=request.POST.get('partyname'))
     crd = Creditnote.objects.get(id=pk,company=cmp)
-    crd.party = party if party else None
-    crd.party_name = request.POST.get('partyname') if party else None
+    crd.party = partys if partys else None
+    # crd.party_name = request.POST.get('partyname') if partys else None
     crd.date = request.POST.get('date1')
     crd.invoice_no = request.POST.get('billNo')
     crd.idate = request.POST.get('billDate')

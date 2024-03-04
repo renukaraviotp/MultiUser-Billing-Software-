@@ -170,12 +170,13 @@
                                     <div class="col-md-4 custom-dropdown">
                                         <label for=""> Party Name</label>
                                         <div class="input-group">
-                                            <select name="partyname" id="employee" class="form-control border-secondary" onchange="getPartyDetails(this);">
+                                            <select name="partyname" id="employee" class="form-control border-secondary">
                                                 <option value="" selected hidden>Select</option>
                                                 {% for c in party %}
                                                     {% if c.cid_id == cmp.cid %}
-                                                        <option value="{{ c.id }}" data-party-id="{{ c.id }}" data-phone="{{ c.phone_number }}" data-address="{{ c.billing_address }}" data-balance="{{ c.opening_balance }}"
-                                                        onclick="selectItem(this);"> {{ c.party_name }}</option>
+                                                        <option value="{{ c.id }}" data-party-id="{{ c.id }}" data-balance="{{ c.opening_balance }}" onclick="selectItem(this);">
+                                                            {{ c.party_name }}
+                                                        </option>
                                                     {% endif %}
                                                 {% endfor %}
                                             </select>
@@ -203,20 +204,20 @@
     &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
 </div>
                                     </div>
-                                    <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" placeholder="Bill Number" hidden></div>
+                                    <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" hidden></div>
 
                                     <div class="col-md-3" id="phonediv">
                                         <label class="col-form-label" >Phone No. </label>
-                                        <input class="form-control border-secondary" name="number"  id="ph"  style="color: black;background-color: white;" readonly>
+                                        <input class="form-control" name="number"  id="ph"  style="color: black;background-color: white;" placeholder="Phone number" readonly>
                                     </div>
                                 <div class="col-md-4" id="addressdiv">
                                     <label class="col-form-label">Billing Address</label>
-                                    <textarea class="form-control border-secondary mb-3" name="address" id="bname" rows="6" type="text" style="color: black;background-color: white;" readonly></textarea>
+                                    <textarea class="form-control mb-3" name="address" id="bname" rows="6" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly></textarea>
                                 </div>
                             </div>
                                     <div id="daddressdiv" style="display: none;">
                                         <label class="col-form-label">Billing Address</label>
-                                        <textarea class="form-control border-secondary mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" readonly></textarea>
+                                        <textarea class="form-control mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly></textarea>
                                     </div>
                                     
                                     {% comment %} <div class="col-md-3" id="phonediv"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
@@ -227,8 +228,22 @@
                 
                             <div class="form-group row">
                                 <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{refno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
-                                <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div>
-                                <div class="col"><label for=""> Bill Date</label><input id="bdt" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div>
+                                <div class="col"><label for=""> Bill No.</label>
+                                    <select class="form-control" name="billNo" id="bno" style="color: black;background-color: white;">
+                                        <option value="" selected hidden>Select</option>
+                                        {% for bill_number in bill_numbers %}
+                                            <option value="{{ bill_number }}">{{ bill_number }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                    {% comment %} <input id="bno" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div> {% endcomment %}
+                                <div class="col"><label for=""> Bill Date</label>
+                                    <select class="form-control" name="billDate" id="bdt" style="color: black;background-color: white;">
+                                        <option value="" selected hidden>Select</option>
+                                        <!-- Options will be dynamically added here using JavaScript -->
+                                    </select>
+                                </div>
+                                    {% comment %} <input id="bdt" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div> {% endcomment %}
                                 
                             </div>
                         
@@ -518,18 +533,30 @@
 
 <script>
     function getPartyDetails(selectElement) {
-        console.log("Party selected");
-        var selectedOption = selectElement.options[selectElement.selectedIndex];
-        var billNumber = selectedOption.getAttribute('data-bill-number');
-        var billDate = selectedOption.getAttribute('data-bill-date');
-        var availableBalance = selectedOption.getAttribute('data-balance');
-    
-        // Update input fields with the fetched data
-        document.getElementById('bno').value = billNumber;
-        document.getElementById('bdt').value = billDate;
-        document.getElementById('ab').value = availableBalance;
+        var partyId = selectElement.value;
+
+        // Make an AJAX request to fetch bill details
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/get_bill_details/', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    var billDetails = JSON.parse(xhr.responseText);
+                    var billNo = billDetails.billNo;
+                    var billDate = billDetails.billDate;
+                    // Use billNo and billDate as needed
+                    console.log("Bill No:", billNo);
+                    console.log("Bill Date:", billDate);
+                } else {
+                    console.error('Request failed: ' + xhr.status);
+                }
+            }
+        };
+        xhr.send('party_id=' + encodeURIComponent(partyId));
     }
-    </script>
+</script>
+
     
     
 
@@ -753,25 +780,6 @@
     });
 
 
-    function selectItem(item) {
-        var partyId = item.getAttribute("data-party-id");
-        var url = "/get_sales_invoice_details/" + partyId;
-    
-        fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Update the "Bill No.", "Bill Date", and "Available Balance" fields with fetched data
-                document.getElementById("bno").value = data.billNo;
-                document.getElementById("bdt").value = data.billDate;
-                document.getElementById("balval").value = data.balance;
-            })
-            .catch(error => console.error("Error fetching sales invoice details:", error));
-    }
     
 
 
@@ -785,6 +793,112 @@
         })();
       });
         
+</script>
+<script>
+
+    $(document).ready(function () {
+        // Event listener for the 'customer' dropdown
+        $('#employee').on('change', function () {
+            var customerId = $('#employee').val();
+    
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'creditbilldata' %}",
+                data: {
+                    id: customerId,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function (data) {
+                    // Clear existing options in the dropdowns
+                    $('#bno').empty();
+                    $('#bdt').empty();
+    
+                    if (data.bill_numbers && data.bill_dates) {
+                        for (var i = 0; i < data.bill_numbers.length; i++) {
+                            var optionText = data.bill_numbers[i];
+                            var optionTexts = data.bill_dates[i];
+                            $('#bno').append($('<option>', {
+                                value: data.bill_numbers[i],
+                                text: optionText
+                            }));
+                            $('#bdt').append($('<option>', {
+                                value: data.bill_dates[i],
+                                text: optionTexts
+                            }));
+                        }
+                    } else {
+                        $('#bno').append($('<option>', {
+                            value: 'No bill',
+                            text: 'No bills available'
+                        }));
+                        $('#bdt').append($('<option>', {
+                            value: 'No date',
+                            text: 'No date available'
+                        }));
+                    }
+                }
+            });
+        });
+    
+        // Event listener for the 'bill_no' dropdown
+        $('#bno').on('change', function () {
+            
+            var selectedBillNo = $(this).val();
+            console.log(selectedBillNo);
+            
+        
+            // Make an AJAX request to get the date for the selected bill number
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'credit_bill_date' %}",  // Replace with the actual URL to fetch date
+                data: {
+                    
+                    billNo: selectedBillNo,  // Ensure the key matches the one expected by the server
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                success: function (dateData) {
+                    // Clear existing options in the 'billdate' dropdown
+                    $('#bdt').empty();
+        
+                    if (dateData && dateData.bill_date) {
+                        // Append the date option to the 'billdate' dropdown
+                        $('#bdt').append($('<option>', {
+                            value: dateData.bill_date,
+                            text: dateData.bill_date
+                        }));
+                    } else {
+                        // If no date is available, add a default option
+                        $('#bdt').append($('<option>', {
+                            value: 'No date',
+                            text: 'No date available'
+                        }));
+                    }
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    console.log("Error:", errorThrown);
+                    // Handle error here if needed
+                }
+            });
+        });
+        
+        
+    });
+
+
+    function selectItem(item) {
+        var partyId = item.getAttribute("data-party-id");
+
+        var url = "/get_sales_invoice_details/" + partyId;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // Update the "Bill No." and "Bill Date" fields with fetched data
+                document.getElementById("bno").value = data.billNo;
+                document.getElementById("bdt").value = data.billDate;
+            })
+            .catch(error => console.error("Error fetching sales invoice details:", error));
+    }
 </script>
 
 
@@ -1121,16 +1235,10 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                             document.getElementById('daddressdiv').style.display = 'none';
                             document.getElementById('addressdiv').style.display = 'none';
                             document.getElementById('phonediv').style.display = 'none';
-                            document.getElementById('dbilldiv').style.display = 'block';
-                            document.getElementById('billdiv').style.display = 'none';
-                            document.getElementById('ddbilldiv').style.display = 'none';
                         }else{
                             document.getElementById('daddressdiv').style.display = 'block';
                             document.getElementById('addressdiv').style.display = 'none';
                             document.getElementById('phonediv').style.display = 'none';
-                            document.getElementById('billdiv').style.display = 'block';
-                            document.getElementById('dbilldiv').style.display = 'none';
-                            document.getElementById('ddbilldiv').style.display = 'none';
                             document.getElementById('dbname').value = data.address;
                         }
                     }else{
@@ -1139,18 +1247,12 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                             document.getElementById('addressdiv').style.display = 'none';
                             document.getElementById('phonediv').style.display = 'block';
                             document.getElementById('ph').value = data.phno;
-                            document.getElementById('ddbilldiv').style.display = 'block';
-                            document.getElementById('dbilldiv').style.display = 'none';
-                            document.getElementById('billdiv').style.display = 'none';
                         }else{
                             document.getElementById('daddressdiv').style.display = 'none';
                             document.getElementById('addressdiv').style.display = 'block';
                             document.getElementById('phonediv').style.display = 'block';
                             document.getElementById('bname').value = data.address;
                             document.getElementById('ph').value = data.phno;
-                            document.getElementById('ddbilldiv').style.display = 'none';
-                            document.getElementById('dbilldiv').style.display = 'none';
-                            document.getElementById('billdiv').style.display = 'block';
                         }
                     }
 
