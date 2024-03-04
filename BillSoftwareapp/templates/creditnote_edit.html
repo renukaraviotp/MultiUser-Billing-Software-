@@ -607,7 +607,7 @@
                 </div>
                 <div class="modal-body">
                     <!-- Your form goes here -->
-                    <form id="customercreation" action="" method="post" enctype="multipart/form-data">
+                    <form id="customercreation" action="{% url "party_save" %}" method="post" enctype="multipart/form-data">
 
                         {% csrf_token %}
                 
@@ -695,7 +695,7 @@
                         
                             <center>
                                 {% comment %} <button id="checkk" style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " value="new" name="buttonn">Save & New</button>  {% endcomment %}
-                                <button style="background-color: #3d4465;color: white;" onmouseover="this.style.backgroundColor='#480ceb'" onmouseout="this.style.backgroundColor='#3d4465'" class="btn " id="customersave" value="old" name="buttonn">Save </button> 
+                                <button type="submit" class="btn btn-primary" id="customersave" value="old" name="buttonn">Save </button> 
                             </center>
                 
                 </form>
@@ -1205,18 +1205,25 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                 gstintype :$("#modalgsttype").val(),
                 gstin :$("#gstin").val(),
                 date : $("#partydate").val(),
-                buttonn : $("#buttonn").val(),
                 balance : $("#openbalance").val(),
                 pay_recieve: pay,
                 csrfmiddlewaretoken: '{{ csrf_token }}',
             },
             success: function(response) {
-                document.getElementById("customercreation").reset();
-                $('#partyModal').modal('hide');
-                reloadCustomer();
+                if (response.success) {
+                    document.getElementById("customercreation").reset();
+                    $('#partyModal').modal('hide');
+                    reloadCustomer();
+                } else {
+                    alert('Failed to save party: ' + response.message);
+                }
             },
+            error: function(xhr, errmsg, err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
         });   
     });
+    
     
 
     function reloadCustomer() {
