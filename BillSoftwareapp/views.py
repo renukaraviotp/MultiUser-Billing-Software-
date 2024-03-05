@@ -591,57 +591,50 @@ def itemdetails(request):
 
 def saveparty(request):
     if request.method == 'POST':
+        # Retrieve session and company information
         sid = request.session.get('staff_id')
         staff = staff_details.objects.get(id=sid)
-        cmp = company.objects.get(id=staff.company.id)
-        user = cmp.id
+        company_obj = company.objects.get(id=staff.company.id)
 
-        partyname = request.POST['partyname'].capitalize()
-        mobilenumber = request.POST['mobilenumber']
-        gstin = request.POST['gstin']
-        gstintype = request.POST['gstintype']
-        state = request.POST['state']
-        email = request.POST['email']
-        Date = request.POST['date']
-        address = request.POST['address']
-        balance = request.POST['balance']
-        buttonn = request.POST['buttonn']
+        # Retrieve party data from POST request
+        party_name = request.POST.get('partyname', '').capitalize()
+        mobile_number = request.POST.get('mobilenumber', '')
+        gstin = request.POST.get('gstin', '')
+        gstintype = request.POST.get('gstintype', '')
+        state = request.POST.get('state', '')
+        email = request.POST.get('email', '')
+        date = request.POST.get('date', '')
+        address = request.POST.get('address', '')
+        balance = request.POST.get('balance', '')
 
-        
-
-        # Check if contact already exists
-        if Parties.objects.filter(phone_number=mobilenumber,company=cmp).exists():
-            messages.info(request, 'Sorry, Contact Number already exists')
-            return redirect('add_debitnote')
-        
-        elif Parties.objects.filter(email=email, company=cmp).exists():
-            messages.info(request, 'Sorry, Email already exists')
-            return redirect('add_debitnote')
-        elif Parties.objects.filter(gstin=gstin, company=cmp).exists():
-            messages.info(request, 'Sorry, GST number already exists')
-            return redirect('add_debitnote')
+        # Check if party already exists
+        if Parties.objects.filter(phone_number=mobile_number, company=company_obj).exists():
+            return JsonResponse({'success': False, 'message': 'Contact number already exists'})
+        elif Parties.objects.filter(email=email, company=company_obj).exists():
+            return JsonResponse({'success': False, 'message': 'Email already exists'})
+        elif Parties.objects.filter(gstin=gstin, company=company_obj).exists():
+            return JsonResponse({'success': False, 'message': 'GST number already exists'})
         else:
-            part = Parties(party_name=partyname, gstin=gstin, phone_number=mobilenumber, gstintype=gstintype, state=state, address=address,
-                         email=email, opening_balance=balance, date=Date, company=cmp, user=cmp.user)
-
-            part.save()
-            return JsonResponse({'success': True, 'id':part.id})
+            # Create and save the party
+            party = Parties(party_name=party_name, gstin=gstin, phone_number=mobile_number, gst_type=gstintype,
+                            state=state, email=email, opening_balance=balance, date=date,billing_address=address, company=company_obj,
+                            staff=staff)
+            party.save()
+            return JsonResponse({'success': True, 'id': party.id})
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
 def party_dropdown(request):
-  sid = request.session.get('staff_id')
-  staff =  staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
-  part = Parties.objects.filter(company=cmp,user=cmp.user)
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    company_obj = company.objects.get(id=staff.company.id)
+    parties = Parties.objects.filter(company=company_obj)
 
-  id_list = []
-  party_list = []
-  for p in part:
-    id_list.append(p.id)
-    party_list.append(p.party_name)
+    id_list = [party.id for party in parties]
+    party_list = [party.party_name for party in parties]
 
-  return JsonResponse({'id_list':id_list, 'party_list':party_list })
+    return JsonResponse({'id_list': id_list, 'party_list': party_list})
+
 
 def saveitem(request):
     sid = request.session.get('staff_id')
