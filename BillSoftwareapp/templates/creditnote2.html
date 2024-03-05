@@ -274,7 +274,7 @@
             </div>
             <div class="modal-body" style="background: rgb(130, 144, 199);">
                 <div class="card p-3 m-3">
-                    <form action="{% url 'sharepdftomail' cd.id %}" method="post" class="needs-validation" id="share_to_email_form" autocomplete="off">
+                    <form action="{% url 'pdftomailcredit' cd.id %}" method="post" class="needs-validation" id="share_to_email_form" autocomplete="off">
                         {% csrf_token %}
                         <div class="form-group">
                             <label for="emailIds">Email IDs</label>

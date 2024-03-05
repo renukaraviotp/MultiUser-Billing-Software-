@@ -636,7 +636,7 @@ def party_dropdown(request):
     return JsonResponse({'id_list': id_list, 'party_list': party_list})
 
 
-def saveitem(request):
+def savecredititem(request):
     sid = request.session.get('staff_id')
     staff =  staff_details.objects.get(id=sid)
     cmp = company.objects.get(id=staff.company.id)
@@ -673,7 +673,7 @@ def saveitem(request):
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
-def item_dropdown(request):
+def credititem_dropdown(request):
   sid = request.session.get('staff_id')
   staff =  staff_details.objects.get(id=sid)
   cmp = company.objects.get(id=staff.company.id)
@@ -945,7 +945,7 @@ def delete_credit(request,pk):
   crd.delete()
   return redirect('transactiontable')
 
-def sharepdftomail(request,pk):
+def pdftomailcredit(request,pk):
   if request.user:
         try:
             if request.method == 'POST':

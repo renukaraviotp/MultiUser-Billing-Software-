@@ -1191,7 +1191,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
     function reloadItem() {
         $.ajax({
-            url: "{% url 'item_dropdown' %}",
+            url: "{% url 'credititem_dropdown' %}",
             type: "GET",
             dataType: "json",
             data: $(this).serialize(),
@@ -1579,7 +1579,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         } else {
             $.ajax({
                 type: 'POST',
-                url: "{% url 'saveitem' %}",
+                url: "{% url 'savecredititem' %}",
                 data: {
                     item_name: item_name,
                     qty: qty,
@@ -1605,7 +1605,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
     function reloadItem() {
         $.ajax({
-            url: "{% url 'item_dropdown' %}",
+            url: "{% url 'credititem_dropdown' %}",
             type: "GET",
             dataType: "json",
             data: $(this).serialize(),
