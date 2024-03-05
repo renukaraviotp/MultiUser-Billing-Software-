@@ -20220,12 +20220,12 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
                         </li>
 
                     <!-- <li><a href="/" aria-expanded="false"><i class="icon icon-single-04"></i><span class="nav-text">Parties</span></a></li> -->
-                    <li><a href="" aria-expanded="false"><i class="icon icon-single-04"></i><span class="nav-text">Parties</span> </a> <a style="display: flex;position:absolute ;left: 195px;background-color: transparent; "  href="{% url 'parties_add_page' %}"><i style="font-size: 25px;" class="fa-solid fa-circle-plus "></i></a></li>
+                    <li><a href="{% url 'parties_table' %}" aria-expanded="false"><i class="icon icon-single-04"></i><span class="nav-text">Parties</span> </a> <a style="display: flex;position:absolute ;left: 195px;background-color: transparent; "  href="{% url 'parties_add_page' %}"><i style="font-size: 25px;" class="fa-solid fa-circle-plus "></i></a></li>
                             
                             <div class="position-relative nav-text">
                                
                                     <div class="position-absolute end-0 bottom-0" style="z-index: 1; margin-top: 8px; margin-right: 0.9rem; margin-left: 14vw;">
-                                        <a style="color: black; margin-top: -2px; width: 20px;" href="">
+                                        <a style="color: black; margin-top: -2px; width: 20px;" href="{% url 'add_item' %}">
                                             <span>
                                                 <i class="fa fa-plus fa-stack-.5x fa-inverse"></i>
                                             </span>
@@ -20235,7 +20235,7 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
                             </div>
                             
                               <li class="sidebar-item">
-                                <a class="sidebar-link mt-2" href="" aria-expanded="false">
+                                <a class="sidebar-link mt-2" href="{% url 'view_item'  %}" aria-expanded="false">
                                   <span>
                                     <b style="margin-left: 10px;"><i class="fa fa-th"></i></b>
                                   </span>
@@ -20248,26 +20248,28 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
                                 class="icon icon-app-store"></i><span class="nav-text">Sales</span></a>
                         <ul aria-expanded="false">
                           <li style="display: flex; align-items: center;">
-                            <a href="">Invoice</a>
-                            <a href=""  style="margin-left: 50px;">
+                            <a href="{% url 'sales_invoice' %}">Invoice</a>
+                            <a href="{% url 'sales_invoice_add' %}"  style="margin-left: 50px;">
                               <span>
                                 <i class="fa fa-plus fa-stack-.1x fa-inverse"></i>
                             </span></a>
+                        </li>
                             <li style="display: flex; align-items: center;">
                               <a href="{% url 'transactiontable' %}" style="text-decoration: none;">Credit Note</a>
                               <a href="{% url 'credit_add' %}" id="" style="color: white; font-size: 14px; display: flex; align-items: center; justify-content: center; margin-left: 10px;" class="btn col-md-1">
                                   <i class="fa-solid fa-plus" id="addRowIcon"></i>
                               </a>
                           </li>
+                        </ul>
                     </li>
 
                     <li><a class="has-arrow" href="javascript:void()" aria-expanded="false"><i
                         class="icon icon-credit-card "></i><span class="nav-text">Purchase</span></a>
                 <ul aria-expanded="false">
-                  <li><a href="">Purchase Bill  &nbsp;&nbsp;&nbsp;<i class="fa fa-plus"></i></a></li>
+                  <li><a href="{% url 'view_purchasebill' %}">Purchase Bill  &nbsp;&nbsp;&nbsp;<i class="fa fa-plus"></i></a></li>
           
                   
-                  <li><a href="">Purchase Return/Dr.Note<i class="fa fa-plus"></i></a></li>
+                  <li><a href="{% url 'view_purchasedebit' %}">Purchase Return/Dr.Note<i class="fa fa-plus"></i></a></li>
                 </ul>
             </li>
 
@@ -20293,7 +20295,7 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
         var modules = {
             'dashboard': '{% url "homepage" %}',
             'parties': '',
-            'items': '',
+            'items': '{% url "add_item" %}',
             'sales': '',
             'purchase': '',
             'stock-report': '',
