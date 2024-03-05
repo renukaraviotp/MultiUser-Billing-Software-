@@ -247,21 +247,25 @@
                 
                             <div class="form-group row">
                                 <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{crd.returnno}}" type="text" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
-                                <div class="col"><label for=""> Bill No.</label>
-                                    <select class="form-control" name="billNo" id="bno" style="color: black;background-color: white;">
+                                <div class="col">
+                                    <label for="">Bill No.</label>
+                                    <select class="form-control" name="billNo" id="bno" style="color: black; background-color: white;">
                                         <option value="" selected hidden>{{crd.invoice_no}}</option>
                                         {% for bill_number in bill_numbers %}
                                             <option value="{{ bill_number }}">{{ bill_number }}</option>
                                         {% endfor %}
                                     </select>
+                                    <input id="bno-input" type="text" name="billNo" value="{{crd.invoice_no}}" class="form-control" placeholder="Bill Number" style="display: none;">
                                 </div>
-                                    {% comment %} <input id="bno" type="text" name="billNo" class="form-control" placeholder="Bill Number" ></div> {% endcomment %}
-                                <div class="col"><label for=""> Bill Date</label>
-                                    <select class="form-control" name="billDate" id="bdt" style="color: black;background-color: white;">
+                                <div class="col">
+                                    <label for="">Bill Date</label>
+                                    <select class="form-control" name="billDate" id="bdt" style="color: black; background-color: white;">
                                         <option value="" selected hidden>{{crd.idate|date:'Y-m-d'}}</option>
                                         <!-- Options will be dynamically added here using JavaScript -->
                                     </select>
+                                    <input id="bdt-input" type="date" name="billDate" value="{{crd.idate|date:'Y-m-d'}}" class="form-control" placeholder="Bill Date" style="display: none;">
                                 </div>
+                                
                                 {% comment %} <div class="col"><label for=""> Bill No.</label><input id="bno" type="text" name="billNo" value={{crd.invoice_no}} class="form-control" placeholder="Bill Number" ></div>
                                 <div class="col"><label for=""> Bill Date</label><input id="bdt" type="date" value="{{crd.idate|date:'Y-m-d'}}" name="billDate" class="form-control" placeholder="Bill Date"> </div> {% endcomment %}
                                 
@@ -696,6 +700,36 @@
    
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var partyCheckbox = document.getElementById('partyCheckbox');
+            var bnoInput = document.getElementById('bno-input');
+            var bdtInput = document.getElementById('bdt-input');
+            var bnoSelect = document.getElementById('bno');
+            var bdtSelect = document.getElementById('bdt');
+        
+            // Initially hide input fields
+            bnoInput.style.display = 'none';
+            bdtInput.style.display = 'none';
+        
+            // Toggle input fields based on party checkbox state
+            partyCheckbox.addEventListener('change', function() {
+                if (partyCheckbox.checked) {
+                    bnoInput.style.display = 'none';
+                    bnoSelect.style.display = 'block';
+                    bdtInput.style.display = 'none';
+                    bdtSelect.style.display = 'block';
+                } else {
+                    bnoInput.style.display = 'block';
+                    bnoSelect.style.display = 'none';
+                    bdtInput.style.display = 'block';
+                    bdtSelect.style.display = 'none';
+                }
+            });
+        });
+        
+    </script>
 
 
    
