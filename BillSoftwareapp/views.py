@@ -17,6 +17,7 @@ from io import BytesIO
 from xhtml2pdf import pisa
 from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.dateparse import parse_date
 
 # Create your views here.
 
@@ -635,42 +636,56 @@ def party_dropdown(request):
 
     return JsonResponse({'id_list': id_list, 'party_list': party_list})
   
-def savecredititem(request):
-    if request.method == 'POST':
-        sid = request.session.get('staff_id')
-        staff =  staff_details.objects.get(id=sid)
-        cmp = company.objects.get(id=staff.company.id)
-        item_name = request.POST.get('item_name')
-        hsn = request.POST.get('hsn')
-        qty = request.POST.get('qty')
-        tax_ref = request.POST.get('taxref')
-        intra_st = request.POST.get('intra_st')
-        inter_st = request.POST.get('inter_st')
-        sale_price = request.POST.get('sale_price')  # Changed to match the AJAX data key
-        purchase_price = request.POST.get('purchase_price')  # Changed to match the AJAX data key
+def saveitemc(request):
+  if request.method == 'POST':
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    company_obj = staff.company
 
-        # Check if the HSN already exists
-        if ItemModel.objects.filter(item_hsn=hsn).exists():
-            return JsonResponse({'success': False, 'message': 'HSN Number already exists'})
-        else:
-            # Save new item
-            item = ItemModel(
-                item_name=item_name,
-                item_hsn=hsn,
-                item_current_stock=qty,
-                item_taxable=tax_ref,
-                item_gst=intra_st,
-                item_igst=inter_st,
-                item_sale_price=sale_price,
-                item_purchase_price=purchase_price,
-                staff=staff,
-                company=cmp
-                # staff and company fields should be properly set based on your requirements
-            )
-            item.save()
-            return JsonResponse({'success': True})
-    else:
-        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+    name = request.POST.get('item_name')
+    print(name)
+    unit = request.POST.get('unit')
+    hsn = request.POST.get('hsn')
+    taxref = request.POST.get('taxref')
+    sell_price = request.POST.get('sell_price')
+    cost_price = request.POST.get('cost_price')
+    intra_st = request.POST.get('intra_st')
+    inter_st = request.POST.get('inter_st')
+    itmdate = request.POST.get('itmdate')
+    stock = request.POST.get('stock')
+    itmprice = request.POST.get('itmprice')
+    minstock = request.POST.get('minstock')
+
+    if not hsn:
+        hsn = None
+
+    # Check if HSN exists for the given company
+    if ItemModel.objects.filter(company=company_obj, item_hsn=hsn).exists():
+        return JsonResponse({'success': False, 'message': 'HSN already exists for this company'})
+
+    itm = ItemModel(
+        item_name=name, item_hsn=hsn, item_unit=unit, item_type='Type', item_taxable=taxref, item_gst=intra_st,
+        item_igst=inter_st, item_sale_price=sell_price, item_purchase_price=cost_price, item_current_stock=stock,
+        item_stock_in_hand=stock, item_at_price=itmprice, item_date=itmdate, company=company_obj, user=company_obj.user
+    )
+    itm.save()
+
+    return JsonResponse({'success': True})
+  
+  return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
+def item_dropdownc(request):
+  sid = request.session.get('staff_id')
+  staff =  staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  print(sid, staff, cmp)
+  options = {}
+  option_objects = ItemModel.objects.filter(company=cmp)
+  for option in option_objects:
+      options[option.id] = [option.id, option.item_name]
+  return JsonResponse(options)
+
 
 
 # def savecredititem(request):
@@ -710,16 +725,16 @@ def savecredititem(request):
 #     else:
 #         return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
-def credititem_dropdown(request):
-  sid = request.session.get('staff_id')
-  staff =  staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
-  print(sid, staff, cmp)
-  options = {}
-  option_objects = ItemModel.objects.filter(company=cmp)
-  for option in option_objects:
-      options[option.id] = [option.id, option.item_name]
-  return JsonResponse(options)
+# def credititem_dropdown(request):
+#   sid = request.session.get('staff_id')
+#   staff =  staff_details.objects.get(id=sid)
+#   cmp = company.objects.get(id=staff.company.id)
+#   print(sid, staff, cmp)
+#   options = {}
+#   option_objects = ItemModel.objects.filter(company=cmp)
+#   for option in option_objects:
+#       options[option.id] = [option.id, option.item_name]
+#   return JsonResponse(options)
   
 
 
@@ -730,19 +745,21 @@ def credit_save(request):
         cmp = company.objects.get(id=staff.company.id)
 
         # Retrieve party details if available
+        party_id = request.POST.get('partyname')
         party = None
-        party_id = request.POST.get('pid')
         if party_id:
             party = Parties.objects.get(id=party_id)
-        
-        bill_no = request.POST.get('billNo')
-        bill_date = request.POST.get('billDate')
 
+        # Check if 'billNo' exists in POST data and assign value accordingly
+        bill_no = request.POST.get('billNo', None)
         if bill_no == 'nobill':
             bill_no = None
 
-        if bill_date == 'nodate':
-            bill_date = None
+        # Check if 'billDate' exists in POST data and assign value accordingly
+        bill_date_str = request.POST.get('billDate', None)
+        bill_date = None
+        if bill_date_str:
+            bill_date = parse_date(bill_date_str)
 
         # Create an instance of Creditnote model and save the data
         credit_note = Creditnote(
@@ -770,7 +787,7 @@ def credit_save(request):
 
         # Save the instance
         credit_note.save()
-        history = CreditnoteHistory(company=cmp,staff=staff,credit=credit_note,action='Created')
+        history = CreditnoteHistory(company=cmp, staff=staff, credit=credit_note, action='Created')
         history.save()
 
         # Save credit note items
@@ -809,6 +826,7 @@ def credit_save(request):
 
     else:
         return render(request, 'credit_add.html')
+
 
   
 def save_item(request):
@@ -904,58 +922,109 @@ def edit_credit(request,pk):
   
   return render(request,'creditnote_edit.html',context)
 
-def update_creditnote(request,pk):
-  if request.method =='POST':
-    sid = request.session.get('staff_id') 
-    staff = staff_details.objects.get(id=sid)
-    cmp = company.objects.get(id=staff.company.id)
+
+def update_creditnote(request, pk):
+    if request.method == 'POST':
+        sid = request.session.get('staff_id') 
+        staff = get_object_or_404(staff_details, id=sid)
+        cmp = get_object_or_404(company, id=staff.company.id)
 
         # Retrieve party details if available
-    party = None
-    party_id = request.POST.get('partyname')
-    if party_id:
-      party = Parties.objects.get(id=party_id)
-      
-    crd = Creditnote.objects.get(id=pk,company=cmp)
-    crd.party = party if party else None
-    # crd.party_name = request.POST.get('partyname') if party else None
-    crd.contact=party.phone_number if party else None,
-    crd.address=party.billing_address if party else None,
-    crd.date = request.POST.get('date1')
-    crd.invoice_no = request.POST.get('billNo')
-    crd.idate = request.POST.get('billDate')
-    crd.state_of_supply  = request.POST.get('placosupply')
-    crd.subtotal =float(request.POST.get('subtotal'))
-    crd.grandtotal = request.POST.get('grandtotal')
-    crd.igst = request.POST.get('igst')
-    crd.cgst = request.POST.get('cgst')
-    crd.sgst = request.POST.get('sgst')
-    crd.taxamount = request.POST.get("taxamount")
-    crd.roundoff = request.POST.get("adj")
-    crd.description = request.POST.get("des")
+        party_id = request.POST.get('partyname')
+        party = get_object_or_404(Parties, id=party_id) if party_id else None
 
-    crd.save()
+        crd = get_object_or_404(Creditnote, id=pk, company=cmp)
+        crd.party = party
+        crd.contact = party.phone_number if party else None
+        crd.address = party.billing_address if party else None
+        crd.date = parse_date(request.POST.get('date1', None))
+        crd.invoice_no = request.POST.get('billNo')
+        crd.idate = parse_date(request.POST.get('billDate', None))
+        crd.state_of_supply = request.POST.get('placosupply')
+        crd.subtotal = float(request.POST.get('subtotal', 0))
+        crd.grandtotal = request.POST.get('grandtotal')
+        crd.igst = request.POST.get('igst')
+        crd.cgst = request.POST.get('cgst')
+        crd.sgst = request.POST.get('sgst')
+        crd.taxamount = request.POST.get("taxamount")
+        crd.roundoff = request.POST.get("adj")
+        crd.description = request.POST.get("des")
 
-    product = tuple(request.POST.getlist("product[]"))
-    qty = tuple(request.POST.getlist("qty[]"))
-    total = tuple(request.POST.getlist("total[]"))
-    discount = tuple(request.POST.getlist("discount[]"))
-    hsn = request.POST.getlist("hsn[]")
-    tax = request.POST.getlist("tax[]")
-    price = request.POST.getlist("price[]")
+        crd.save()
 
-    CreditnoteItem.objects.filter(credit=crd).delete()
-    if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax) == len(price):
-      mapped=zip(product, qty, discount, total, hsn, tax, price)
-      mapped=list(mapped)
-      for ele in mapped:
-        itm = ItemModel.objects.get(id=ele[0])
-        CreditnoteItem.objects.create(product =itm.item_name,qty=ele[1],discount=ele[2],total=ele[3],hsn=ele[4],tax=ele[5],price=ele[6],credit=crd,company=cmp,item=itm,staff=staff)
+        product = tuple(request.POST.getlist("product[]"))
+        qty = tuple(request.POST.getlist("qty[]"))
+        total = tuple(request.POST.getlist("total[]"))
+        discount = tuple(request.POST.getlist("discount[]"))
+        hsn = request.POST.getlist("hsn[]")
+        tax = request.POST.getlist("tax[]")
+        price = request.POST.getlist("price[]")
 
-    CreditnoteHistory.objects.create(credit=crd,company=cmp,staff=staff,action='Updated')
+        CreditnoteItem.objects.filter(credit=crd).delete()
+        if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax) == len(price):
+          mapped=zip(product, qty, discount, total, hsn, tax, price)
+          mapped=list(mapped)
+          for ele in mapped:
+            itm = ItemModel.objects.get(id=ele[0])
+            CreditnoteItem.objects.create(product =itm.item_name,qty=ele[1],discount=ele[2],total=ele[3],hsn=ele[4],tax=ele[5],price=ele[6],credit=crd,company=cmp,item=itm,staff=staff)
+
+        CreditnoteHistory.objects.create(credit=crd,company=cmp,staff=staff,action='Updated')
+        return redirect('transactiontable')
+
     return redirect('transactiontable')
 
-  return redirect('transactiontable')
+# def update_creditnote(request,pk):
+#   if request.method =='POST':
+#     sid = request.session.get('staff_id') 
+#     staff = staff_details.objects.get(id=sid)
+#     cmp = company.objects.get(id=staff.company.id)
+
+#         # Retrieve party details if available
+#     party = None
+#     party_id = request.POST.get('partyname')
+#     if party_id:
+#       party = Parties.objects.get(id=party_id)
+      
+#     crd = Creditnote.objects.get(id=pk,company=cmp)
+#     crd.party = party if party else None
+#     # crd.party_name = request.POST.get('partyname') if party else None
+#     crd.contact=party.phone_number if party else None,
+#     crd.address=party.billing_address if party else None,
+#     crd.date = request.POST.get('date1')
+#     crd.invoice_no = request.POST.get('billNo')
+#     crd.idate = request.POST.get('billDate')
+#     crd.state_of_supply  = request.POST.get('placosupply')
+#     crd.subtotal =float(request.POST.get('subtotal'))
+#     crd.grandtotal = request.POST.get('grandtotal')
+#     crd.igst = request.POST.get('igst')
+#     crd.cgst = request.POST.get('cgst')
+#     crd.sgst = request.POST.get('sgst')
+#     crd.taxamount = request.POST.get("taxamount")
+#     crd.roundoff = request.POST.get("adj")
+#     crd.description = request.POST.get("des")
+
+#     crd.save()
+
+#     product = tuple(request.POST.getlist("product[]"))
+#     qty = tuple(request.POST.getlist("qty[]"))
+#     total = tuple(request.POST.getlist("total[]"))
+#     discount = tuple(request.POST.getlist("discount[]"))
+#     hsn = request.POST.getlist("hsn[]")
+#     tax = request.POST.getlist("tax[]")
+#     price = request.POST.getlist("price[]")
+
+#     CreditnoteItem.objects.filter(credit=crd).delete()
+#     if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax) == len(price):
+#       mapped=zip(product, qty, discount, total, hsn, tax, price)
+#       mapped=list(mapped)
+#       for ele in mapped:
+#         itm = ItemModel.objects.get(id=ele[0])
+#         CreditnoteItem.objects.create(product =itm.item_name,qty=ele[1],discount=ele[2],total=ele[3],hsn=ele[4],tax=ele[5],price=ele[6],credit=crd,company=cmp,item=itm,staff=staff)
+
+#     CreditnoteHistory.objects.create(credit=crd,company=cmp,staff=staff,action='Updated')
+#     return redirect('transactiontable')
+
+#   return redirect('transactiontable')
 
 
 

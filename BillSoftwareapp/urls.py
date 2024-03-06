@@ -39,11 +39,11 @@ urlpatterns = [
     path('party_save',views.party_save,name='party_save'),
     path('item_save',views.item_save,name='item_save'),
     path('item_details',views.item_details,name='item_details'),
-    path('credititem_dropdown',views.credititem_dropdown,name='credititem_dropdown'),
+    # path('credititem_dropdown',views.credititem_dropdown,name='credititem_dropdown'),
     path('save_item',views.save_item,name='save_item'),
     path('get_tax_rate/', views.get_tax_rate, name='get_tax_rate'),
     path('itemdetails',views.itemdetails,name='itemdetails'),
-    path('savecredititem',views.savecredititem,name='savecredititem'),
+    # path('savecredititem',views.savecredititem,name='savecredititem'),
     path('edit_credit/<int:pk>',views.edit_credit,name='edit_credit'),
     path('update_creditnote/<int:pk>',views.update_creditnote,name='update_creditnote'),
     path('template1/<int:pk>',views.template1,name='template1'),
@@ -58,6 +58,9 @@ urlpatterns = [
     path('credit_bill_date',views.credit_bill_date,name='credit_bill_date'),
     path('saveparty',views.saveparty,name='saveparty'),
     path('party_dropdown',views.party_dropdown,name='party_dropdown'),
+    path('saveitemc',views.saveitemc,name='saveitemc'),
+    path('item_dropdownc',views.item_dropdownc,name='item_dropdownc'),
+    
     
     
     

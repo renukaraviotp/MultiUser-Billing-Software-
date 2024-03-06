@@ -155,7 +155,7 @@ class Creditnote(models.Model):
     party_name = models.CharField(max_length=100,null=True,blank=True)
     contact = models.CharField(max_length=255,null=True,blank=True)
     address = models.CharField(max_length=255,null=True,blank=True)
-    invoice_no = models.IntegerField(default=0,null=True,blank=True)
+    invoice_no = models.CharField(max_length=50, null=True, blank=True)
     idate = models.DateField(null=True)
     state_of_supply = models.CharField(max_length=255,null=True,blank=True)
     date=models.DateField(null=True)
