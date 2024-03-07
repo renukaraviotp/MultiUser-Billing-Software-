@@ -568,7 +568,7 @@ def item_save(request):
     sid = request.session.get('staff_id')
     staff = staff_details.objects.get(id=sid)
     cmp = company.objects.get(id=staff.company.id)
-    itemname=request.POST['itemname']
+    itemname=request.POST['item_name']
     hsn=request.POST['hsn']
     unit=request.POST['unit']
     saleprice=request.POST['saleprice']
@@ -596,6 +596,7 @@ def saveparty(request):
         sid = request.session.get('staff_id')
         staff = staff_details.objects.get(id=sid)
         company_obj = company.objects.get(id=staff.company.id)
+        user = company_obj.id
 
         # Retrieve party data from POST request
         party_name = request.POST.get('partyname', '').capitalize()
@@ -621,6 +622,8 @@ def saveparty(request):
                             state=state, email=email, opening_balance=balance, date=date,billing_address=address, company=company_obj,
                             staff=staff)
             party.save()
+            history = History(company_id=user,party_id=party.id,staff_id=staff.id,action='CREATED')
+            history.save()
             return JsonResponse({'success': True, 'id': party.id})
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
@@ -642,7 +645,7 @@ def saveitemc(request):
     staff = staff_details.objects.get(id=sid)
     company_obj = staff.company
 
-    name = request.POST.get('item_name')
+    name = request.POST.get('itemname')
     print(name)
     unit = request.POST.get('unit')
     hsn = request.POST.get('hsn')

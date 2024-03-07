@@ -477,7 +477,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input style="color: black;" class="form-control border-dark " type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name" name="item_name" required>
+                                    <input style="color: black;" class="form-control border-dark " type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name1" name="item_name" required>
                                 </div>
                                 <div class="col-md-3">
                                     <input style="color: black;" class="form-control border-dark" type="number" placeholder="ITEM HSN" id="hsn" name="hsn" onchange="checkhsn(this)" required>
@@ -1644,8 +1644,10 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
 
     $(document).on("click", "#itemsave", function () {
-        var item_name = $("#item_name").val().trim();
+        var item_name = $("#item_name1").val().trim();
+        console.log($("#item_name"));
         var hsn = $("#hsn").val().trim();
+        console.log(hsn)
         var tax;
     
         if ($('#inclusive').prop('checked')) {
@@ -1686,6 +1688,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                     minstock: $("#minstock").val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
+
                 success: function (response) {
                     document.getElementById("modalItem").reset();
                     $('#newitem').modal('hide');
