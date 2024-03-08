@@ -645,7 +645,7 @@ def saveitemc(request):
     staff = staff_details.objects.get(id=sid)
     company_obj = staff.company
 
-    name = request.POST.get('itemname')
+    name = request.POST.get('name')
     print(name)
     unit = request.POST.get('unit')
     hsn = request.POST.get('hsn')
@@ -659,12 +659,12 @@ def saveitemc(request):
     itmprice = request.POST.get('itmprice')
     minstock = request.POST.get('minstock')
 
-    if not hsn:
-        hsn = None
+    # if not hsn:
+    #     hsn = None
 
     # Check if HSN exists for the given company
     if ItemModel.objects.filter(company=company_obj, item_hsn=hsn).exists():
-        return JsonResponse({'success': False, 'message': 'HSN already exists for this company'})
+        return JsonResponse({'success': False, 'message': 'HSN already exists'})
 
     itm = ItemModel(
         item_name=name, item_hsn=hsn, item_unit=unit, item_type='Type', item_taxable=taxref, item_gst=intra_st,

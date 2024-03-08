@@ -464,8 +464,8 @@
                 </button>
             </div>
             <div class="modal-body" >
-                <form method="post" class="needs-validation" novalidate autocomplete="off" id="modalItem">
-                    {% csrf_token %}
+                <div class="needs-validation" novalidate autocomplete="off" id="modalItem">
+                    
                     <div class="bg-light bs p-4 rounded mb-5">
                         <div id="main_form_div">
                             <div class="row" style="margin-left: -1vh;">
@@ -599,7 +599,7 @@
                                             </div>
                                             <div class="text-start mt-5">
                                                 <button id="prev_btn" class="btn me-3" style="background-color:rgb(61, 68, 101);" type="button">PREVIOUS</button>
-                                                <button class="btn " type="submit" style="background-color:rgb(61, 68, 101);" id="itemsave">SAVE</button>
+                                                <button class="btn " style="background-color:rgb(61, 68, 101);" id="itemsave">SAVE</button>
                                             </div>
                                         </div>
                                     </div>
@@ -607,7 +607,7 @@
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div> 
         </div> 
     </div>
@@ -1588,7 +1588,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         }
 
     });
-</script>
+</script> 
 <script>
 
     $(document).on("submit", "#partyCreationForm", function(event) {
@@ -1644,11 +1644,13 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
 
     $(document).on("click", "#itemsave", function () {
+        console.log('hello')
         var item_name = $("#item_name1").val().trim();
-        console.log($("#item_name"));
+        console.log(item_name);
         var hsn = $("#hsn").val().trim();
         console.log(hsn)
         var tax;
+        
     
         if ($('#inclusive').prop('checked')) {
             tax = $('#inclusive').val();
