@@ -189,7 +189,7 @@
                                             </select>
                                              &nbsp;&nbsp;&nbsp;
                                             {% comment %} <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();"> {% endcomment %}
-                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#partyModal">
+                                            <button type="button" class="btn btn-primary" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#partyModal">
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
                                         </div>
@@ -464,8 +464,8 @@
                 </button>
             </div>
             <div class="modal-body" >
-                <div class="needs-validation" novalidate autocomplete="off" id="modalItem">
-                    
+                <form method="post" class="needs-validation" novalidate autocomplete="off" id="modalItem">
+                    {% csrf_token %}
                     <div class="bg-light bs p-4 rounded mb-5">
                         <div id="main_form_div">
                             <div class="row" style="margin-left: -1vh;">
@@ -565,7 +565,7 @@
                                                 </div>
                                             </div>
                                             <div class="text-start mt-5">
-                                                <button id="next_btn" class="btn " style="background-color:rgb(61, 68, 101); color:white;" type="button">Next</button>
+                                                <button id="next_btn" class="btn" style="background-color:rgb(61, 68, 101); color:white;" type="button">Next</button>
                                             </div>
                                         </div>
                                     </div>
@@ -607,7 +607,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div> 
         </div> 
     </div>
@@ -1642,8 +1642,45 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         });
     }
 
+    $(document).ready(function () {
+        $('#saveItemButton').click(function () {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "save_item" %}',
+                data: $('#itemCreationForm').serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        $('#newItemModal').modal('hide');
+                        reloadItemDropdown();
+                    } else {
+                        alert('Failed to save item: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('Failed to save item. Please try again later.');
+                }
+            });
+        });
+    
+        function reloadItemDropdown() {
+            $.ajax({
+                url: "{% url 'item_dropdowne' %}",
+                type: "GET",
+                dataType: "json",
+                data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+                success: function (data) {
+                    // Update item dropdown options
+                },
+                error: function (xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+    });
 
-    $(document).on("click", "#itemsave", function () {
+
+    {% comment %} $(document).on("click", "#itemsave", function () {
         console.log('hello')
         var item_name = $("#item_name1").val().trim();
         console.log(item_name);
@@ -1726,7 +1763,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                 console.error(xhr.responseText);
             }
         });
-    }
+    } {% endcomment %}
 </script>
    
 

@@ -40,7 +40,7 @@ urlpatterns = [
     path('item_save',views.item_save,name='item_save'),
     path('item_details',views.item_details,name='item_details'),
     # path('credititem_dropdown',views.credititem_dropdown,name='credititem_dropdown'),
-    path('save_item',views.save_item,name='save_item'),
+    # path('save_item',views.save_item,name='save_item'),
     path('get_tax_rate/', views.get_tax_rate, name='get_tax_rate'),
     path('itemdetails',views.itemdetails,name='itemdetails'),
     # path('savecredititem',views.savecredititem,name='savecredititem'),
@@ -60,6 +60,8 @@ urlpatterns = [
     path('party_dropdown',views.party_dropdown,name='party_dropdown'),
     path('saveitemc',views.saveitemc,name='saveitemc'),
     path('item_dropdownc',views.item_dropdownc,name='item_dropdownc'),
+    path('save_item',views.save_item,name='save_item'),
+    path('item_dropdowne',views.item_dropdowne,name='item_dropdowne'),
     
     
     

@@ -689,6 +689,61 @@ def item_dropdownc(request):
       options[option.id] = [option.id, option.item_name]
   return JsonResponse(options)
 
+def save_item(request):
+    if request.method == 'POST':
+        sid = request.session.get('staff_id')
+        staff = staff_details.objects.get(id=sid)
+        company_obj = staff.company
+        item_name = request.POST.get('item_name', '').strip()
+        hsn = request.POST.get('hsn', '').strip()
+        unit = request.POST.get('unit', '').strip()
+        taxref = request.POST.get('taxref', '').strip()
+        sell_price = request.POST.get('sell_price', '').strip()
+        cost_price = request.POST.get('cost_price', '').strip()
+        intra_st = request.POST.get('intra_st', '').strip()
+        inter_st = request.POST.get('inter_st', '').strip()
+        itmdate = request.POST.get('itmdate', '').strip()
+        stock = request.POST.get('stock', '').strip()
+        itmprice = request.POST.get('itmprice', '').strip()
+        minstock = request.POST.get('minstock', '').strip()
+        # Retrieve other form fields similarly
+        
+        # Perform any validation if needed
+        if not item_name:
+            return JsonResponse({'success': False, 'message': 'Item name is required'})
+        if not hsn:
+            return JsonResponse({'success': False, 'message': 'HSN is required'})
+        if ItemModel.objects.filter(company=company_obj, item_hsn=hsn).exists():
+          return JsonResponse({'success': False, 'message': 'HSN already exists'})
+        
+        # Save item to database
+        try:
+            item = ItemModel(item_name=item_name, item_hsn=hsn, item_unit=unit, item_type='Type', item_taxable=taxref, item_gst=intra_st,
+        item_igst=inter_st, item_sale_price=sell_price, item_purchase_price=cost_price, item_current_stock=stock,
+        item_stock_in_hand=stock, item_at_price=itmprice, item_date=itmdate, company=company_obj, user=company_obj.user
+    )
+            # Set additional fields similarly
+            
+            item.save()
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+def item_dropdowne(request):
+    sid = request.session.get('staff_id')
+    staff =  staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    # Retrieve items from the database
+    items = ItemModel.objects.filter(company=cmp)
+    
+    # Prepare data for dropdown
+    id_list = [item.id for item in items]
+    item_list = [item.item_name for item in items]
+    
+    return JsonResponse({'id_list': id_list, 'item_list': item_list})
+
 
 
 # def savecredititem(request):
@@ -832,42 +887,42 @@ def credit_save(request):
 
 
   
-def save_item(request):
-  sid = request.session.get('staff_id')
-  staff =  staff_details.objects.get(id=sid)
-  cmp = company.objects.get(id=staff.company.id)
-  if request.method == 'POST':
-        item_name = request.POST.get('item_name')
-        hsn = request.POST.get('hsn')
-        qty = request.POST.get('qty')
-        tax_ref = request.POST.get('taxref')
-        intra_st = request.POST.get('intra_st')
-        inter_st = request.POST.get('inter_st')
-        sale_price = request.POST.get('saleprice')
-        purchase_price = request.POST.get('purprice')
+# def save_item(request):
+#   sid = request.session.get('staff_id')
+#   staff =  staff_details.objects.get(id=sid)
+#   cmp = company.objects.get(id=staff.company.id)
+#   if request.method == 'POST':
+#         item_name = request.POST.get('item_name')
+#         hsn = request.POST.get('hsn')
+#         qty = request.POST.get('qty')
+#         tax_ref = request.POST.get('taxref')
+#         intra_st = request.POST.get('intra_st')
+#         inter_st = request.POST.get('inter_st')
+#         sale_price = request.POST.get('saleprice')
+#         purchase_price = request.POST.get('purprice')
 
-        # Perform any additional validation or processing here
+#         # Perform any additional validation or processing here
 
-        # Create an instance of your model and save it to the database
-        item = ItemModel(
-            item_name=item_name,
-            item_hsn=hsn,
-            item_current_stock=qty,
-            item_taxable=tax_ref,
-            item_gst=intra_st,
-            item_igst=inter_st,
-            item_sale_price=sale_price,
-            item_purchase_price=purchase_price,
-            staff=staff,
-            company=cmp
-        )
-        item.save()
+#         # Create an instance of your model and save it to the database
+#         item = ItemModel(
+#             item_name=item_name,
+#             item_hsn=hsn,
+#             item_current_stock=qty,
+#             item_taxable=tax_ref,
+#             item_gst=intra_st,
+#             item_igst=inter_st,
+#             item_sale_price=sale_price,
+#             item_purchase_price=purchase_price,
+#             staff=staff,
+#             company=cmp
+#         )
+#         item.save()
 
-        # Redirect to a success page or return a success message
-        return redirect("credit_add")
+#         # Redirect to a success page or return a success message
+#         return redirect("credit_add")
 
-    # Handle GET requests or any other cases
-  return render(request, 'credit_add.html') 
+#     # Handle GET requests or any other cases
+#   return render(request, 'credit_add.html') 
   
   
 def get_tax_rate(request):
