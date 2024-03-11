@@ -1642,45 +1642,9 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         });
     }
 
-    $(document).ready(function () {
-        $('#saveItemButton').click(function () {
-            $.ajax({
-                type: 'POST',
-                url: '{% url "save_item" %}',
-                data: $('#itemCreationForm').serialize(),
-                success: function (response) {
-                    if (response.success) {
-                        $('#newItemModal').modal('hide');
-                        reloadItemDropdown();
-                    } else {
-                        alert('Failed to save item: ' + response.message);
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert('Failed to save item. Please try again later.');
-                }
-            });
-        });
-    
-        function reloadItemDropdown() {
-            $.ajax({
-                url: "{% url 'item_dropdowne' %}",
-                type: "GET",
-                dataType: "json",
-                data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
-                success: function (data) {
-                    // Update item dropdown options
-                },
-                error: function (xhr, status, error) {
-                    console.error(xhr.responseText);
-                }
-            });
-        }
-    });
 
 
-    {% comment %} $(document).on("click", "#itemsave", function () {
+    $(document).on("click", "#itemsave", function () {
         console.log('hello')
         var item_name = $("#item_name1").val().trim();
         console.log(item_name);
@@ -1763,7 +1727,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                 console.error(xhr.responseText);
             }
         });
-    } {% endcomment %}
+    }
 </script>
    
 
