@@ -1691,10 +1691,18 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                 },
 
                 success: function (response) {
-                    document.getElementById("modalItem").reset();
-                    $('#newitem').modal('hide');
-                    reloadItem();
+                    if (response.success) {
+                        document.getElementById("modalItem").reset();
+                        $('#newitem').modal('hide');
+                        reloadItem();
+                    } else {
+                        alert('Failed to save item: ' + response.message);
+                    }
                 },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                    alert('Failed to save item. Please try again later.');
+                }
                 
             });
         }
@@ -1726,6 +1734,9 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             }
         });
     }
+
+
+
 </script>
    
 
