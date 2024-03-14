@@ -305,7 +305,7 @@
                                                                             <option value="{{ i.id }}">{{ i.item_name }}</option>
                                                                         {% endif %}
                                                                     {% endfor %}
-                                                                </select>
+                                                                </select>&nbsp;&nbsp;&nbsp;
                                                                 <button type="button" class="btn" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#newitem" class="text-capitalize">
                                                                     <span class="fa fa-plus"></span>
                                                                 </button>
@@ -464,8 +464,7 @@
                 </button>
             </div>
             <div class="modal-body" >
-                <form method="post" class="needs-validation" novalidate autocomplete="off" id="modalItem">
-                    {% csrf_token %}
+                <form class="needs-validation" novalidate autocomplete="off" id="modalItem">
                     <div class="bg-light bs p-4 rounded mb-5">
                         <div id="main_form_div">
                             <div class="row" style="margin-left: -1vh;">
@@ -599,7 +598,7 @@
                                             </div>
                                             <div class="text-start mt-5">
                                                 <button id="prev_btn" class="btn me-3" style="background-color:rgb(61, 68, 101);" type="button">PREVIOUS</button>
-                                                <button class="btn " style="background-color:rgb(61, 68, 101);" id="itemsave">SAVE</button>
+                                                <button class="btn" type="button" style="background-color:rgb(61, 68, 101);" id="itemsave">SAVE</button>
                                             </div>
                                         </div>
                                     </div>
@@ -1602,7 +1601,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             data: formData,
             success: function(response) {
                 console.log("Response:", response); // Debug statement
-                
+    
                 if (response.success) {
                     console.log("Party saved successfully."); // Debug statement
                     $('#partyModal').modal('hide'); // Close the modal
@@ -1619,6 +1618,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             }
         });
     });
+    
     
     
     
@@ -1641,8 +1641,6 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             },
         });
     }
-
-
 
     $(document).on("click", "#itemsave", function () {
         console.log('hello')

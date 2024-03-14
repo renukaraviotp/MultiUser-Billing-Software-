@@ -596,7 +596,6 @@ def saveparty(request):
         sid = request.session.get('staff_id')
         staff = staff_details.objects.get(id=sid)
         company_obj = company.objects.get(id=staff.company.id)
-        user = company_obj.id
 
         # Retrieve party data from POST request
         party_name = request.POST.get('partyname', '').capitalize()
@@ -617,14 +616,46 @@ def saveparty(request):
         elif Parties.objects.filter(gstin=gstin, company=company_obj).exists():
             return JsonResponse({'success': False, 'message': 'GST number already exists'})
         else:
-            # Create and save the party
-            party = Parties(party_name=party_name, gstin=gstin, phone_number=mobile_number, gst_type=gstintype,
-                            state=state, email=email, opening_balance=balance, date=date,billing_address=address, company=company_obj,
-                            staff=staff)
-            party.save()
-            history = History(company_id=user,party_id=party.id,staff_id=staff.id,action='CREATED')
-            history.save()
-            return JsonResponse({'success': True, 'id': party.id})
+            if balance == '' or balance == '0':
+                party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
+                                gst_type=gstintype, billing_address=address, state=state,
+                                email=email, date=date, company=company_obj, staff_id=staff.id)
+                party.save()
+
+                history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
+                history.save()
+                return JsonResponse({'success': True, 'id': party.id})
+            else:
+                if request.POST.get('pay_recieve') != '':
+                    pay_recieve = request.POST.get('pay_recieve')
+
+                    if pay_recieve == 'receive':
+                        party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
+                                        gst_type=gstintype, billing_address=address, state=state,
+                                        email=email, date=date, opening_balance=balance, to_recieve=True,
+                                        company=company_obj, staff_id=staff.id)
+                        party.save()
+                        history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
+                        history.save()
+                        return JsonResponse({'success': True, 'id': party.id})
+                    elif pay_recieve == 'pay':
+                        neg_balance = int(balance)
+                        party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
+                                        gst_type=gstintype, billing_address=address, state=state,
+                                        email=email, date=date, opening_balance=neg_balance, to_pay=True,
+                                        company=company_obj, staff=staff)
+                        party.save()
+                        history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
+                        history.save()
+                        return JsonResponse({'success': True, 'id': party.id})
+                    else:
+                        party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
+                                        gst_type=gstintype, billing_address=address, state=state,
+                                        email=email, date=date, staff_id=staff.id, company=company_obj)
+                        party.save()
+                        history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
+                        history.save()
+                        return JsonResponse({'success': True, 'id': party.id})
     else:
         return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
@@ -962,8 +993,8 @@ def edit_credit(request,pk):
   sid = request.session.get('staff_id')
   staff =  staff_details.objects.get(id=sid)
   cmp = company.objects.get(id=staff.company.id)
-  party = Parties.objects.filter(company=cmp,staff=staff)
-  item = ItemModel.objects.filter(company=cmp,staff=staff)
+  party = Parties.objects.filter(company=cmp)
+  item = ItemModel.objects.filter(company=cmp)
   crd = Creditnote.objects.get(id=pk,company=cmp)
   crditem = CreditnoteItem.objects.filter(credit=crd,company=cmp)
   cdate = crd.date.strftime("%Y-%m-%d")
