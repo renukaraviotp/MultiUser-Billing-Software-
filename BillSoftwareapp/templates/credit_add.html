@@ -69,7 +69,7 @@
             display: inline-block;
             position: relative;
             width: 60px;
-            height: 34px;
+            height: 32px;
           }
       
           .abc {
@@ -138,8 +138,14 @@
             outline: none; /* Removes the input focus border */
             background: transparent; /* Makes the input background transparent */
         }
+        .party {
+            display: flex;
+            align-items: center;
+        }
     
-        
+        .party h4 {
+            margin-right: 10px; /* Adjust as needed */
+        }
             
           
           
@@ -147,149 +153,141 @@
     </style>
     <body>
        
-    <div class="body-wrapper" style="margin-left:20%;">
+    <div class="body-wrapper" style="margin-left:23%;margin-right:3%;">
         <br><br><br><br><br>
        
-        <div class="container" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
+        <div class="container col-md-12" style="background-color: rgb(130, 144, 199);min-height: 100vh;">
                     <form action="{% url 'credit_save' %}" method="post" enctype="multipart/form-data" onsubmit="return validatecredit()" novalidate>
                         {% csrf_token %}
-                        <div class="container col-md-12" style="background-color: white; padding: 30px; border-radius: 15px;box-shadow: 4px 3px 4px gray;">
-                            <div class="row">
-                                <div class="col-md-11">
-                                    <h2>Add Credit Note</h2>
-                                </div>
-                                <div class="col-md-1">
-                                    <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
-                                </div>
-                            </div><br>
-                            {% for m in messages %}
-                            <h5 style="background-color: rgba(255, 0, 0, 0.4);color: red;font-size: larger;padding: 10px;border-radius: 10px;text-align: center;">{{m}}</h5>
-                            {% endfor %}
-                
-                            <div class='party'>
-                                <h3>Party</h3>
-                                <label class="toggle-control">
-                                    <input class='abc' type="checkbox" name="abc" id="partyCheckbox" checked>
-                                    <span class="control"></span>
-                                </label>
-                            </div>
-                            <div id="partyForm" class="form-group row">
-                                    <div class="col-md-4 custom-dropdown">
-                                        <label for=""> Party Name</label>
-                                        <div class="input-group">
-                                            <select name="partyname" id="employee" class="form-control border-secondary">
-                                                <option value="" selected hidden>Select</option>
-                                                {% for c in party %}
-                                                    {% if c.cid_id == cmp.cid %}
-                                                        <option value="{{ c.id }}" data-party-id="{{ c.id }}" data-balance="{{ c.opening_balance }}" onclick="selectItem(this);">
-                                                            {{ c.party_name }}
-                                                        </option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
-                                             &nbsp;&nbsp;&nbsp;
-                                            {% comment %} <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();"> {% endcomment %}
-                                            <button type="button" class="btn btn-primary" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#partyModal">
-                                                <i class="fa-solid fa-plus"></i>
-                                            </button>
-                                        </div>
-{% comment %} <ul id="employee" class="dropdown-list">
-{% for p in party %}
-    <li class="dropdown-item"
-        data-value="{{ p.party_name }}"
-        data-party-id="{{ p.id }}" data-phone="{{ p.phone_number }}" data-address="{{ p.billing_address }}" data-balance="{{ p.opening_balance }}"
-        onclick="selectItem(this);"
-     >
-        {{ p.party_name }}
-    </li>
-{% endfor %}
-</ul> {% endcomment %}
-
-
-                                            
-<div class="mt-1 d-flex" >
-    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
-</div>
+                        <div class="container col-md-11" style="background-color: white; padding: 30px; border-radius: 10px;box-shadow: 4px 3px 4px gray;">
+                            <div clas"container col-md-12 mr-2 ml-2" style="margin-left: 5vh;margin-right:5vh;">
+                                <div class="row">
+                                    <div class="col-md-11">
+                                        <h3>ADD CREDIT NOTE</h3>
                                     </div>
-                                    <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" hidden></div>
-
-                                    <div class="col-md-3" id="phonediv">
-                                        <label class="col-form-label" >Phone No. </label>
-                                        <input class="form-control" name="number"  id="ph"  style="color: black;background-color: white;" placeholder="Phone number" readonly>
+                                    <div class="col-md-1">
+                                        <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
                                     </div>
-                                <div class="col-md-4" id="addressdiv">
-                                    <label class="col-form-label">Billing Address</label>
-                                    <textarea class="form-control mb-3" name="address" id="bname" rows="6" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly></textarea>
-                                </div>
-                            </div>
-                                    <div id="daddressdiv" style="display: none;">
-                                        <label class="col-form-label">Billing Address</label>
-                                        <textarea class="form-control mb-3" name="dbname" id="dbname" rows="6" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly></textarea>
-                                    </div>
-                                    
-                                    {% comment %} <div class="col-md-3" id="phonediv"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
-                                    <div class="col-md-4" id="addressdiv"><label for="">Billing Address</label>
-                                        <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly></textarea></div> {% endcomment %}
-                                
-                            
-                
-                            <div class="form-group row">
-                                <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{refno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
-                                <div class="col">
-                                    <label for="">Bill No.</label>
-                                    <select class="form-control" name="billNo" id="bno" style="color: black; background-color: white;">
-                                        <option value="" selected hidden>Select</option>
-                                        {% for bill_number in bill_numbers %}
-                                            <option value="{{ bill_number }}">{{ bill_number }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <input id="bno-input" type="text" name="billNo" class="form-control" placeholder="Bill Number" style="display: none;">
-                                </div>
-                                <div class="col">
-                                    <label for="">Bill Date</label>
-                                    <select class="form-control" name="billDate" id="bdt" style="color: black; background-color: white;">
-                                        <option value="" selected hidden>Select</option>
-                                        <!-- Options will be dynamically added here using JavaScript -->
-                                    </select>
-                                    <input id="bdt-input" type="date" name="billDate" class="form-control" placeholder="Bill Date" style="display: none;">
-                                </div>
-                                    {% comment %} <input id="bdt" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div> {% endcomment %}
-                                
-                            </div>
-                        
-                
-                            
-                
-                            <div class="row form-group">
-                                <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{todayDate}}" class="form-control"></div>
-                
-                                <div class="col-md">
-                                    <label class="col-form-label ">Place of Supply</label>
-                                        <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">
-                                            <option value="" selected hidden>Select</option>
-                                                <option value="State">State</option>
-                                                <option value="Other State">Other State</option>
-                                        </select> 
-                                </div>
+                                </div><br>
+                                {% for m in messages %}
+                                <h5 style="background-color: rgba(255, 0, 0, 0.4);color: red;font-size: larger;padding: 10px;border-radius: 10px;text-align: center;">{{m}}</h5>
+                                {% endfor %}
                     
+                                <div class='party'>
+                                    <h4>Party</h4>
+                                    <label class="toggle-control">
+                                        <input class='abc' type="checkbox" name="abc" id="partyCheckbox" checked>
+                                        <span class="control"></span>
+                                    </label>
+                                </div>
+                                <div id="partyForm" class="form-group row">
+                                        <div class="col-md-4 custom-dropdown">
+                                            <label for=""> Party Name</label>
+                                            <div class="input-group">
+                                                <select name="partyname" id="employee" class="form-control border-secondary">
+                                                    <option value="" selected hidden>Select</option>
+                                                    {% for c in party %}
+                                                        {% if c.cid_id == cmp.cid %}
+                                                            <option value="{{ c.id }}" data-party-id="{{ c.id }}" data-balance="{{ c.opening_balance }}" onclick="selectItem(this);">
+                                                                {{ c.party_name }}
+                                                            </option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                                &nbsp;&nbsp;&nbsp;
+                                                {% comment %} <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();"> {% endcomment %}
+                                                <button type="button" class="btn btn-primary" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#partyModal">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </button>
+                                            </div>
+
+
+
+                                                
+                                            <div class="mt-1 d-flex" >
+                                                &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval"></span></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" hidden></div>
+
+                                        <div class="col-md-3" id="phonediv">
+                                            <label class="col-form-label" >Phone No. </label>
+                                            <input class="form-control" name="number"  id="ph"  style="color: black;background-color: white;" placeholder="Phone number" readonly>
+                                        </div>
+                                    <div class="col-md-4" id="addressdiv">
+                                        <label class="col-form-label">Billing Address</label>
+                                        <textarea class="form-control mb-3" name="address" id="bname" rows="2" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly></textarea>
+                                    </div>
+                                </div>
+                                        <div id="daddressdiv" style="display: none;">
+                                            <label class="col-form-label">Billing Address</label>
+                                            <textarea class="form-control mb-3" name="dbname" id="dbname" rows="2" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly></textarea>
+                                        </div>
+                                        
+                                        {% comment %} <div class="col-md-3" id="phonediv"><label for=""> Phone Number</label><input id="ph" type="text" name="number" class="form-control" pattern="[0-9]{10}" placeholder="Phone Number" readonly></div>
+                                        <div class="col-md-4" id="addressdiv"><label for="">Billing Address</label>
+                                            <textarea name="address" id="ad" cols="10" rows="4" class="form-control" placeholder="Billing Address..." readonly></textarea></div> {% endcomment %}
+                                    
+                                
+                    
+                                <div class="form-group row">
+                                    <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{refno}}" type="text" value="" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
+                                    <div class="col">
+                                        <label for="">Bill No.</label>
+                                        <select class="form-control" name="billNo" id="bno" style="color: black; background-color: white;">
+                                            <option value="" selected hidden>Select</option>
+                                            {% for bill_number in bill_numbers %}
+                                                <option value="{{ bill_number }}">{{ bill_number }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <input id="bno-input" type="text" name="billNo" class="form-control" placeholder="Bill Number" style="display: none;">
+                                    </div>
+                                    <div class="col">
+                                        <label for="">Bill Date</label>
+                                        <select class="form-control" name="billDate" id="bdt" style="color: black; background-color: white;">
+                                            <option value="" selected hidden>Select</option>
+                                            <!-- Options will be dynamically added here using JavaScript -->
+                                        </select>
+                                        <input id="bdt-input" type="date" name="billDate" class="form-control" placeholder="Bill Date" style="display: none;">
+                                    </div>
+                                        {% comment %} <input id="bdt" type="date" name="billDate" class="form-control" placeholder="Bill Date"> </div> {% endcomment %}
+                                    
+                                </div>
+                            
+                    
+                                
+                    
+                                <div class="row form-group">
+                                    <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{todayDate}}" class="form-control"></div>
+                    
+                                    <div class="col-md">
+                                        <label class="col-form-label ">Place of Supply</label>
+                                            <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">
+                                                <option value="" selected hidden>Select</option>
+                                                    <option value="State">State</option>
+                                                    <option value="Other State">Other State</option>
+                                            </select> 
+                                    </div>
+                        
+                                </div>
                             </div>
                         </div>
                                     <br><br>
                                    
-                                    <div class="container table-responsive col-md-12 mr-1">
-                                        <div class="col-md-12 table-responsive-md mt-3">
+                                    <div class="container table-responsive col-md-12" style="margin-left: 5vh;">
+                                        <div class=" table-responsive-md mt-3" style="margin-right: 8vh;">
                                             <table class="table table-bordered table-hover  mt-3" id="tab_logic" >
                                                 <thead style="background-color:rgb(61, 68, 101);">
                                                     <tr style="color: white; ">
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">#</th>
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">PRODUCT</th>
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">HSN</th>
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">QTY</th>
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">PRICE</th>
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">TAX (%)</th>
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">DISCOUNT</th>
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">TOTAL</th>
-                                                        <th style="font-size:15px; font-weight:bold;" class="text-center">FIELD</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">#</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">PRODUCT</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">HSN</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">QTY</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">PRICE</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">TAX (%)</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">DISCOUNT</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">TOTAL</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">FIELD</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="items-table-body">
@@ -356,7 +354,7 @@
                                     <br><br><br>
                                     
                                     <div class="container col-md-12 mr-5" style="margin-top:10px">
-                                        <div class="row" style="margin-left: 2vh;" >
+                                        <div class="row" style="margin-left: 2vh;">
                                             <div class="col-md-6" id="tab_logic_total" style=" color: black; border: 1px solid rgba(128, 128, 128, 0.6); margin-left: 2vh; background-color: rgba(61, 68, 101); width:30px;">
                                                 <div class="p-2">
                                                     <div class="row container-fluid p-2 m-0">
@@ -724,7 +722,7 @@
                                 <div class="row form-group">
                                     <div class="col-md-6">
                                         <label for="billingAddress">Billing Address</label>
-                                        <textarea name="address" id="billingAddress" cols="10" rows="4" class="form-control" placeholder="Billing Address..."></textarea>
+                                        <textarea name="address" id="billingAddress" cols="10" rows="2" class="form-control" placeholder="Billing Address..."></textarea>
                                     </div>
                                 </div>
                                 <br>

@@ -200,18 +200,19 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2"></div>
-                                <div class="col-md-3 text-right" style="margin-left: 6vh;">
-                                    <button class="btn mt-3" type="button" onclick="ExportToExcel()" style="margin-right: 2vh; margin-left: 5vh;">
+                                <div class="col-md-3 text-right" style="margin-left: 2vh;">
+                                    <button class="btn mt-3" type="button" onclick="ExportToExcel()" style="margin-right: 0vh; margin-left: 5vh;">
                                         <span><img width="22px" src="{% static 'assets/excel2.png' %}" alt="no img"></span>
                                         <br><span style="color: black; font-size: small; font-weight: bold;">Excel</span>
                                     </button>
 
-                                    <button class="btn mt-3" type="button" onclick="printfunction()" style="margin-right: 2vh;">
+                                    <button class="btn mt-3" type="button" onclick="printfunction()" style="margin-right: 0vh;">
                                         <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
                                         <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
                                     </button>
 
-                                    
+                                   
+                                   
                                 </div>
                                     <br><br><br><br>
                                 </div>
@@ -221,20 +222,20 @@
                     
                     
 
-            <div class="row pt-0 m-0" style="width:100%;">
+            
                 <div class="card p-0 bg-light bs" style="height: 36rem; width:100%;">
                     <div class="row m-0 p-0 pt-3">
-                        <div class="col-sm-12 col-lg-3">
-                            <h4 class="tb fw-bolder pt-2 " style="rgb(61, 68, 101);">Credit Notes</h4>
+                        <div class="col-sm-12 col-lg-3" style="margin-left: 5vh;">
+                            <h3 class="tb fw-bolder pt-2 " style="rgb(61, 68, 101);">Credit Notes</h3>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-4">
-                            <input id="search_input" style="padding-inline-start: 2rem; margin-left: 1vh; " class="w-100 border-secondary text-dark pt-1 pb-1 pe-1 rounded" type="text" placeholder=" Search">
+                            <input id="search_input" style="padding-inline-start: 2rem; margin-left: 7vh; " class="w-100 border-secondary text-dark pt-1 pb-1 pe-1 rounded" type="text" placeholder=" Search">
                         </div>
                         <div class="col-md-6"></div>
-                        <div class="col-md-2">
+                        <div class="col-md-2" style="margin-left:-3%;">
                             <a class="btn"  href="{% url 'credit_add' %}" style="color: white;background-color:rgb(61, 68, 101);margin-right:3%;"> 
                                 <i class="fa fa-plus border-dark " aria-hidden="true" style="color: white;"></i> &nbsp;Add Creditnote
                             </a>
@@ -376,7 +377,7 @@
                         </div>
                     </div>                        
                 </div>
-            </div>
+            
         </div>
     </div>
         

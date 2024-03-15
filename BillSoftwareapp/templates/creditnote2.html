@@ -116,19 +116,18 @@
       
 </style>
 <body>
-    
-
-    <br><br><br><br><br><br>
+<br><br><br><br><br><br>
+<div class="body-wrapper" style="margin-left:25%;margin-right:5%;background-color:white;box-shadow:5px;">
     <div class="row ps-3 pe-3 m-0" id="print-area">
-    <div class="col-sm-12 ps-2 pe-3" style="margin-left:23%;">
+    <div class="col-sm-12 ps-2 pe-3">
         <div class="row pt-0 m-0">
-            <div class="card p-0 bg-light bs col-md-9"><br>
+            <div class="card p-0 bg-light bs col-md-12"><br>
                 <div class="row">
                     <div class="container">
                         <div class="row ">
                             <div class="col-md-3" style="margin-left: 7vh; margin-top: 7vh;">
                                 <div class="form-group">
-                                    <h3>Credit Note Details</h3>
+                                    <h2>Credit Note Details</h2>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -163,12 +162,12 @@
                             </div>
                         </div>
                     </div>
-                </div><br>
-                
-                
-                <br> 
+                </div>
             </div>
         </div>
+        <div id="templates" class="col text-center pb-2 pt-3" style="background-color:rgb(130, 144, 199); color:white;"  >
+            <a class="fw-bolder fs-4" style="color: white; text-decoration: none; " >TEMPLATE</a>
+        </div><br><br>
     
     
 
@@ -251,20 +250,20 @@
   
 
   <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-6">
-            <ul class="pagination pagination-sm">
-                <li class="page-item"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
-                <li class="page-item active"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
-                <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
-            </ul>
+        <div class="row justify-content-center">
+            <div class="col-6 d-flex justify-content-center">
+                <ul class="pagination pagination-sm">
+                    <li class="page-item"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
+                    <li class="page-item active"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
+                    <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
   </div>
 
-<br><br>
     </div>
-    </div>
+    </div><br>
+</div><br><br>
 
     <div id="emailModal" class="modal col-md-6" style="margin-left:25%; height:125%">
         <div class="modal-content">

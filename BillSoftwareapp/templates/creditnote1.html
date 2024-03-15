@@ -88,7 +88,7 @@ body{
 }
 .credit-wrapper{
     min-height: 100vh;
-    background-color: rgb(130, 144, 199);
+    {% comment %} background-color: rgb(130, 144, 199); {% endcomment %}
     {% comment %} padding-top: 20px; {% endcomment %}
     padding-bottom: 20px;
 }
@@ -188,191 +188,195 @@ body{
     
 
 <br><br><br><br><br><br>
-<div class="row ps-3 pe-3 m-0" id="whatToPrint1" >
-<div class="col-sm-12 ps-2 pe-3" style="margin-left:23%;">
-    <div class="row pt-0 m-0">
-        <div class="card p-0 bg-light bs col-md-9"><br>
-            <div class="row">
-                <div class="container">
-                    <div class="row ">
-                        <div class="col-md-3" style="margin-left: 7vh; margin-top: 7vh;">
-                            <div class="form-group">
-                                <h3>Credit Note Details</h3>
+<div class="body-wrapper" style="margin-left:25%;margin-right:5%;background-color:white;box-shadow:5px;">
+    <div class="row ps-3 pe-3 m-0" id="whatToPrint1" >
+        <div class="col-sm-12 ps-2 pe-3">
+            <div class="row pt-0 m-0">
+                <div class="card p-0 bg-light bs col-md-12"><br>
+                    
+                    <div class="row">
+                        <div class="container">
+                            <div class="row ">
+                                <div class="col-md-3" style="margin-left: 7vh; margin-top: 7vh;">
+                                    <div class="form-group">
+                                        <h2>Credit Note Details</h2>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                    </div>
+                                </div>
+                                <div class="col-md-2"></div>
+                                <div class="col-md-4 text-right" style="margin-left: -13vh;">
+                                    <div class="btn-group" role="group" aria-label="Button group">
+                                        <button class="btn mt-3" type="button" onclick="printContent()" style="margin-right: 2vh;">
+                                            <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
+                                            <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
+                                        </button>
+                                
+                                        <button class="btn mt-3" type="button" id="download-pdf" style="margin-right: 2vh;">
+                                            <span><img width="30px" src="{% static 'images/credit/pdf.jpg' %}" alt="no img"></span>
+                                            <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
+                                        </button>
+                                
+                                        <div class="dropdown">
+                                            <button class="btn mt-3 dropdown-toggle" type="button" id="shareDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <span><img width="30px" src="{% static 'images/credit/share.png' %}" alt="no img"></span>
+                                                <br>
+                                                <span style="color: black; font-size: small; font-weight: bold;">Share</span>
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="shareDropdown">
+                                                <a class="dropdown-item" href="" id="share_on_whatsapp">{% post_to_whatsapp object_or_url "WhatsApp" %}</a>
+                                                <a class="dropdown-item" href="#" id="share_with_email" onclick="toggleEmailModal()">Email</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
+                    </div>
+                </div>
+            </div> 
+            <div id="templates" class="col text-center pb-2 pt-3" style="background-color:rgb(130, 144, 199); color:white;"  >
+                <a class="fw-bolder fs-4" style="color: white; text-decoration: none; " >TEMPLATE</a>
+            </div>
+
+
+
+            <div class = "credit-wrapper">
+                <br>
+                <div class = "credit col-12 mr-0" id = "print-area">
+                    <div class="credit-container" id="slipdiv">
+                        <div class="credit-head">
+                            <div class="credit-head-top">
+                                <div class="credit-head-top-left text-start">
+                                    <h3>Credit Note</h3>
+                                </div>
+                                <div class="credit-head-top-right text-end">
+                                    <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+                            <div class="hr"></div>
+                            <div class="credit-head-middle">
+                    
+                                <div class="credit-head-middle-left text-start">
+                                    <p><span class="text-bold">Date:</span>{{cd.date}}</p>
+                                </div>
+                                <div class="credit-head-middle-right text-end">
+                                    <p><spanf class="text-bold">CreditNote No:</span>{{cd.returnno}}</p>
+                                </div>
+                    
+                            </div>
+                            <div class="hr"></div>
+                            <div class="credit-head-bottom">
+                                <div class="credit-head-bottom-left">
+                                    <ul>
+                                        <li class='text-bold'style="background-color:rgb(61, 68, 101);color:white;padding:3px;border-top-right-radius: 4vh; border-bottom-right-radius: 4vh;width:100px;">From:</li>
+                                        <li>{{cd.company.company_name}}</li>
+                                        <li>{{cd.company.address}}</li>
+                                    </ul>
+                                </div>
+                                <div class="credit-head-bottom-right">
+                                    <ul class="text-end">
+                                        <li class='text-bold' style="margin-left:50vh;width: 100px; background-color:rgb(61, 68, 101); color:white; padding:3px; border-top-left-radius: 4vh; border-bottom-left-radius: 4vh;">To:</li>
+                                        <li>{{cd.party_name}}</li>
+                                        {% comment %}
+                                        <li>{{cd.address}}</li>
+                                        <li>{{cd.contact}}</li> {% endcomment %}
+                                    </ul>
+                                </div> 
+                                
                             </div>
                         </div>
-                        <div class="col-md-2"></div>
-                        <div class="col-md-4 text-right" style="margin-left: -13vh;">
-                            <div class="btn-group" role="group" aria-label="Button group">
-                                <button class="btn mt-3" type="button" onclick="printContent()" style="margin-right: 2vh;">
-                                    <span><img width="30px" src="{% static 'images/printer.jpeg' %}" alt="no img"></span>
-                                    <br><span style="color: black; font-size: small; font-weight: bold;">Print</span>
-                                </button>
-                        
-                                <button class="btn mt-3" type="button" id="download-pdf" style="margin-right: 2vh;">
-                                    <span><img width="30px" src="{% static 'images/credit/pdf.jpg' %}" alt="no img"></span>
-                                    <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
-                                </button>
-                        
-                                <div class="dropdown">
-                                    <button class="btn mt-3 dropdown-toggle" type="button" id="shareDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <span><img width="30px" src="{% static 'images/credit/share.png' %}" alt="no img"></span>
-                                        <br>
-                                        <span style="color: black; font-size: small; font-weight: bold;">Share</span>
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="shareDropdown">
-                                        <a class="dropdown-item" href="" id="share_on_whatsapp">{% post_to_whatsapp object_or_url "WhatsApp" %}</a>
-                                        <a class="dropdown-item" href="#" id="share_with_email" onclick="toggleEmailModal()">Email</a>
+                        <div class="overflow-view">
+                            <div class="credit-body">
+                                <table id="credit-table">
+                                    <thead style="background-color:rgb(61, 68, 101);color:white;">
+                                        <tr>
+                                            <th class="text-bold">Item</th>
+                                            <th class="text-bold">HSN</th>
+                                            <th class="text-bold">Qty</th>
+                                            <th class="text-bold">Rate</th>
+                                            <th class="text-bold">Tax</th>
+                                            <th class="text-bold">Discount</th>
+                                            <th class="text-bold">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for i in crditem %}
+                                        <tr>
+                                            <td>{{i.product}}</td>
+                                            <td>{{i.hsn}}</td>
+                                            <td>{{i.qty}}</td>
+                                            <td>{{i.price}}</td>
+                                            <td>{{i.tax}}</td>
+                                            <td>{{i.discount}}</td>
+                                            <td class="text-end">{{i.total}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="credit-body-bottom">
+                                    <div class="credit-body-info-item border-bottom">
+                                        <div class="info-item-td text-end text-bold">Sub Total:</div>
+                                        <div class="info-item-td text-end">{{cd.subtotal}}</div>
+                                    </div>
+                                    <div class="credit-body-info-item border-bottom">
+                                        <div class="info-item-td text-end text-bold">Tax:</div>
+                                        <div class="info-item-td text-end">{{cd.taxamount}}</div>
+                                    </div>
+                                    <div class="credit-body-info-item">
+                                        <div class="info-item-td text-end text-bold">Total:</div>
+                                        <div class="info-item-td text-end">{{cd.grandtotal}}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    
+                    
+                    
+
+                    <script>
+                        function printContent() {
+                            // Get the HTML content of the entire section you want to print
+                            var contentToPrint = document.getElementById("print-area").innerHTML;
                         
-                    </div>
-                </div>
-            </div><br>
-            
-            
-            <br>
-        </div>
-    </div> 
+                            // Create a div to contain the content to be printed
+                            var printerDiv = document.createElement('div');
+                            printerDiv.classList.add('printContainer');
+                            printerDiv.innerHTML = contentToPrint;
+                        
+                            // Append the container div to the body
+                            document.body.appendChild(printerDiv);
+                        
+                            // Trigger the print dialog
+                            window.print();
+                        
+                            // Remove the container div after printing
+                            printerDiv.remove();
+                        }
+                        
+                    </script>
 
-
-
-<div class = "credit-wrapper">
-    <br><br><br><br>
-    <div class = "credit col-10 mr-0" id = "print-area">
-        <div class="credit-container" id="slipdiv">
-            <div class="credit-head">
-                <div class="credit-head-top">
-                    <div class="credit-head-top-left text-start">
-                        <h3>Credit Note</h3>
-                    </div>
-                    <div class="credit-head-top-right text-end">
-                        <a href="{% url "transactiontable" %}" style="text-align: right; font-size: large;"><i class="fa fa-times mt-3 mr-4" aria-hidden="true"></i></a>
-                    </div>
                 </div>
-                <div class="hr"></div>
-                <div class="credit-head-middle">
-        
-                    <div class="credit-head-middle-left text-start">
-                        <p><span class="text-bold">Date:</span>{{cd.date}}</p>
-                    </div>
-                    <div class="credit-head-middle-right text-end">
-                        <p><spanf class="text-bold">CreditNote No:</span>{{cd.returnno}}</p>
-                    </div>
-        
-                </div>
-                <div class="hr"></div>
-                <div class="credit-head-bottom">
-                    <div class="credit-head-bottom-left">
-                        <ul>
-                            <li class='text-bold'>From:</li>
-                            <li>{{cd.company.company_name}}</li>
-                            <li>{{cd.company.address}}</li>
-                        </ul>
-                    </div>
-                    <div class="credit-head-bottom-right">
-                        <ul class="text-end">
-                            <li class='text-bold'>To:</li>
-                            <li>{{cd.party_name}}</li>
-                            {% comment %}
-                            <li>{{cd.address}}</li>
-                            <li>{{cd.contact}}</li> {% endcomment %}
+            </div><br><br>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-6 d-flex justify-content-center">
+                        <ul class="pagination pagination-sm">
+                            <li class="page-item active"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
+                            <li class="page-item"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
+                            <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
-            <div class="overflow-view">
-                <div class="credit-body">
-                    <table id="credit-table">
-                        <thead>
-                            <tr>
-                                <th class="text-bold">Item</th>
-                                <th class="text-bold">HSN</th>
-                                <th class="text-bold">Qty</th>
-                                <th class="text-bold">Rate</th>
-                                <th class="text-bold">Tax</th>
-                                <th class="text-bold">Discount</th>
-                                <th class="text-bold">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for i in crditem %}
-                            <tr>
-                                <td>{{i.product}}</td>
-                                <td>{{i.hsn}}</td>
-                                <td>{{i.qty}}</td>
-                                <td>{{i.price}}</td>
-                                <td>{{i.tax}}</td>
-                                <td>{{i.discount}}</td>
-                                <td class="text-end">{{i.total}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <div class="credit-body-bottom">
-                        <div class="credit-body-info-item border-bottom">
-                            <div class="info-item-td text-end text-bold">Sub Total:</div>
-                            <div class="info-item-td text-end">{{cd.subtotal}}</div>
-                        </div>
-                        <div class="credit-body-info-item border-bottom">
-                            <div class="info-item-td text-end text-bold">Tax:</div>
-                            <div class="info-item-td text-end">{{cd.taxamount}}</div>
-                        </div>
-                        <div class="credit-body-info-item">
-                            <div class="info-item-td text-end text-bold">Total:</div>
-                            <div class="info-item-td text-end">{{cd.grandtotal}}</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        
-        
-
-        <script>
-            function printContent() {
-                // Get the HTML content of the entire section you want to print
-                var contentToPrint = document.getElementById("print-area").innerHTML;
-            
-                // Create a div to contain the content to be printed
-                var printerDiv = document.createElement('div');
-                printerDiv.classList.add('printContainer');
-                printerDiv.innerHTML = contentToPrint;
-            
-                // Append the container div to the body
-                document.body.appendChild(printerDiv);
-            
-                // Trigger the print dialog
-                window.print();
-            
-                // Remove the container div after printing
-                printerDiv.remove();
-            }
-            
-        </script>
-
-    </div>
-</div><br><br>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-6">
-            <ul class="pagination pagination-sm">
-                <li class="page-item active"><a class="page-link" href="{% url "template1" cd.id %}">1</a></li>
-                <li class="page-item"><a class="page-link" href="{% url "template2" cd.id %}">2</a></li>
-                <li class="page-item"><a class="page-link" href="{% url "template3" cd.id %}">3</a></li>
-            </ul>
         </div>
     </div>
 </div>
 <br><br>
-</div>
-</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 
