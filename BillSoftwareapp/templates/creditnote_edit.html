@@ -185,8 +185,6 @@
                                         <label for=""> Party Name</label>
                                         <div class="input-group">
                                             <select name="partyname" id="employee" class="form-control" style="color:black;">
-                                                
-                                                {% comment %} <option value="{{ crd.party }}" selected>{{crd.party_name}}</option> {% endcomment %}
                                                 <option value="" selected hidden>{{crd.party.party_name}}</option>
                                                 {% for c in party %}
                                                     {% if c.cid_id == cmp.cid %}
@@ -203,35 +201,22 @@
                                             <button type="button" class="btn btn-primary" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#partyModal">
                                                 <i class="fa-solid fa-plus"></i>
                                             </button>
-                                        </div>
-{% comment %} <ul id="employee" class="dropdown-list">
-{% for p in party %}
-{% if c.cid_id == cmp.cid %}
-    <li class="dropdown-item"
-        data-value="{{ p.party_name }}"
-        data-party-id="{{ p.id }}" data-phone="{{ p.phone_number }}" data-address="{{ p.billing_address }}" data-balance="{{ p.opening_balance }}"
-        onclick="selectItem(this);"
-     >
-        {{ p.party_name }}
-    </li>
-    {% endif %}
-{% endfor %}
-</ul> {% endcomment %}
+                                        </div>  
                                             
-<div class="mt-1 d-flex" >
-    &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval">{{crd.party.opening_balance}}</span></span>
-</div>
+                                        <div class="mt-1 d-flex" >
+                                            &nbsp;<span id="balancediv" style="display: none; color: black;"> Available Balance : <span id="balval">{{crd.party.opening_balance}}</span></span>
+                                        </div>
                                     </div>
-                                    <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" placeholder="Bill Number" hidden></div>
+                                    <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" hidden></div>
 
                                     <div class="col-md-3" id="phonediv">
                                         <label class="col-form-label" >Phone No. </label>
                                         <input class="form-control" name="number" value="{{crd.contact}}"  id="ph"  style="color: black;background-color: white;" pattern="[0-9]{10}" placeholder="Phone number" readonly>
                                     </div>
-                                <div class="col-md-4" id="addressdiv">
-                                    <label class="col-form-label">Billing Address</label>
-                                    <textarea class="form-control mb-3" name="address" id="bname" rows="6" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly>{{crd.address}}</textarea>
-                                </div>
+                                    <div class="col-md-4" id="addressdiv">
+                                        <label class="col-form-label">Billing Address</label>
+                                        <textarea class="form-control mb-3" name="address" id="bname" rows="6" type="text" style="color: black;background-color: white;" placeholder="Billing Address..." readonly>{{crd.address}}</textarea>
+                                    </div>
                             </div>
                                     <div id="daddressdiv" style="display: none;">
                                         <label class="col-form-label">Billing Address</label>

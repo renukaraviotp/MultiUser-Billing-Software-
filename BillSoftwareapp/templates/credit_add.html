@@ -271,9 +271,8 @@
                         
                                 </div>
                             </div>
-                        </div>
-                                    <br><br>
-                                   
+                        </div><br>
+        
                                     <div class="container table-responsive col-md-12" style="margin-left: 5vh;">
                                         <div class=" table-responsive-md mt-3" style="margin-right: 8vh;">
                                             <table class="table table-bordered table-hover  mt-3" id="tab_logic" >
@@ -351,7 +350,6 @@
                                             </table>
                                         </div>
                                     </div>
-                                    <br><br><br>
                                     
                                     <div class="container col-md-12 mr-5" style="margin-top:10px">
                                         <div class="row" style="margin-left: 2vh;">
@@ -1602,8 +1600,9 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     
                 if (response.success) {
                     console.log("Party saved successfully."); // Debug statement
-                    $('#partyModal').modal('hide'); // Close the modal
-                    $('#partyCreationForm')[0].reset(); // Reset the form
+                    Document.getelementbyid('partyModal').hide();
+                    Document.getelementbyid('partyCreationForm').reset();
+                    
                     reloadPartyDropdown();
                 } else {
                     console.error('Failed to save party:', response.message); // Debug statement
@@ -1735,6 +1734,25 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
 
 
+</script>
+
+<script>
+    function validateQuantity() {
+        var quantities = document.getElementsByName('qty[]');
+
+        for (var i = 0; i < quantities.length; i++) {
+            var quantity = parseFloat(quantities[i].value);
+
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("Warning: Quantity must not be zero.");
+                return false; // Prevent form submission
+            }
+        }
+
+        return true; // Proceed with form submission
+    }
+
+    
 </script>
    
 
