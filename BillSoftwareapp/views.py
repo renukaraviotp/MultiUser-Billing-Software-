@@ -590,74 +590,135 @@ def itemdetails(request):
   qty = itm.item_current_stock
   return JsonResponse({'hsn':hsn, 'gst':gst, 'igst':igst, 'price':price, 'qty':qty})
 
+# def saveparty(request):
+#     if request.method == 'POST':
+#         # Retrieve session and company information
+#         sid = request.session.get('staff_id')
+#         staff = staff_details.objects.get(id=sid)
+#         company_obj = company.objects.get(id=staff.company.id)
+
+#         # Retrieve party data from POST request
+#         party_name = request.POST.get('partyname', '').capitalize()
+#         mobile_number = request.POST.get('mobilenumber', '')
+#         gstin = request.POST.get('gstin', '')
+#         gstintype = request.POST.get('gstintype', '')
+#         state = request.POST.get('state', '')
+#         email = request.POST.get('email', '')
+#         date = request.POST.get('date', '')
+#         address = request.POST.get('address', '')
+#         balance = request.POST.get('balance', '')
+
+#         # Check if party already exists
+#         if Parties.objects.filter(phone_number=mobile_number, company=company_obj).exists():
+#             return JsonResponse({'success': False, 'message': 'Contact number already exists'})
+#         elif Parties.objects.filter(email=email, company=company_obj).exists():
+#             return JsonResponse({'success': False, 'message': 'Email already exists'})
+#         elif Parties.objects.filter(gstin=gstin, company=company_obj).exists():
+#             return JsonResponse({'success': False, 'message': 'GST number already exists'})
+#         else:
+#             if balance == '' or balance == '0':
+#                 party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
+#                                 gst_type=gstintype, billing_address=address, state=state,
+#                                 email=email, date=date, company=company_obj, staff_id=staff.id)
+#                 party.save()
+
+#                 history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
+#                 history.save()
+#                 return JsonResponse({'success': True, 'id': party.id})
+#             else:
+#                 if request.POST.get('pay_recieve') != '':
+#                     pay_recieve = request.POST.get('pay_recieve')
+
+#                     if pay_recieve == 'receive':
+#                         party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
+#                                         gst_type=gstintype, billing_address=address, state=state,
+#                                         email=email, date=date, opening_balance=balance, to_recieve=True,
+#                                         company=company_obj, staff_id=staff.id)
+#                         party.save()
+#                         history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
+#                         history.save()
+#                         return JsonResponse({'success': True, 'id': party.id})
+#                     elif pay_recieve == 'pay':
+#                         neg_balance = int(balance)
+#                         party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
+#                                         gst_type=gstintype, billing_address=address, state=state,
+#                                         email=email, date=date, opening_balance=neg_balance, to_pay=True,
+#                                         company=company_obj, staff=staff)
+#                         party.save()
+#                         history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
+#                         history.save()
+#                         return JsonResponse({'success': True, 'id': party.id})
+#                     else:
+#                         party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
+#                                         gst_type=gstintype, billing_address=address, state=state,
+#                                         email=email, date=date, staff_id=staff.id, company=company_obj)
+#                         party.save()
+#                         history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
+#                         history.save()
+#                         return JsonResponse({'success': True, 'id': party.id})
+#     else:
+#         return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
 def saveparty(request):
-    if request.method == 'POST':
-        # Retrieve session and company information
-        sid = request.session.get('staff_id')
-        staff = staff_details.objects.get(id=sid)
-        company_obj = company.objects.get(id=staff.company.id)
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
 
-        # Retrieve party data from POST request
-        party_name = request.POST.get('partyname', '').capitalize()
-        mobile_number = request.POST.get('mobilenumber', '')
-        gstin = request.POST.get('gstin', '')
-        gstintype = request.POST.get('gstintype', '')
-        state = request.POST.get('state', '')
-        email = request.POST.get('email', '')
-        date = request.POST.get('date', '')
-        address = request.POST.get('address', '')
-        balance = request.POST.get('balance', '')
-
-        # Check if party already exists
-        if Parties.objects.filter(phone_number=mobile_number, company=company_obj).exists():
-            return JsonResponse({'success': False, 'message': 'Contact number already exists'})
-        elif Parties.objects.filter(email=email, company=company_obj).exists():
-            return JsonResponse({'success': False, 'message': 'Email already exists'})
-        elif Parties.objects.filter(gstin=gstin, company=company_obj).exists():
-            return JsonResponse({'success': False, 'message': 'GST number already exists'})
-        else:
-            if balance == '' or balance == '0':
-                party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
-                                gst_type=gstintype, billing_address=address, state=state,
-                                email=email, date=date, company=company_obj, staff_id=staff.id)
-                party.save()
-
-                history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
-                history.save()
-                return JsonResponse({'success': True, 'id': party.id})
-            else:
-                if request.POST.get('pay_recieve') != '':
-                    pay_recieve = request.POST.get('pay_recieve')
-
-                    if pay_recieve == 'receive':
-                        party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
-                                        gst_type=gstintype, billing_address=address, state=state,
-                                        email=email, date=date, opening_balance=balance, to_recieve=True,
-                                        company=company_obj, staff_id=staff.id)
-                        party.save()
-                        history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
-                        history.save()
-                        return JsonResponse({'success': True, 'id': party.id})
-                    elif pay_recieve == 'pay':
-                        neg_balance = int(balance)
-                        party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
-                                        gst_type=gstintype, billing_address=address, state=state,
-                                        email=email, date=date, opening_balance=neg_balance, to_pay=True,
-                                        company=company_obj, staff=staff)
-                        party.save()
-                        history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
-                        history.save()
-                        return JsonResponse({'success': True, 'id': party.id})
-                    else:
-                        party = Parties(party_name=party_name, phone_number=mobile_number, gstin=gstin,
-                                        gst_type=gstintype, billing_address=address, state=state,
-                                        email=email, date=date, staff_id=staff.id, company=company_obj)
-                        party.save()
-                        history = History(company=company_obj, party_id=party.id, staff_id=staff.id, action='CREATED')
-                        history.save()
-                        return JsonResponse({'success': True, 'id': party.id})
+    party_name = request.POST['name']
+    email = request.POST['email']
+    
+    phone_number = request.POST.get('mobile', None)
+    state = request.POST['splystate']
+    address = request.POST['baddress']
+    gst_type = request.POST['gsttype']
+    gst_no = request.POST['gstin']
+    openingbalance = request.POST.get('openbalance')
+    payment = request.POST.get('paytype')
+    End_date = request.POST.get('enddate', None)
+    
+    if Parties.objects.filter(phone_number=phone_number, company=cmp).exists():
+        return JsonResponse({'success': False, 'message': 'Contact number already exists', 'error_field': 'phone_number'})
+    elif Parties.objects.filter(email=email, company=cmp).exists():
+        return JsonResponse({'success': False, 'message': 'Email already exists', 'error_field': 'email'})
+    elif Parties.objects.filter(gstin=gst_no, company=cmp).exists():
+        return JsonResponse({'success': False, 'message': 'GST number already exists', 'error_field': 'gstin'})
     else:
-        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+    
+    
+      part = Parties(
+          party_name=party_name,
+          gstin=gst_no,
+          phone_number=phone_number,
+          gst_type=gst_type,
+          state=state,
+          billing_address=address,
+          email=email,
+          opening_balance=openingbalance,
+          to_pay=(payment == 'to_pay'),  # Set to True if payment is 'to_pay'
+          to_recieve=(payment == 'to_receive'),        
+          date=End_date,
+          company=cmp,
+          staff=staff,
+
+          
+      )
+      part.save()
+      history_action =  "Created"
+      history = History(
+          staff=staff,
+          company=cmp,
+          party=part,
+          action=history_action,
+      )
+      history.save()
+    
+  
+    
+    partyobj = Parties.objects.filter(company=cmp).values('id', 'party_name')
+
+    party_list = [{'id': employee['id'], 'name': employee['party_name']} for employee in partyobj]
+
+    return JsonResponse({'party_list':party_list, 'success': True, 'message': 'Party saved successfully.'})
 
 def party_dropdown(request):
     sid = request.session.get('staff_id')
