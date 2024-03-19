@@ -720,16 +720,30 @@ def saveparty(request):
 
     return JsonResponse({'party_list':party_list, 'success': True, 'message': 'Party saved successfully.'})
 
+# def party_dropdown(request):
+#     sid = request.session.get('staff_id')
+#     staff = staff_details.objects.get(id=sid)
+#     company_obj = company.objects.get(id=staff.company.id)
+#     parties = Parties.objects.filter(company=company_obj)
+
+#     id_list = [party.id for party in parties]
+#     party_list = [party.party_name for party in parties]
+
+#     return JsonResponse({'id_list': id_list, 'party_list': party_list})
+
 def party_dropdown(request):
-    sid = request.session.get('staff_id')
-    staff = staff_details.objects.get(id=sid)
-    company_obj = company.objects.get(id=staff.company.id)
-    parties = Parties.objects.filter(company=company_obj)
+  sid = request.session.get('staff_id')
+  staff =  staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  part = Parties.objects.filter(company=cmp) 
 
-    id_list = [party.id for party in parties]
-    party_list = [party.party_name for party in parties]
+  id_list = []
+  party_list = []
+  for p in part:
+    id_list.append(p.id)
+    party_list.append(p.party_name)
 
-    return JsonResponse({'id_list': id_list, 'party_list': party_list})
+  return JsonResponse({'id_list':id_list, 'party_list':party_list })
   
 def saveitemc(request):
   if request.method == 'POST':

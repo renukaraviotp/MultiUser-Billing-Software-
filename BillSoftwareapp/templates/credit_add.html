@@ -1736,10 +1736,12 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                         customerSelect.empty(); // Clear existing options
         
                         // Add "Select" option
-                        customerSelect.append(selectOption);
+                        // customerSelect.append(selectOption);
         
                         // Add new options based on the Ajax response
+                        console.log(data.party_list)
                         $.each(data.party_list, function(index, partyobj) {
+                            console.log(partyobj)
                             customerSelect.append('<option value="' + partyobj.id + '">' + partyobj.name + '</option>');
                         });
                     }else{
