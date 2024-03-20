@@ -20,6 +20,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>
      
        
     <style>
@@ -184,18 +186,15 @@
                                         <div class="col-md-4 custom-dropdown">
                                             <label for=""> Party Name</label>
                                             <div class="input-group">
-                                                <select name="partyname" id="employee" class="form-control border-secondary">
+                                                <select name="partyname" id="employee2" class="form-control border-secondary" >
                                                     <option value="" selected hidden>Select</option>
                                                     {% for c in party %}
-                                                        {% if c.cid_id == cmp.cid %}
-                                                            <option value="{{ c.id }}" data-party-id="{{ c.id }}" data-balance="{{ c.opening_balance }}" onclick="selectItem(this);">
-                                                                {{ c.party_name }}
-                                                            </option>
-                                                        {% endif %}
-                                                    {% endfor %}
+                                                    {% if c.cid_id == cmp.cid %}
+                                                        <option value={{c.id}}> {{ c.party_name }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
                                                 </select>
                                                 &nbsp;&nbsp;&nbsp;
-                                                {% comment %} <input type="text" class="dropdown-input form-control" id="ip" name='partyname' placeholder='Search Party' oninput="getEmail();"> {% endcomment %}
                                                 <button id="modal_closing" type="button" class="btn" style="background-color:rgb(61, 68, 101);" data-bs-toggle="modal" data-bs-target="#customercreation" data-bs-whatever="@mdo">
                                                     <span class="fa fa-plus"></span>
                                                 </button>
@@ -304,7 +303,7 @@
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </select>&nbsp;&nbsp;&nbsp;
-                                                                <button type="button" class="btn" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#newitem" class="text-capitalize">
+                                                                <button id="modal_closing" type="button" style="background-color:rgb(61, 68, 101);" class="btn" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
                                                                     <span class="fa fa-plus"></span>
                                                                 </button>
                                                                
@@ -454,14 +453,13 @@
 <div class="modal fade" id="newitem">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="text ms-3">ADD ITEM</h3>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <div class="modal-header" style="background-color: rgba(61, 68, 101);">
+                <h3 class="text ms-3" style="color:white;">ADD ITEM</h3>
+                <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" >
-                <form class="needs-validation" novalidate autocomplete="off" id="modalItem">
+            <div class="modal-body" style="background-color: rgba(61, 68, 101);" >
+                <form method="post" class="needs-validation" novalidate autocomplete="off" id="modalItem">
+                    {% csrf_token %}
                     <div class="bg-light bs p-4 rounded mb-5">
                         <div id="main_form_div">
                             <div class="row" style="margin-left: -1vh;">
@@ -473,7 +471,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <input style="color: black;" class="form-control border-dark " type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name1" name="item_name" required>
+                                    <input style="color: black;" class="form-control border-dark " type="text" placeholder="ITEM NAME" autocomplete="off" id="item_name" name="item_name" required>
                                 </div>
                                 <div class="col-md-3">
                                     <input style="color: black;" class="form-control border-dark" type="number" placeholder="ITEM HSN" id="hsn" name="hsn" onchange="checkhsn(this)" required>
@@ -486,14 +484,13 @@
                                         <option value="BOX">BOX</option>
                                         <option value="PACKET">PACKET</option>
                                         {% for i in item_units %}
-                                        <option value="{{ i.unit_name|upper }}">{{ i.unit_name|upper }}</option>
+                                            <option value="{{ i.unit_name|upper }}">{{ i.unit_name|upper }}</option>
                                         {% endfor %}
                                     </select>&nbsp; &nbsp;
-                                    {% comment %} <button type="button" class="btn" style="background-color:rgb(60, 61, 101); width:2px; height:34px; text-align:center;" data-bs-toggle="modal" data-bs-target="#addUnitModal">
+                                    <button type="button" class="btn" id="unitAddButton" style="background-color:rgb(60, 61, 101); width:2px; height:34px; text-align:center;" data-bs-toggle="modal" data-bs-target="#addUnitModal">
                                         +
-                                    </button> {% endcomment %}
+                                    </button>
                                 </div>
-                                
                             </div>
                             <div>
                                 <p></p>
@@ -553,15 +550,15 @@
                                             <div class="d-flex">
                                                 <div class="w-50 me-3">
                                                     <label class="tb " for="" style="color: black;">SALES PRICE</label><br>
-                                                    <input style="color: black;background-color: white;" id="saleprice" class="form-control fw-normal border-secondary" type="number" name="sell_price" value="0">
+                                                    <input style="color: black;background-color: white;" id="saleprice" class="form-control fw-normal border-secondary" type="number" name="saleprice" value="0">
                                                 </div>
                                                 <div class="w-50">
                                                     <label class="tb " for="" style="color: black;">PURCHASE PRICE</label><br>
-                                                    <input style="color: black;background-color: white;" id="purprice" class="form-control fw-normal border-secondary" type="number" name="cost_price" value="0">
+                                                    <input style="color: black;background-color: white;" id="purprice" class="form-control fw-normal border-secondary" type="number" name="purprice" value="0">
                                                 </div>
                                             </div>
                                             <div class="text-start mt-5">
-                                                <button id="next_btn" class="btn" style="background-color:rgb(61, 68, 101); color:white;" type="button">Next</button>
+                                                <button id="next_btn" class="btn " style="background-color:rgb(61, 68, 101); color:white;" type="button">Next</button>
                                             </div>
                                         </div>
                                     </div>
@@ -595,7 +592,7 @@
                                             </div>
                                             <div class="text-start mt-5">
                                                 <button id="prev_btn" class="btn me-3" style="background-color:rgb(61, 68, 101);" type="button">PREVIOUS</button>
-                                                <button class="btn" type="button" style="background-color:rgb(61, 68, 101);" id="itemsave">SAVE</button>
+                                                <button class="btn " type="button" style="background-color:rgb(61, 68, 101);" id="itemsave">SAVE</button>
                                             </div>
                                         </div>
                                     </div>
@@ -873,7 +870,7 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             var input = document.querySelector('.dropdown-input');
-            var dropdownList = document.querySelector('#employee');
+            var dropdownList = document.querySelector('#employee2');
     
             input.addEventListener('focus', function () {
                 dropdownList.style.display = 'block';
@@ -973,8 +970,8 @@
 
     $(document).ready(function () {
         // Event listener for the 'customer' dropdown
-        $('#employee').on('change', function () {
-            var customerId = $('#employee').val();
+        $('#employee2').on('change', function () {
+            var customerId = $('#employee2').val();
     
             $.ajax({
                 type: 'POST',
@@ -1234,47 +1231,15 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
 <script>
     $(document).ready(function () {
-        $('#employee').selectize({
-            sortField: 'value',
-            items: [''],
-            render: {
-                item: function (item, escape) {
-                    if (item.value === '') {
-                        return '';
-                    }
-                    return '<div>' + escape(item.text) + '</div>';
-                }
-            }
-        });
+        $('#employee2').select2();
     });
 
     $(document).ready(function () {
-        $('.product').selectize({
-            sortField: 'value',
-            items: [''],
-            render: {
-                item: function (item, escape) {
-                    if (item.value === '') {
-                        return '';
-                    }
-                    return '<div>' + escape(item.text) + '</div>';
-                }
-            }
-        });
+        $('.product').select2();
     });
 
     function productsearch(roinc){
-        $(`#product${roinc}`).selectize({
-            sortField: 'value',
-            render: {
-                item: function (item, escape) {
-                    if (item.value === '') {
-                        return '';
-                    }
-                    return '<div>' + escape(item.text) + '</div>';
-                }
-            }
-        });
+        $(`#product${roinc}`).select2();
     }
 </script>
 
@@ -1370,12 +1335,12 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     
 
     $(document).ready(function () {
-        $('#employee').on('change', function() {
+        $('#employee2').on('change', function() {
             $.ajax({
                 type : 'POST',
                 url: "{% url 'partydata' %}",
                 data: {
-                    id: $('#employee').val(),
+                    id: $('#employee2').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
              
@@ -1440,7 +1405,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                                 {% endfor %}
                             </select>&nbsp;&nbsp;&nbsp;
 
-                            <button type="button" class="btn btn-outline-success" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#newitem" class="text-capitalize">
+                            <button id="modal_closing" type="button" style="background-color:rgb(61, 68, 101);" class="btn" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
                                 <span class="fa fa-plus"></span>
                             </button>
                         </div>
@@ -1666,8 +1631,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 <script>
 
     $(document).ready(function() {
-        // Assuming you want to retain the "Select" option in the dropdown
-        var customerSelect = $('#employee');
+        var customerSelect = $('#employee2');
         var selectOption = '<option value="" selected hidden>Select</option>';
     
         $(document).on("click", "#customersave", function() {
@@ -1675,48 +1639,139 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             var partyPhone = $("#partyphno").val().trim();
             var gstType = $("#modalgsttype").val();
             var gstin = $("#gstin").val().trim();
-            var emailid = $('#partyemail').val().trim();
+            var partyEmail = $("#partyemail").val().trim();
     
+            // Clear all existing warning messages
+            $(".warn").text('');
+    
+            // Validate party name
             if (partyName === '') {
                 $("#warnPartyName").text('Please provide a Party Name');
-                return; // Stop execution if party name is not provided
-            } else {
-                $("#warnPartyName").text(''); // Clear the warning if party name is provided
+                return;
             }
     
+            // Validate phone number
             if (partyPhone === '') {
                 $("#warnphone").text('Please provide a Phone Number');
-                return; // Stop execution if phone number is not provided
-            } else {
-                $("#warnphone").text(''); // Clear the warning if phone number is provided
+                return;
             }
     
-            // Additional checks or validation logic can be added here
+            // Validate email format
+            if (!isValidEmail(partyEmail)) {
+                $("#warnemail").text('Please provide a valid Email');
+                return;
+            }
     
-            if (gstType !== "Unregistered or Consumer" && gstin === '') {
-                $("#warngst").text('Please fill the GSTIN field');
-                return; // Stop execution if GSTIN is required but not provided
+            // Perform phone number existence check
+            checkPhoneNumberExists(partyPhone, function(phoneExists) {
+                if (phoneExists) {
+                    $('#warnphone').text('Phone number already exists!');
+                } else {
+                    // Phone number does not exist, proceed to email existence check
+                    checkEmailExists(partyEmail, function(emailExists) {
+                        if (emailExists) {
+                            $('#warnemail').text('Email already exists!');
+                        } else {
+                            // Email is unique, proceed to GST existence check
+                            checkGSTExists(gstin, gstType, function(gstExists) {
+                                if (gstExists) {
+                                    $('#warngst').text('GSTIN already exists!');
+                                } else {
+                                    // All checks pass, proceed to save the customer
+                                    saveCustomer();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    
+        // Function to validate email format
+        function isValidEmail(email) {
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+    
+        // Function to check phone number existence
+        function checkPhoneNumberExists(phoneNumber, callback) {
+            $.ajax({
+                url: 'check_phone_no',
+                data: {
+                    'phone_number': phoneNumber
+                },
+                dataType: 'json',
+                success: function(data) {
+                    callback(data.exists);
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                    callback(false); // Assume phone number does not exist in case of error
+                }
+            });
+        }
+    
+        // Function to check email existence
+        function checkEmailExists(email, callback) {
+            $.ajax({
+                url: 'check_email',
+                data: {
+                    'email': email
+                },
+                dataType: 'json',
+                success: function(data) {
+                    callback(data.exists);
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
+                    callback(false); // Assume email does not exist in case of error
+                }
+            });
+        }
+    
+        // Function to check GST existence
+        function checkGSTExists(gstin, gstType, callback) {
+            if (gstType !== "Unregistered or Consumer") {
+                $.ajax({
+                    url: 'check_gstin_exists',
+                    data: {
+                        'gstin': gstin,
+                        'gsttype': gstType
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        callback(data.exists);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error:", status, error);
+                        callback(false); // Assume GSTIN does not exist in case of error
+                    }
+                });
             } else {
-                $("#warngst").text(''); // Clear the warning if GSTIN is provided or not required
+                // If GST type is "Unregistered or Consumer", assume GSTIN does not exist
+                callback(false);
             }
-
-            if (emailid === '') {
-                $("#warnemail").text('Please provide a Email Id');
-                return; // Stop execution if email id is not provided
-            } else {
-                $("#warnemail").text(''); // Clear the warning if email id is provided
-            }
+        }
+    
+        // Function to save customer
+        function saveCustomer() {
+            var partyName = $("#partyname").val().trim();
+            var partyPhone = $("#partyphno").val().trim();
+            var gstType = $("#modalgsttype").val();
+            var gstin = $("#gstin").val().trim();
+            var partyEmail = $("#partyemail").val().trim();
     
             var toPayRadio = $('#toPayRadio');
             var payType = toPayRadio.is(':checked') ? 'to_pay' : 'to_receive';
     
+            // Continue with saving the customer
             $.ajax({
                 type: 'POST',
                 url: "{% url 'saveparty' %}",
                 data: {
-                    name: $('#partyname').val(),
-                    email: $("#partyemail").val(),
-                    mobile: $("#partyphno").val(),
+                    name: partyName,
+                    email: partyEmail,
+                    mobile: partyPhone,
                     splystate: $("#splystate").val(),
                     baddress: $("#baddress").val(),
                     gsttype: gstType,
@@ -1727,55 +1782,34 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                     csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
                 success: function(data) {
-                    if (data.success) {
-                        document.getElementById("modalCustomer").reset();
-                        $('#customercreation').modal('hide');
-        
-                        var customerSelect = $('#employee'); 
-                        
-                        customerSelect.empty(); // Clear existing options
-        
-                        // Add "Select" option
-                        // customerSelect.append(selectOption);
-        
-                        // Add new options based on the Ajax response
-                        console.log(data.party_list)
-                        $.each(data.party_list, function(index, partyobj) {
-                            console.log(partyobj)
-                            customerSelect.append('<option value="' + partyobj.id + '">' + partyobj.name + '</option>');
-                        });
-                    }else{
-                        if (data.error_field === 'phone_number') {
-                            $("#warnphone").text(data.message);
-                        } else if (data.error_field === 'email') {
-                            $("#warnemail").text(data.message);
-                        } else if (data.error_field === 'gstin') {
-                            $("#warngst").text(data.message);
-                        }
+                    document.getElementById("modalCustomer").reset();
+                    $('#customercreation').modal('hide');
+    
+                    $('#employee2').empty();
+                    $('#employee2').append(selectOption);
+
+                    console.log(data.party_list)
+                    for(let i=0;i<data.party_list.length;i++){
+                        console.log(data.party_list[i])
+                        $('#employee2').append('<option value="' + data.party_list[i].id + '">' + data.party_list[i].name + '</option>');
                     }
+                    //$.each(data.party_list, function(index, partyobj) {
+                    //    console.log(partyobj)
+                     //   $('#employee2').append('<option value="' + partyobj.id + '">' + partyobj.name + '</option>');
+                    //});
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", status, error);
                 }
             });
-        });
+        }
     });
 
-    
-
-    
-    
-    
-    
-    
-    
-    
 
     $(document).on("click", "#itemsave", function () {
-        console.log('hello')
-        var item_name = $("#item_name1").val().trim();
-        console.log(item_name);
+        var item_name = $("#item_name").val().trim();
         var hsn = $("#hsn").val().trim();
-        console.log(hsn)
         var tax;
-        
     
         if ($('#inclusive').prop('checked')) {
             tax = $('#inclusive').val();
@@ -1796,70 +1830,116 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             alert('Please provide a valid Sales Price');
         } else if (isNaN(purchase_price) || purchase_price < 0) {
             alert('Please provide a valid Purchase Price');
+        } else if (!/^\d{6}$/.test(hsn)) {
+            // Check if HSN is exactly 6 digits
+            alert('HSN must be a 6-digit number');
         } else {
+            // Perform HSN existence check
             $.ajax({
-                type: 'POST',
-                url: "{% url 'saveitemc' %}",
+                url: 'check_hsn_exists',
                 data: {
-                    name: item_name,
-                    unit: $("#unit").val(),
-                    hsn: hsn,
-                    taxref: tax,
-                    sell_price: sale_price,
-                    cost_price: purchase_price,
-                    intra_st: $("#intra_st").val(),
-                    inter_st: $("#inter_st").val(),
-                    itmdate: $("#itmdate").val(),
-                    stock: $("#stock").val(),
-                    itmprice: $("#itmprice").val(),
-                    minstock: $("#minstock").val(),
-                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    'hsn': hsn
                 },
-
-                success: function (response) {
-                    if (response.success) {
-                        document.getElementById("modalItem").reset();
-                        $('#newitem').modal('hide');
-                        reloadItem();
+                dataType: 'json',
+                success: function(data) {
+                    if (data.exists === 'true') {
+                        $('#warnhsn').text('HSN already exists!');
                     } else {
-                        alert('Failed to save item: ' + response.message);
+                        // HSN does not exist, proceed to save the item
+                        $('#warnhsn').text('');
+    
+                        $.ajax({
+                            type: 'POST',
+                            url: "{% url 'saveitemc' %}",
+                            data: {
+                                name: item_name,
+                                unit: $("#unit").val(),
+                                hsn: hsn,
+                                taxref: tax,
+                                sell_price: sale_price,
+                                cost_price: purchase_price,
+                                intra_st: $("#intra_st").val(),
+                                inter_st: $("#inter_st").val(),
+                                itmdate: $("#itmdate").val(),
+                                stock: $("#stock").val(),
+                                itmprice: $("#itmprice").val(),
+                                minstock: $("#minstock").val(),
+                                csrfmiddlewaretoken: '{{ csrf_token }}',
+                            },
+                            success: function (response) {
+                                document.getElementById("modalItem").reset();
+                                $('#newitem').modal('hide');
+                                reloadItem();
+                            },
+                        });
                     }
-                },
-                error: function(xhr, status, error) {
-                    console.error(xhr.responseText);
-                    alert('Failed to save item. Please try again later.');
                 }
-                
             });
         }
     });
-    
     function reloadItem() {
         $.ajax({
             url: "{% url 'item_dropdownc' %}",
             type: "GET",
             dataType: "json",
-            data: $(this).serialize(),
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
             success: function(data) {
-                id_list = data.id_list
-                product_list = data.product_list
-                var table = document.getElementById('tab_logic');
-                var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-                for (var i = 1; i <= rows.length; i++) {
-                    var $select = $(document.getElementById('product'+i));
-                    var selectize = $select[0].selectize;
-                    for(let i=0; i<id_list.length;i++){
-                        selectize.addOption({value:id_list[i],text:product_list[i]});
+                
+
+                id_list = data.id_list;
+                product_list = data.product_list;
+    
+                // Assuming you have a select element with id 'productDropdown'
+                // var selectElement = document.getElementById('productDropdown');
+
+                $('#items-table-body tr').each(function(){
+                    var currentRow = $(this).html();
+
+                    if(currentRow!=""){
+                        var selectElement = $(this).find('.product');
+
+                        var itmValue = $(this).find('.product').val();
+
+                        selectElement.empty();
+
+                        selectElement.append(`<option value="">Select Product</option>`);
+
+                        $.each(data, function(key, value){
+                            var ID = value[0]
+                            var itemName = value[1]
+
+                            selectElement.append(`<option value="${ID}">${itemName}</option>`);
+                            // selectElement.append(`<option></option>`).val(value[0])
+                            
+                            
+                        })
+                        console.log('item value..',itmValue)
+                        if (itmValue != ""){
+                            $(this).find('.product').val(itmValue)
+                        }
                     }
-                }
+                })
+
+                
+    
+                // Clear existing options
+                // selectElement.options.length = 0;
+                
+    
+                // Add new options
+                /* for (let i = 0; i < id_list.length; i++) {
+                    var option = new Option(product_list[i], id_list[i]);
+                    selectElement.add(option);
+                }*/
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
             }
         });
     }
+
 
 
 

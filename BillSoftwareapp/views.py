@@ -676,49 +676,72 @@ def saveparty(request):
     payment = request.POST.get('paytype')
     End_date = request.POST.get('enddate', None)
     
-    if Parties.objects.filter(phone_number=phone_number, company=cmp).exists():
-        return JsonResponse({'success': False, 'message': 'Contact number already exists', 'error_field': 'phone_number'})
-    elif Parties.objects.filter(email=email, company=cmp).exists():
-        return JsonResponse({'success': False, 'message': 'Email already exists', 'error_field': 'email'})
-    elif Parties.objects.filter(gstin=gst_no, company=cmp).exists():
-        return JsonResponse({'success': False, 'message': 'GST number already exists', 'error_field': 'gstin'})
-    else:
     
-    
-      part = Parties(
-          party_name=party_name,
-          gstin=gst_no,
-          phone_number=phone_number,
-          gst_type=gst_type,
-          state=state,
-          billing_address=address,
-          email=email,
-          opening_balance=openingbalance,
-          to_pay=(payment == 'to_pay'),  # Set to True if payment is 'to_pay'
-          to_recieve=(payment == 'to_receive'),        
-          date=End_date,
-          company=cmp,
-          staff=staff,
+    part = Parties(
+        party_name=party_name,
+        gstin=gst_no,
+        phone_number=phone_number,
+        gst_type=gst_type,
+        state=state,
+        billing_address=address,
+        email=email,
+        opening_balance=openingbalance,
+        to_pay=(payment == 'to_pay'),  # Set to True if payment is 'to_pay'
+        to_recieve=(payment == 'to_receive'),        
+        date=End_date,
+        company=cmp,
+        staff=staff,
 
-          
-      )
-      part.save()
-      history_action =  "Created"
-      history = History(
-          staff=staff,
-          company=cmp,
-          party=part,
-          action=history_action,
-      )
-      history.save()
+        
+    )
+    part.save()
+    history_action =  "Created"
+    history = History(
+        staff=staff,
+        company=cmp,
+        party=part,
+        action=history_action,
+    )
+    history.save()
     
   
     
     partyobj = Parties.objects.filter(company=cmp).values('id', 'party_name')
+    print(partyobj)
 
     party_list = [{'id': employee['id'], 'name': employee['party_name']} for employee in partyobj]
+    print(party_list)
 
-    return JsonResponse({'party_list':party_list, 'success': True, 'message': 'Party saved successfully.'})
+    return JsonResponse({'party_list':party_list, 'success': True, 'message': 'Customer saved successfully.'})
+  
+def check_gstin_exists(request):
+    gstin = request.GET.get('gstin')
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    gsttype = request.GET.get('gsttype')  
+    print(gsttype)
+
+    if gsttype != "Unregistered or Consumer":
+        if Parties.objects.filter(company=cmp, gstin=gstin).exists():
+            return JsonResponse({'exists': True})
+        return JsonResponse({'exists': False})
+      
+def check_email_exists(request):
+    email= request.GET.get('email')
+    if Parties.objects.filter(email=email).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists':False})
+  
+  
+def check_phone_number_exists(request):
+    phone_number = request.GET.get('phone_number')
+    sid = request.session.get('staff_id')
+    staff =  staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    if Parties.objects.filter(company=cmp,phone_number=phone_number).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists': False})
 
 # def party_dropdown(request):
 #     sid = request.session.get('staff_id')
