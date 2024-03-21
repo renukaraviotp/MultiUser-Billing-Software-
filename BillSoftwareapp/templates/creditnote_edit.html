@@ -23,6 +23,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" defer></script>
     
     
      
@@ -1177,47 +1179,16 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
 <script>
     $(document).ready(function () {
-        $('#employee').selectize({
-            sortField: 'value',
-            items: [''],
-            render: {
-                item: function (item, escape) {
-                    if (item.value === '') {
-                        return '';
-                    }
-                    return '<div>' + escape(item.text) + '</div>';
-                }
-            }
-        });
+        cust_name = '{{cust_name}}'
+        $('#employee').select2();
     });
 
     $(document).ready(function () {
-        $('.product').selectize({
-            sortField: 'value',
-            items: [''],
-            render: {
-                item: function (item, escape) {
-                    if (item.value === '') {
-                        return '';
-                    }
-                    return '<div>' + escape(item.text) + '</div>';
-                }
-            }
-        });
+        $('.product').select2();
     });
 
     function productsearch(roinc){
-        $(`#product${roinc}`).selectize({
-            sortField: 'value',
-            render: {
-                item: function (item, escape) {
-                    if (item.value === '') {
-                        return '';
-                    }
-                    return '<div>' + escape(item.text) + '</div>';
-                }
-            }
-        });
+        $(`#product${roinc}`).select2();
     }
 </script>
 

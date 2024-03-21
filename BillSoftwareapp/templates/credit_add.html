@@ -185,7 +185,7 @@
                                 <div id="partyForm" class="form-group row">
                                         <div class="col-md-4 custom-dropdown">
                                             <label for=""> Party Name</label>
-                                            <div class="input-group">
+                                            <div class="d-flex">
                                                 <select name="partyname" id="employee2" class="form-control border-secondary" >
                                                     <option value="" selected hidden>Select</option>
                                                     {% for c in party %}
@@ -453,11 +453,11 @@
 <div class="modal fade" id="newitem">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header" style="background-color: rgba(61, 68, 101);">
+            <div class="modal-header">
                 <h3 class="text ms-3" style="color:white;">ADD ITEM</h3>
                 <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="background-color: rgba(61, 68, 101);" >
+            <div class="modal-body">
                 <form method="post" class="needs-validation" novalidate autocomplete="off" id="modalItem">
                     {% csrf_token %}
                     <div class="bg-light bs p-4 rounded mb-5">
@@ -603,6 +603,30 @@
                 </form>
             </div> 
         </div> 
+    </div>
+</div>
+
+{% comment %} unit modal {% endcomment %}
+
+<div class="modal fade" id="addUnitModal" tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUnitModalLabel">Add Unit</h5>
+                <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addUnitForm" action="{% url 'addunitc' %}" method="POST">
+                    {% csrf_token %}
+                    <label for="newUnit" class="form-label" style="color:black;">New Unit:</label>
+                    <input type="text" class="form-control" name="newUnit" id="newUnit" required>
+                    <div class="mt-3">
+                        <button type="submit" class="btn" style="background-color:rgb(60, 61, 101);color:white;">Add</button>
+                    </div>
+                </form>
+                 
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1714,7 +1738,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         // Function to check email existence
         function checkEmailExists(email, callback) {
             $.ajax({
-                url: 'check_email',
+                url: 'check_emailc',
                 data: {
                     'email': email
                 },
@@ -1939,11 +1963,8 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             }
         });
     }
-
-
-
-
 </script>
+
 <script>
     function validateQuantity() {
         var quantities = document.getElementsByName('qty[]');
@@ -1962,6 +1983,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
     
 </script>
+
 <script>
     function validateParty() {
         // Clear existing warning messages
@@ -1997,6 +2019,125 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         // If all validations pass, return true to allow form submission
         return true;
     }
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Function to update the unit dropdown options
+        function updateUnitDropdown(units) {
+            var unitDropdown = $('#unit');
+    
+            // Clear existing options
+            unitDropdown.empty();
+    
+            // Add default options
+            unitDropdown.append('<option value="" hidden>Select a unit</option>');
+            unitDropdown.append('<option value="NOS">NOS</option>');
+            unitDropdown.append('<option value="BOX">BOX</option>');
+            unitDropdown.append('<option value="PACKET">PACKET</option>');
+    
+            // Add new options from ItemUnitModel
+            $.each(units, function(index, unit) {
+                unitDropdown.append($('<option>', {
+                    value: unit.toUpperCase(),
+                    text: unit.toUpperCase()
+                }));
+            });
+        }
+    
+        // Function to fetch all units and update the dropdown
+        function fetchAndUpdateUnits() {
+            $.ajax({
+                type: 'GET',
+                url: 'allunits',
+                success: function (data) {
+                    updateUnitDropdown(data.units);
+                },
+                error: function (error) {
+                    console.log(error);
+                    displayMessage('Error fetching units. Please try again.', 'error');
+                }
+            });
+        }
+    
+        // Function to display a message
+        function displayMessage(message, type) {
+            var messageContainer = $('#messageContainer');
+            messageContainer.empty();
+    
+            // Add the message with styling based on the type
+            messageContainer.append('<div class="alert alert-' + type + '" role="alert">' + message + '</div>');
+        }
+    
+        // Fetch units on page load
+        fetchAndUpdateUnits();
+    
+        $('#addUnitForm').submit(function (e) {
+            e.preventDefault();
+            var newUnit = $('#newUnit').val();
+            var csrfToken = $('[name=csrfmiddlewaretoken]').val();  // Get the CSRF token from the page
+    
+            // Check if the unit already exists
+            $.ajax({
+                type: 'GET',
+                url: 'check_unit',
+                data: { 'unit': newUnit },
+                success: function (data) {
+                    if (data.exists) {
+                        // Display a message that the unit already exists
+                        alert('Unit already exists. Please choose a different unit.');
+                    } else {
+                        // Save the new unit to the database
+                        $.ajax({
+                            type: 'POST',
+                            url: '{% url "addunitc" %}',
+                            data: { 'newUnit': newUnit },
+                            headers: {
+                                'X-CSRFToken': csrfToken
+                            },
+                            success: function (data) {
+                                if (data.status === 'success') {
+                                    // Retrieve updated units and update the dropdown
+                                    $.ajax({
+                                        type: 'GET',
+                                        url: 'allunits',
+                                        success: function (data) {
+                                            updateUnitDropdown(data.units);
+    
+                                            // Close the modal
+                                            $('#addUnitModal').modal('hide');
+    
+                                            // Open the "ADD ITEM" modal
+                                            $('#newitem').modal('show');
+                                        },
+                                        error: function (error) {
+                                            console.log(error);
+                                            alert('Error updating the unit dropdown. Please try again.');
+                                        }
+                                    });
+                                } else {
+                                    alert('Error saving the unit. Please try again.');
+                                }
+                            },
+                            error: function (error) {
+                                console.log(error);
+                                alert('Error saving the unit. Please try again.');
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Error checking unit existence. Please try again.');
+                }
+            });
+        });
+    
+        // Event handler for + button click
+        $('#unitAddButton').click(function () {
+            showModal();
+        });
+    });
 </script>
    
 

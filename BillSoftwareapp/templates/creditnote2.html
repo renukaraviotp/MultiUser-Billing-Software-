@@ -179,7 +179,7 @@
             </a>
         </div>
     </div>
-    
+    <div class="pdfdwnld">
     <div class="hdr credit-container">
         <h2 style='color:white;'>Credit Note</h2>
     </div><br>
@@ -198,7 +198,7 @@
                 </ul>
             </div>
             <div class="credit-head-bottom-right">
-                <ul class="text-end">
+                <ul class="text-end d-block">
                     <li class='text-bold' style="color:black; font-weight:bold;">To:</li>
                     <li style="color:black;">{{cd.party_name}}</li>
                 </ul>
@@ -246,6 +246,7 @@
         </div>
     </div>
   </div><br>
+</div><br>
 
   
 
@@ -346,7 +347,7 @@
 
     <script>
         document.getElementById('download-pdf').addEventListener('click', function() {
-            var element = document.getElementById('whatToPrint1');
+            var element = document.querySelector('.pdfdwnld');
             var opt = {
                 margin: 1,
                 filename: 'CreditNote.pdf',

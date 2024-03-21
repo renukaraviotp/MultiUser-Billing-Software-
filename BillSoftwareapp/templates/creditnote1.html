@@ -382,7 +382,7 @@ body{
 
 <script>
     document.getElementById('download-pdf').addEventListener('click', function() {
-        var element = document.getElementById('slipdiv'); // select the container to print
+        var element = document.querySelector('.credit-container'); // select the container to print
         var opt = {
             margin: 1,
             filename: 'CreditNote.pdf',
