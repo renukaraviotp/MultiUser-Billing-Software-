@@ -16,19 +16,12 @@ body{
 }
 
 @media print {
-    body * {
+    body {
       visibility: hidden;
+      background-color: transparent !important;
     }
     .credit-container, .credit-container * {
       visibility: visible !important;
-    }
-    .print-area{
-        visibility: visible;
-        width: 100%;
-        position: absolute;
-        left: 0;
-        top: 0;
-        overflow: hidden;
     }
     .overflow-view{
         overflow-x: hidden;
@@ -37,11 +30,25 @@ body{
     .credit-btns{
         display: none;
     }
+    .credit-wrapper {
+        background-color: white; /* Set background color for the printed content */
+        box-shadow: none; /* Remove box shadow for the printed content */
+        margin-left: -50%; /* Adjust margin as needed */
+        margin-right: -0%;
+        margin-top:-70%;
+        
+    }
+    .text-end{
+        text-align: right;
+        margin-left:-30vh;
+    }
+    
+    
   }
 
 :root{
     --blue-color: #0c2f54;
-    --dark-color: #535b61;
+    --dark-color: #0a0a0a;
     --white-color: #fff;
 }
 
@@ -219,7 +226,7 @@ body{
                                             <br><span style="color: black; font-size: small; font-weight: bold;">Pdf</span>
                                         </button>
                                 
-                                        <div class="dropdown">
+                                        <div class="dropdown"> 
                                             <button class="btn mt-3 dropdown-toggle" type="button" id="shareDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <span><img width="30px" src="{% static 'images/credit/share.png' %}" alt="no img"></span>
                                                 <br>
@@ -337,9 +344,21 @@ body{
                     
                     
                     
+                    
 
                     <script>
-                        function printContent() {
+
+                        function printContent(){
+                            var printContents = document.getElementById("slipdiv").innerHTML;
+                            var $printerDiv = $('<div class="printContainer"></div>');
+                            $printerDiv.html(printContents); 
+                            $('body').append($printerDiv).addClass("printingContent"); 
+                            window.print(); 
+                            $printerDiv.remove();
+                            $('body').removeClass("printingContent");
+                        }
+
+                        {% comment %} function printContent() {
                             // Get the HTML content of the entire section you want to print
                             var contentToPrint = document.getElementById("print-area").innerHTML;
                         
@@ -356,7 +375,7 @@ body{
                         
                             // Remove the container div after printing
                             printerDiv.remove();
-                        }
+                        } {% endcomment %}
                         
                     </script>
 

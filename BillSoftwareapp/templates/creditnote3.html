@@ -83,6 +83,10 @@
     .credit-btns{
         display: none;
     }
+    .credit-header{
+      visibility: visible;
+      background-image: linear-gradient(rgb(130, 144, 199), rgb(60, 61, 101)); padding:10px;
+    }
   }
       
       
@@ -322,7 +326,7 @@
       var originalContents = document.body.innerHTML;
       document.body.innerHTML = printContents;
       var printCSS = "<style>\
-                      body { font-family: Arial, sans-serif;margin: 0; background-color: rgb(130, 144, 199); } \
+                      body { font-family: Arial, sans-serif;margin: 0; } \
                       .credit { border: 1px solid #ccc; padding: 20px; max-width: 900px; } \
                       .credit-header, .credit-footer { text-align: center; } \
                       .credit-body { margin-top: 20px; } \
@@ -343,7 +347,7 @@
   document.getElementById('download-pdf').addEventListener('click', function() {
       var element = document.querySelector('.credit-container'); // Select the container to print
       var opt = {
-          margin: 1,
+          margin: 0.1,
           filename: 'CreditNote.pdf',
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { scale: 3 },

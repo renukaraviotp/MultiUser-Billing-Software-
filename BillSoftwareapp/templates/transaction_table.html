@@ -131,7 +131,8 @@
 
     @media print{
         body{
-            visibility: hidden !important; /* hide everything in body when in print mode*/
+            visibility: hidden; /* hide everything in body when in print mode*/
+            background-color: transparent !important;
         }
 
         .printContainer {
@@ -155,13 +156,13 @@
         #credittable{
             margin-top: 20vh;
             margin-bottom: 20vh;
+            width:100% !important;
         }
 
         #credittable th{
             font-size: medium;
-        }
-        th{
-            background-color:rgb(61,68,101);
+            background-color: rgb(61, 68, 101) !important;
+            color: white !important;
         }
 
         .extra{
@@ -301,9 +302,9 @@
                                                 </div>
                                             </th>
                                             
-                                            <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);">
+                                            <th class="w-15 text-white" style="background-color:rgb(61,68,101);">
                                                 TYPE
-                                                &nbsp; <a onclick="toggleDropdown(4)"><i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                &nbsp; <a class="extra" onclick="toggleDropdown(4)"><i class="fa fa-filter" aria-hidden="true"></i></a>
                                                 <div class="dropdown-content" id="dropdownContent4">
                                                     <label for="filterInput4" style="color: black; text-align: left;">Equal To</label>
                                                     <input type="text" id="filterInput4" />
@@ -313,7 +314,7 @@
                                                     </div>
                                                 </div>
                                             </th>
-                                            <th class="w-25 text-white " style="background-color:rgb(61,68,101);"></th>
+                                            <th class="w-25 text-white extra" style="background-color:rgb(61,68,101);"></th>
                                         </tr>
                                     </thead>
                                     <tbody>

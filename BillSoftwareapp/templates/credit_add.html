@@ -1621,8 +1621,8 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         if (phoneinput.match(phoneregexp)) {
             document.getElementById('warnphone').innerHTML = '';
         } else {
-            document.getElementById('warnphone').innerHTML = 'Please provide a valid Phone Number';
-            alert('Please provide a valid Phone Number')
+            document.getElementById('warnphone').innerHTML = 'Please enter a valid 10-digit Mobile Number';
+            alert('Please enter a valid 10-digit Mobile Number')
         }
     }
 
@@ -1684,6 +1684,13 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             if (!isValidEmail(partyEmail)) {
                 $("#warnemail").text('Please provide a valid Email');
                 return;
+            }
+
+            if (gstType !== "Unregistered or Consumer" && gstin === '') {
+                $("#warngst").text('Please fill the GSTIN field');
+                return; // Stop execution if GSTIN is required but not provided
+            } else {
+                $("#warngst").text(''); // Clear the warning if GSTIN is provided or not required
             }
     
             // Perform phone number existence check
@@ -1757,7 +1764,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         function checkGSTExists(gstin, gstType, callback) {
             if (gstType !== "Unregistered or Consumer") {
                 $.ajax({
-                    url: 'check_gstin_exists',
+                    url: 'check_gstc',
                     data: {
                         'gstin': gstin,
                         'gsttype': gstType

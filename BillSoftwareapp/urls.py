@@ -62,6 +62,12 @@ urlpatterns = [
     path('item_dropdownc',views.item_dropdownc,name='item_dropdownc'),
     path('save_item',views.save_item,name='save_item'),
     path('item_dropdowne',views.item_dropdowne,name='item_dropdowne'),
+    path('check_phone_no',views.check_phone_no,name='check_phone_no'),
+    path('check_emailc',views.check_emailc,name='check_emailc'),
+    path('check_gstc',views.check_gstc,name='check_gstc'),
+    path('check_unit',views.check_unit,name='check_unit'),
+    path('allunits',views.allunits,name='allunits'),
+    path('addunitc',views.addunitc,name='addunitc'),
     
     
     

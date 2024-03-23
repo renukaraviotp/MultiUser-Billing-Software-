@@ -1309,6 +1309,87 @@ def partydata(request):
     else:
         return JsonResponse({'error': 'Invalid request method'})
 
+
+def check_phone_no(request):
+    phone_number = request.GET.get('phone_number')
+    sid = request.session.get('staff_id')
+    staff =  staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    if Parties.objects.filter(company=cmp,phone_number=phone_number).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists': False})
+  
+def check_emailc(request):
+    email= request.GET.get('email')
+    if Parties.objects.filter(email=email).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists':False})
+
+def check_gstc(request):
+    gstin = request.GET.get('gstin')
+    sid = request.session.get('staff_id')
+    staff = staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    gsttype = request.GET.get('gsttype')  
+    print(gsttype)
+
+    if gsttype != "Unregistered/Consumers":
+        if Parties.objects.filter(company=cmp, gstin=gstin).exists():
+            return JsonResponse({'exists': True})
+        return JsonResponse({'exists': False})
+  
+def check_unit(request):
+    newUnit = request.GET.get('newUnit', '').upper()
+    exists = ItemUnitModel.objects.filter(unit_name=newUnit).exists()
+    return JsonResponse({'exists': exists})
+    
+def allunits(request):
+    try:
+        # Fetch all units from ItemUnitModel
+        units = ItemUnitModel.objects.values_list('unit_name', flat=True)
+        
+        # Convert the QuerySet to a list
+        units_list = list(units)
+        
+        # Return the list as JSON response
+        return JsonResponse({'units': units_list})
+    except Exception as e:
+        # Handle exceptions if any
+        return JsonResponse({'error': str(e)})
+      
+def addunitc(request):
+    if request.method == 'POST':
+        sid = request.session.get('staff_id')
+        staff =  staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
+        new_unit_name = request.POST.get('newUnit')
+
+        if new_unit_name:
+           
+            new_unit_name = new_unit_name.upper()
+
+            
+            if not ItemUnitModel.objects.filter(unit_name=new_unit_name).exists():
+                
+                new_unit = ItemUnitModel(user=cmp.user,company=cmp,unit_name=new_unit_name)
+                new_unit.save()
+
+                messages.success(request, 'Unit added successfully')
+                return JsonResponse({'status': 'success', 'message': 'Unit added successfully'})
+            else:
+                messages.error(request, 'Unit already exists')
+                return JsonResponse({'status': 'error', 'message': 'Unit already exists'})
+        else:
+            messages.error(request, 'Unit name cannot be empty')
+            return JsonResponse({'status': 'error', 'message': 'Unit name cannot be empty'})
+
+    return redirect('credit_add')
+      
+      
+      
+      
+      
+
 # def get_party_details(request):
 #     if request.method == 'POST' and request.is_ajax():
 #         party_id = request.POST.get('id')
