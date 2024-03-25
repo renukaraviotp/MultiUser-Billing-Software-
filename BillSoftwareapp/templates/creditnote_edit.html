@@ -317,7 +317,7 @@
                                                                     {% endfor %}
                                                                     
                                                                 </select>&nbsp;&nbsp;&nbsp;
-                                                                <button type="button" class="btn" style="background-color:rgb(61, 68, 101);" data-toggle="modal" data-target="#newitem" class="text-capitalize">
+                                                                <button id="modal_closing" type="button" style="background-color:rgb(61, 68, 101);" class="btn" data-bs-toggle="modal" data-bs-target="#newitem" data-bs-whatever="@mdo">
                                                                     <span class="fa fa-plus"></span>
                                                                 </button>
                                                             </div>
@@ -498,7 +498,7 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="text ms-3">ADD ITEM</h3>
+                <h3 class="text ms-3" style="color:white;">ADD ITEM</h3>
                 <button type="button" class="btn-close me-3" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -608,7 +608,7 @@
                                     </div>
                                 </div>
 
-                                <div hidden id="stock_template"style="background-color: rgba(144, 211, 117, 0.098);">
+                                <div hidden id="stock_template">
                                     <div class="row">
                                         <div class="col-sm-12  col-md-1"></div>
                                         <div class="col-sm-12 col-md-10 pb-4">
@@ -1729,6 +1729,13 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                 $("#warnemail").text('Please provide a valid Email');
                 return;
             }
+
+            if (gstType !== "Unregistered or Consumer" && gstin === '') {
+                $("#warngst").text('Please fill the GSTIN field');
+                return; // Stop execution if GSTIN is required but not provided
+            } else {
+                $("#warngst").text(''); // Clear the warning if GSTIN is provided or not required
+            }
     
             // Perform phone number existence check
             checkPhoneNumberExists(partyPhone, function(phoneExists) {
@@ -1764,7 +1771,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         // Function to check phone number existence
         function checkPhoneNumberExists(phoneNumber, callback) {
             $.ajax({
-                url: 'check_phone_no',
+                url: '{% url "check_phone_no" %}',
                 data: {
                     'phone_number': phoneNumber
                 },
@@ -1801,7 +1808,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         function checkGSTExists(gstin, gstType, callback) {
             if (gstType !== "Unregistered or Consumer") {
                 $.ajax({
-                    url: 'check_gstin_exists',
+                    url: '{% url "check_gstc" %}',
                     data: {
                         'gstin': gstin,
                         'gsttype': gstType
@@ -1877,6 +1884,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     $(document).on("click", "#itemsave", function () {
         var item_name = $("#item_name").val().trim();
         var hsn = $("#hsn").val().trim();
+        console.log(hsn)
         var tax;
     
         if ($('#inclusive').prop('checked')) {
@@ -1902,23 +1910,37 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             // Check if HSN is exactly 6 digits
             alert('HSN must be a 6-digit number');
         } else {
+            console.log(hsn)
             // Perform HSN existence check
             $.ajax({
-                url: 'check_hsn_exists',
+                type:'POST',
+                url: "{% url 'check_hsnc' %}",
                 data: {
-                    'hsn': hsn
+                    hsn: hsn,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
                 dataType: 'json',
                 success: function(data) {
-                    if (data.exists === 'true') {
-                        $('#warnhsn').text('HSN already exists!');
+                    if (data.exists) {
+                        //$('#warnhsn').text('HSN already exists!');
+                        alert('HSN already exists');
                     } else {
                         // HSN does not exist, proceed to save the item
-                        $('#warnhsn').text('');
-    
+                        //$('#warnhsn').text('');
+
+                        console.log(item_name)
+                        console.log(hsn)
+                        console.log(sale_price)
+                        console.log(purchase_price)
+                        console.log($("#intra_st").val());
+                        console.log($("#inter_st").val());
+                        console.log($("#itmdate").val());
+                        console.log($("#stock").val());
+                        console.log($("#itmprice").val());
+                        console.log($("#minstock").val());
                         $.ajax({
                             type: 'POST',
-                            url: "{% url 'saveitemc' %}",
+                            url: "{% url 'saveitemcr' %}",
                             data: {
                                 name: item_name,
                                 unit: $("#unit").val(),
@@ -1947,7 +1969,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     });
     function reloadItem() {
         $.ajax({
-            url: "{% url 'item_dropdownc' %}",
+            url: "{% url 'item_dropdowncr' %}",
             type: "GET",
             dataType: "json",
             data: {
@@ -2093,7 +2115,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         function fetchAndUpdateUnits() {
             $.ajax({
                 type: 'GET',
-                url: 'allunits',
+                url: 'allunitsc',
                 success: function (data) {
                     updateUnitDropdown(data.units);
                 },
@@ -2124,7 +2146,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             // Check if the unit already exists
             $.ajax({
                 type: 'GET',
-                url: 'check_unit',
+                url: '{% url "check_unitc" %}',
                 data: { 'unit': newUnit },
                 success: function (data) {
                     if (data.exists) {
@@ -2135,7 +2157,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                         $.ajax({
                             type: 'POST',
                             url: '{% url "addunitc" %}',
-                            data: { 'newUnit': newUnit },
+                            data: { newUnit: newUnit },
                             headers: {
                                 'X-CSRFToken': csrfToken
                             },
@@ -2144,7 +2166,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                                     // Retrieve updated units and update the dropdown
                                     $.ajax({
                                         type: 'GET',
-                                        url: 'allunits',
+                                        url: '{% url "allunitsc" %}',
                                         success: function (data) {
                                             updateUnitDropdown(data.units);
     
