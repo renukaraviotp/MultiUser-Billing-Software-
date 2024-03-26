@@ -259,42 +259,34 @@
                                                 
                                                 
                                             </div>
-                            
-                    
-                                
-                    
                                             <div class="row form-group">
                                                 <div class="col"><label for="">Date</label><input id="bdt1" value="{{crd.date|date:'Y-m-d'}}" type="date" name="date1" class="form-control"></div>
                                 
                                                 <div class="col-md">
-                                                    <label class="col-form-label ">Place of Supply</label>
+                                                    <label class="col-form-label ">State of Supply</label>
                                                         <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">
                                                             <option value="{{crd.state_of_supply }}" selected hidden>{{crd.state_of_supply }}</option>
                                                                 <option value="State">State</option>
                                                                 <option value="Other State">Other State</option>
                                                         </select> 
                                                 </div>
-                                    
                                             </div>
-                        
                                 </div>
                             </div>
-                        </div>
-                                    <br>
-                                   
+                        </div> 
                                     <div class="container table-responsive col-md-12" style="margin-left: 5vh;">
                                         <div class=" table-responsive-md mt-3" style="margin-right: 8vh;">
                                             <table class="table table-bordered table-hover  mt-3" id="tab_logic" >
                                                 <thead style="background-color:rgb(61, 68, 101);">
                                                     <tr style="color: white; ">
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">#</th>
-                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">PRODUCT</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">ITEMS</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">HSN</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">QTY</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">PRICE</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">TAX (%)</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">DISCOUNT</th>
-                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">TOTAL</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">AMOUNT</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">FIELD</th>
                                                     </tr>
                                                 </thead>
@@ -308,7 +300,8 @@
                                                         <td style="width:21%" >
                                                             <div class="d-flex">
                                                                 <select name='product[]' id="product{{ forloop.counter }}" class="form-control product border-secondary" onchange="changeprd(this.id,this.value)" style="color: black; background-color: white;" >
-                                                                    <option value="{{ j.item.id }}" selected hidden>{{ j.item.item_name }}</option>
+                                                                    <option value="{{ j.item.id }}" selected>{{ j.item.item_name }}</option>
+                                                                    
                                                                     
                                                                     {% for i in item %}
                                                                         {% if i.cid_id == cmp.cid %}
@@ -454,7 +447,7 @@
                                                     </div>
                                                    
                                                     <div class="row container-fluid p-2 m-0">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Grand Total</label></div>
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Total</label></div>
                                                         <div class="col-sm-1 mt-2">:</div>
                                                         <div class="col-sm-7">
                                                         <input type="number" name='grandtotal' id="grandtotal" value="{{crd.grandtotal}}" readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
@@ -843,7 +836,7 @@
                                                 <br><br>
                                             </div>
             
-                                            <div id="credittemp"style="background-color: rgba(144, 211, 117, 0.098);" hidden>
+                                            <div id="credittemp" hidden>
                                                 <div class="row">
                                                     <div class="col-sm-12  col-md-1"></div>
                                                     <div class="col-sm-12 col-md-10 pb-4">
@@ -1789,7 +1782,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         // Function to check email existence
         function checkEmailExists(email, callback) {
             $.ajax({
-                url: 'check_emailc',
+                url: '{% url "check_emailc" %}',
                 data: {
                     'email': email
                 },

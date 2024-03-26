@@ -314,7 +314,18 @@
                                                     </div>
                                                 </div>
                                             </th>
-                                            <th class="w-25 text-white extra" style="background-color:rgb(61,68,101);"></th>
+
+                                            <th class="text-white extra" style="background-color:rgb(61,68,101);">
+                                                ACTION
+                                                &nbsp; <a onclick="toggleDropdown(4)"><i class="fa fa-filter" aria-hidden="true"></i></a>
+                                                <div class="dropdown-content" id="dropdownContent4" style="width:90px;">
+                                                    <label for="filterInput5" style="color: black; text-align: left;">Equal To</label>
+                                                    <input type="text" id="filterInput5" />
+                                                    <a class="btn" style="background-color:rgb(61,68,101);" onclick="cleardropdown(4)">Clear</a> <br>
+                                                    &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(4)">Apply</a>
+                                                </div>
+                                            </th>
+                                            <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -326,6 +337,9 @@
                                             {% comment %} <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.pay_method}}</td> {% endcomment %}
                                             <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">{{p.grandtotal}}</td>
                                             <td class="clickable-row" style="color: black;" data-href="template1/{{ p.id }}">Credit Note</td>
+                                            <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td>
+
+                                            {% comment %} <td class="clickable-row extra" style="color: black;" data-href="template1/{{ p.id }}"></td> {% endcomment %}
                                             <td class="pt-3 m-0 extra">
                                                 <div class="btn-group">
                                                     <button class="btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -543,6 +557,35 @@
         const year = parsedDate.getFullYear();
         const formattedDate = `${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}-${year}`;
         return formattedDate;
+    }
+</script>
+
+<script>
+    var table = document.getElementById('credittable');
+    var rows = table.getElementsByTagName('tr');
+    for (var i = 1; i < rows.length; i++) {
+        var pid = rows[i].getElementsByTagName('td')[1].innerText;
+        findhistory(i,pid)            
+    }
+    function findhistory( rowid,pid){
+        $.ajax({
+            type : 'POST',
+            url: "{% url 'credithistoryc' %}",
+            data: { 
+                id: pid ,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(data){
+                rows[rowid].getElementsByTagName('td')[5].innerText=data.action;
+                //rows[rowid].getElementsByTagName('td')[6].innerText=data.name;
+
+                if(data.action== 'Created'){
+                    rows[rowid].getElementsByTagName('td')[5].style.color = 'Red'
+                }else{
+                    rows[rowid].getElementsByTagName('td')[5].style.color = 'green'
+                }
+            }
+        });
     }
 </script>
 

@@ -260,7 +260,7 @@
                                     <div class="col"><label for="">Date</label><input type="date" id="dt" name="date" value="{{todayDate}}" class="form-control"></div>
                     
                                     <div class="col-md">
-                                        <label class="col-form-label ">Place of Supply</label>
+                                        <label class="col-form-label ">State of Supply</label>
                                             <select type="text" class="form-control border-secondary" id="psu" name="placosupply" onclick="toggleDateInput()"  style="color: black;background-color: white;">
                                                 <option value="" selected hidden>Select</option>
                                                     <option value="State">State</option>
@@ -279,13 +279,13 @@
                                                 <thead style="background-color:rgb(61, 68, 101);">
                                                     <tr style="color: white; ">
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">#</th>
-                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">PRODUCT</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">ITEMS</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">HSN</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">QTY</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">PRICE</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">TAX (%)</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">DISCOUNT</th>
-                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">TOTAL</th>
+                                                        <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">AMOUNT</th>
                                                         <th style="font-size:15px; font-weight:bold;background-color:rgb(61, 68, 101);color:white;" class="text-center">FIELD</th>
                                                     </tr>
                                                 </thead>
@@ -410,7 +410,7 @@
                                                     </div>
                                                    
                                                     <div class="row container-fluid p-2 m-0">
-                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Grand Total</label></div>
+                                                        <div class="col-sm-4 mt-2"><label for="a" class="text-center">Total</label></div>
                                                         <div class="col-sm-1 mt-2">:</div>
                                                         <div class="col-sm-7">
                                                         <input type="number" name='grandtotal' id="grandtotal" value=0.00 readonly style="color: black; background-color: white;" class="form-control border-secondary"/>
@@ -484,7 +484,7 @@
                                         <option value="BOX">BOX</option>
                                         <option value="PACKET">PACKET</option>
                                         {% for i in item_units %}
-                                            <option value="{{ i.unit_name|upper }}">{{ i.unit_name|upper }}</option>
+                                            <option value="{{ i.unit_name|upper }}">{{ i.unit_name }}</option>
                                         {% endfor %}
                                     </select>&nbsp; &nbsp;
                                     <button type="button" class="btn" id="unitAddButton" style="background-color:rgb(60, 61, 101); width:2px; height:34px; text-align:center;" data-bs-toggle="modal" data-bs-target="#addUnitModal">
@@ -583,7 +583,7 @@
                                             <div class="d-flex">
                                                 <div class="w-50 me-3">
                                                 <label class="tb " for="itmdate" style="color: black;">DATE</label><br>
-                                                <input style="color: black;background-color: white" id="itmdate" class="form-control fw-normal border-secondary " type="date" required name="itmdate" value="{{tod}}">
+                                                <input style="color: black;background-color: white" id="itmdate" class="form-control fw-normal border-secondary " type="date" required name="itmdate" value="{{todaydate}}">
                                                 </div>
                                                 <div class="w-50">
                                                 <label class="tb " for="minstock" style="color: black;">MINIMUM STOCK TO MAINTAIN</label><br>
@@ -799,7 +799,7 @@
                                                 <br><br>
                                             </div>
             
-                                            <div id="credittemp"style="background-color: rgba(144, 211, 117, 0.098);" hidden>
+                                            <div id="credittemp" hidden>
                                                 <div class="row">
                                                     <div class="col-sm-12  col-md-1"></div>
                                                     <div class="col-sm-12 col-md-10 pb-4">
@@ -1727,7 +1727,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         // Function to check phone number existence
         function checkPhoneNumberExists(phoneNumber, callback) {
             $.ajax({
-                url: 'check_phone_no',
+                url: '{% url "check_phone_no" %}',
                 data: {
                     'phone_number': phoneNumber
                 },
@@ -1745,7 +1745,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         // Function to check email existence
         function checkEmailExists(email, callback) {
             $.ajax({
-                url: 'check_emailc',
+                url: '{% url "check_emailc" %}',
                 data: {
                     'email': email
                 },
@@ -1764,7 +1764,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         function checkGSTExists(gstin, gstType, callback) {
             if (gstType !== "Unregistered or Consumer") {
                 $.ajax({
-                    url: 'check_gstc',
+                    url: '{% url "check_gstc" %}',
                     data: {
                         'gstin': gstin,
                         'gsttype': gstType
@@ -1840,6 +1840,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     $(document).on("click", "#itemsave", function () {
         var item_name = $("#item_name").val().trim();
         var hsn = $("#hsn").val().trim();
+        console.log(hsn)
         var tax;
     
         if ($('#inclusive').prop('checked')) {
@@ -1865,20 +1866,34 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             // Check if HSN is exactly 6 digits
             alert('HSN must be a 6-digit number');
         } else {
+            console.log(hsn)
             // Perform HSN existence check
             $.ajax({
-                url: 'check_hsn_exists',
+                type:'POST',
+                url: "{% url 'check_hsnc' %}",
                 data: {
-                    'hsn': hsn
+                    hsn: hsn,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
                 },
                 dataType: 'json',
                 success: function(data) {
-                    if (data.exists === 'true') {
-                        $('#warnhsn').text('HSN already exists!');
+                    if (data.exists) {
+                        //$('#warnhsn').text('HSN already exists!');
+                        alert('HSN already exists');
                     } else {
                         // HSN does not exist, proceed to save the item
-                        $('#warnhsn').text('');
-    
+                        //$('#warnhsn').text('');
+
+                        console.log(item_name)
+                        console.log(hsn)
+                        console.log(sale_price)
+                        console.log(purchase_price)
+                        console.log($("#intra_st").val());
+                        console.log($("#inter_st").val());
+                        console.log($("#itmdate").val());
+                        console.log($("#stock").val());
+                        console.log($("#itmprice").val());
+                        console.log($("#minstock").val());
                         $.ajax({
                             type: 'POST',
                             url: "{% url 'saveitemc' %}",
@@ -1908,6 +1923,9 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             });
         }
     });
+
+
+    
     function reloadItem() {
         $.ajax({
             url: "{% url 'item_dropdownc' %}",
@@ -2107,7 +2125,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                                     // Retrieve updated units and update the dropdown
                                     $.ajax({
                                         type: 'GET',
-                                        url: 'allunits',
+                                        url: '{% url "allunits" %}',
                                         success: function (data) {
                                             updateUnitDropdown(data.units);
     

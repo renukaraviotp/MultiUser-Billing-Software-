@@ -357,6 +357,7 @@ def credit_add(request):
   todaydate = date.today().isoformat()
   party = Parties.objects.filter(company_id=cmp.id)
   item=ItemModel.objects.filter(company_id=cmp.id) 
+  item_units = ItemUnitModel.objects.filter(company=cmp)
   last_ref = Creditnote.objects.filter(company=cmp).order_by('-returnno').first()
   if last_ref:
         refno = last_ref.returnno + 1
@@ -367,9 +368,9 @@ def credit_add(request):
         'party':party,
         'item':item,
         'todaydate':todaydate,
-        # Add other context variables as needed
+        'item_units':item_units
     }
-  return render(request, 'credit_add.html',context) 
+  return render(request, 'credit_add.html',context)
 
 
 def get_sales_invoice_details(request, party_id):
@@ -1430,8 +1431,13 @@ def check_unitc(request):
     
 def allunits(request):
     try:
+        sid = request.session.get('staff_id')
+        staff = staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
+        itmunits = ItemUnitModel.objects.filter(company=cmp)
+        
         # Fetch all units from ItemUnitModel
-        units = ItemUnitModel.objects.values_list('unit_name', flat=True)
+        units = itmunits.values_list('unit_name', flat=True)
         
         # Convert the QuerySet to a list
         units_list = list(units)
@@ -1444,8 +1450,13 @@ def allunits(request):
       
 def allunitsc(request):
     try:
+        sid = request.session.get('staff_id')
+        staff = staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
+        itmunits = ItemUnitModel.objects.filter(company=cmp)
+        
         # Fetch all units from ItemUnitModel
-        units = ItemUnitModel.objects.values_list('unit_name', flat=True)
+        units = itmunits.values_list('unit_name', flat=True)
         
         # Convert the QuerySet to a list
         units_list = list(units)
@@ -1483,6 +1494,17 @@ def addunitc(request):
             return JsonResponse({'status': 'error', 'message': 'Unit name cannot be empty'})
 
     return redirect('credit_add')
+  
+def credithistoryc(request):
+  pid = request.POST['id']
+  sid = request.session.get('staff_id')
+  staff = staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id) 
+  crd = Creditnote.objects.get(returnno=pid,company=cmp)
+  hst = CreditnoteHistory.objects.filter(credit=crd,company=cmp).last()
+  name = hst.staff.first_name + ' ' + hst.staff.last_name 
+  action = hst.action
+  return JsonResponse({'name':name,'action':action,'pid':pid})
       
       
       

@@ -68,6 +68,7 @@ urlpatterns = [
     path('check_unit',views.check_unit,name='check_unit'),
     path('allunits',views.allunits,name='allunits'),
     path('addunitc',views.addunitc,name='addunitc'),
+    path('credithistoryc',views.credithistoryc,name='credithistoryc'),
     
     
     
