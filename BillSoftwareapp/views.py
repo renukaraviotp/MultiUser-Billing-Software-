@@ -939,15 +939,30 @@ def credit_save(request):
             party = Parties.objects.get(id=party_id)
 
         # Check if 'billNo' exists in POST data and assign value accordingly
-        bill_no = request.POST.get('billNo', None)
-        if bill_no == 'nobill':
-            bill_no = None
+        # bill_no = request.POST.get('billNo', None)
+        # if bill_no == 'nobill':
+        #     bill_no = None
+        checkbtn=request.POST.get('abc', None)
+        if checkbtn == 'on':
+          if request.POST.get('billNod') == 'nobill':
+             bill_no = None
+          else:
+            bill_no = request.POST.get('billNod')
+        else:
+           bill_no = request.POST.get('billNo')
+        if checkbtn == 'on':
+          if request.POST.get('billDated') == 'nodate':
+            bill_date = None
+          else:
+            bill_date = request.POST.get('billDated')
+        else:
+          bill_date = request.POST.get('billDate')
 
         # Check if 'billDate' exists in POST data and assign value accordingly
-        bill_date_str = request.POST.get('billDate', None)
-        bill_date = None
-        if bill_date_str:
-            bill_date = parse_date(bill_date_str)
+        # bill_date_str = request.POST.get('billDate', None)
+        # bill_date = None
+        # if bill_date_str:
+        #     bill_date = parse_date(bill_date_str)
 
         # Create an instance of Creditnote model and save the data
         credit_note = Creditnote(
@@ -992,6 +1007,7 @@ def credit_save(request):
             for ele in mapped:
                 itm = ItemModel.objects.get(id=ele[0])
                 CreditnoteItem.objects.create(
+                    item=itm,
                     product=itm.item_name,
                     qty=ele[1],
                     discount=ele[2],
@@ -1113,21 +1129,38 @@ def edit_credit(request,pk):
 
 def update_creditnote(request, pk):
     if request.method == 'POST':
-        sid = request.session.get('staff_id') 
-        staff = get_object_or_404(staff_details, id=sid)
-        cmp = get_object_or_404(company, id=staff.company.id)
+        sid = request.session.get('staff_id')
+        staff = staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
 
         # Retrieve party details if available
         party_id = request.POST.get('partyname')
         party = get_object_or_404(Parties, id=party_id) if party_id else None
+        
 
-        crd = get_object_or_404(Creditnote, id=pk, company=cmp)
+        # crd = get_object_or_404(Creditnote, id=pk, company=cmp)
+        crd=Creditnote.objects.get(id=pk,company=cmp)
+        checkbtn=request.POST.get('abc', None)
+        if checkbtn == 'on':
+          if request.POST.get('billNod') == 'nobill':
+             crd.invoice_no = None
+          else:
+            crd.invoice_no = request.POST.get('billNod')
+        else:
+           crd.invoice_no = request.POST.get('billNo')
+        if checkbtn == 'on':
+          if parse_date(request.POST.get('billDated')) == 'nodate':
+            crd.idate = None
+          else:
+            crd.idate = parse_date(request.POST.get('billDated'))
+        else:
+          crd.idate = parse_date(request.POST.get('billDate'))
         crd.party = party
         crd.contact = party.phone_number if party else None
         crd.address = party.billing_address if party else None
         crd.date = parse_date(request.POST.get('date1', None))
-        crd.invoice_no = request.POST.get('billNo')
-        crd.idate = parse_date(request.POST.get('billDate', None))
+        # crd.invoice_no = request.POST.get('billNo')
+        # crd.idate = parse_date(request.POST.get('billDate', None))
         crd.state_of_supply = request.POST.get('placosupply')
         crd.subtotal = float(request.POST.get('subtotal', 0))
         crd.grandtotal = request.POST.get('grandtotal')
@@ -1139,22 +1172,31 @@ def update_creditnote(request, pk):
         crd.description = request.POST.get("des")
 
         crd.save()
-
+        
         product = tuple(request.POST.getlist("product[]"))
         qty = tuple(request.POST.getlist("qty[]"))
         total = tuple(request.POST.getlist("total[]"))
         discount = tuple(request.POST.getlist("discount[]"))
-        hsn = request.POST.getlist("hsn[]")
-        tax = request.POST.getlist("tax[]")
-        price = request.POST.getlist("price[]")
+        hsn = tuple(request.POST.getlist("hsn[]"))
+        tax = tuple(request.POST.getlist("tax[]"))
+        price = tuple(request.POST.getlist("price[]"))
 
-        CreditnoteItem.objects.filter(credit=crd).delete()
+        CreditnoteItem.objects.filter(credit=crd,company=cmp).delete()
+        print('11')
         if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax) == len(price):
+          print('22')
           mapped=zip(product, qty, discount, total, hsn, tax, price)
+          print('33')
           mapped=list(mapped)
+          print('44')
           for ele in mapped:
+            print('555')
             itm = ItemModel.objects.get(id=ele[0])
+            print('66')
+    
             CreditnoteItem.objects.create(product =itm.item_name,qty=ele[1],discount=ele[2],total=ele[3],hsn=ele[4],tax=ele[5],price=ele[6],credit=crd,company=cmp,item=itm,staff=staff)
+            print('77') 
+          
 
         CreditnoteHistory.objects.create(credit=crd,company=cmp,staff=staff,action='Updated')
         return redirect('transactiontable')
@@ -1505,6 +1547,16 @@ def credithistoryc(request):
   name = hst.staff.first_name + ' ' + hst.staff.last_name 
   action = hst.action
   return JsonResponse({'name':name,'action':action,'pid':pid})
+
+def check_itmname(request):
+    sid = request.session.get('staff_id')
+    staff =  staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    item_name= request.GET.get('item_name')
+    
+    if ItemModel.objects.filter(item_name=item_name,company=cmp).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists':False})
       
       
       

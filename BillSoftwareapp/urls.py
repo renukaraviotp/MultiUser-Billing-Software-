@@ -69,6 +69,7 @@ urlpatterns = [
     path('allunits',views.allunits,name='allunits'),
     path('addunitc',views.addunitc,name='addunitc'),
     path('credithistoryc',views.credithistoryc,name='credithistoryc'),
+    path('check_itmname',views.check_itmname,name='check_itmname'),
     
     
     

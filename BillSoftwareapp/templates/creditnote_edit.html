@@ -213,7 +213,7 @@
                                         </div>
                                         {% comment %} <div class="col-md-1"><input id="pid" type="text" name="pid" class="form-control" hidden></div> {% endcomment %}
 
-                                        <div class="col-md-3" id="phonediv">
+                                        <div class="col-md-4" id="phonediv">
                                             <label class="col-form-label" >Phone No. </label>
                                             <input class="form-control" name="number" value="{{crd.contact}}"  id="ph"  style="color: black;background-color: white;" pattern="[0-9]{10}" placeholder="Phone number" readonly>
                                         </div>
@@ -237,8 +237,8 @@
                                                 <div class="col"><label for=""> Return No.</label><input id="returnno" value="{{crd.returnno}}" type="text" name="returnno" class="form-control" placeholder="Return Number" readonly></div>
                                                 <div class="col">
                                                     <label for="">Invoice No.</label>
-                                                    <select class="form-control" name="billNo" id="bno" style="color: black; background-color: white;">
-                                                        <option value="" selected hidden>{{crd.invoice_no}}</option>
+                                                    <select class="form-control" name="billNod" id="bno" style="color: black; background-color: white;">
+                                                        <option value="{{crd.invoice_no}}" selected hidden>{{crd.invoice_no}}</option>
                                                         {% for bill_number in bill_numbers %}
                                                             <option value="{{ bill_number }}">{{ bill_number }}</option>
                                                         {% endfor %}
@@ -247,7 +247,7 @@
                                                 </div>
                                                 <div class="col">
                                                     <label for="">Invoice Date</label>
-                                                    <select class="form-control" name="billDate" id="bdt" style="color: black; background-color: white;">
+                                                    <select class="form-control" name="billDated" id="bdt" style="color: black; background-color: white;">
                                                         <option value="" selected hidden>{{crd.idate|date:'Y-m-d'}}</option>
                                                         <!-- Options will be dynamically added here using JavaScript -->
                                                     </select>
@@ -1304,43 +1304,53 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
     }
 </script>
 
-
-
 <script>
-    function changeprd(id,value){
+    // Define an array to store selected item IDs
+    var selectedItems = [];
+
+    function changeprd(id, value) {
         var n = id.slice(7);
+
+        // Check if the item is already selected in another row
+        if (selectedItems.includes(value)) {
+            alert('This item has already been selected in another row.');
+            var $select = $(document.getElementById('product' + n));
+            var selectize = $select[0].selectize;
+            selectize.clear();  // Clear the selected option
+            return;
+        }
+
         $.ajax({
             url: "{% url 'itemdetails' %}",
-            type : 'GET',
-            data:{
-                id : value,
+            type: 'GET',
+            data: {
+                id: value,
                 csrfmiddlewaretoken: '{{ csrf_token }}'
             },
-           
-            success: function(response) {
-                data = response.hsn
-                data2 = response.qty
-                data3 = response.price
-                data4 = response.gst
-                data5 = response.igst
+            success: function (response) {
+                // Update your fields with the response data
+
+                // Add the selected item to the array
+                selectedItems.push(value);
+
                 var bc = document.getElementById("psu").value;
                 if (bc == 'State') {
-                    document.getElementById('intrataxval'+n).value = data4;
-                    document.getElementById('intertaxval'+n).value = data5;
-                    document.getElementById('hsn'+n).value = data;
-                    document.getElementById('unit'+n).value = data3;
-                    document.getElementById('tax'+n).value = data4;
-                    calc()
+                    document.getElementById('intrataxval' + n).value = response.gst;
+                    document.getElementById('intertaxval' + n).value = response.igst;
+                    document.getElementById('hsn' + n).value = response.hsn;
+                    document.getElementById('unit' + n).value = response.price;
+                    document.getElementById('tax' + n).value = response.gst;
+                    calc();
                 } else if (bc == 'Other State') {
-                    document.getElementById('intrataxval'+n).value = data4;
-                    document.getElementById('intertaxval'+n).value = data5;
-                    document.getElementById('hsn'+n).value = data;
-                    document.getElementById('unit'+n).value = data3;
-                    document.getElementById('tax'+n).value = data5;
-                    calc()
-                }else{
-                    alert('Please Select Place of Supply')
-                    var $select = $(document.getElementById('product'+n));
+                    document.getElementById('intrataxval' + n).value = response.gst;
+                    document.getElementById('intertaxval' + n).value = response.igst;
+                    document.getElementById('hsn' + n).value = response.hsn;
+                    document.getElementById('unit' + n).value = response.price;
+                    document.getElementById('tax' + n).value = response.igst;
+                    calc();
+                } else {
+                    alert('Please Select Place of Supply');
+                    var $select = $(document.getElementById('product' + n));
                     var selectize = $select[0].selectize;
                     selectize.setValue("");
                 }
@@ -1348,6 +1358,8 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
         });
     }
 </script>
+
+
 
 <script>
     $(document).ready(function() {
@@ -1506,7 +1518,9 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
                     </td>
                 </tr>`
             );
-            productsearch(roinc)
+            reloadItem();
+            productsearch(roinc);
+            
         });
     });
 
@@ -1895,9 +1909,9 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             alert('Please provide an Item Name');
         } else if (hsn === '') {
             alert('Please provide a HSN');
-        } else if (isNaN(sale_price) || sale_price < 0) {
+        } else if (sale_price < 0) {
             alert('Please provide a valid Sales Price');
-        } else if (isNaN(purchase_price) || purchase_price < 0) {
+        } else if (purchase_price < 0) {
             alert('Please provide a valid Purchase Price');
         } else if (!/^\d{6}$/.test(hsn)) {
             // Check if HSN is exactly 6 digits
@@ -1987,7 +2001,7 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 
                         selectElement.empty();
 
-                        selectElement.append(`<option value="">Select Product</option>`);
+                        selectElement.append(`<option value="">Select</option>`);
 
                         $.each(data, function(key, value){
                             var ID = value[0]
@@ -2022,6 +2036,26 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
             }
         });
     }
+</script>
+<script>
+
+    $('#item_name').blur(function() {
+        var item_name = $(this).val();
+        $.ajax({
+            url: "{% url 'check_itmname' %}",
+            data: {
+                'item_name': item_name
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.exists) {
+                    //$('#item_error').text('ITEM already exists!');
+                    alert('ITEM already exists');
+                }
+            }
+        });
+    });
+    
 </script>
 
 <script>
