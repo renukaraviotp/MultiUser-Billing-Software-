@@ -1173,29 +1173,34 @@ def update_creditnote(request, pk):
 
         crd.save()
         
-        product = tuple(request.POST.getlist("product[]"))
-        qty = tuple(request.POST.getlist("qty[]"))
-        total = tuple(request.POST.getlist("total[]"))
-        discount = tuple(request.POST.getlist("discount[]"))
-        hsn = tuple(request.POST.getlist("hsn[]"))
-        tax = tuple(request.POST.getlist("tax[]"))
-        price = tuple(request.POST.getlist("price[]"))
+        product = request.POST.getlist("product[]")
+        qty = request.POST.getlist("qty[]")
+        total = request.POST.getlist("total[]")
+        discount = request.POST.getlist("discount[]")
+        hsn = request.POST.getlist("hsn[]")
+        tax = request.POST.getlist("tax[]")
+        price = request.POST.getlist("price[]")
 
-        CreditnoteItem.objects.filter(credit=crd,company=cmp).delete()
-        print('11')
-        if len(product) == len(qty) == len(discount) == len(total) == len(hsn) == len(tax) == len(price):
-          print('22')
-          mapped=zip(product, qty, discount, total, hsn, tax, price)
-          print('33')
-          mapped=list(mapped)
-          print('44')
-          for ele in mapped:
-            print('555')
-            itm = ItemModel.objects.get(id=ele[0])
-            print('66')
-    
-            CreditnoteItem.objects.create(product =itm.item_name,qty=ele[1],discount=ele[2],total=ele[3],hsn=ele[4],tax=ele[5],price=ele[6],credit=crd,company=cmp,item=itm,staff=staff)
-            print('77') 
+        # Iterate over form data to handle each item row
+        for i in range(len(product)):
+            # Retrieve or create the item
+            item = ItemModel.objects.get(id=product[i])
+
+            # Create or update CreditnoteItem
+            CreditnoteItem.objects.update_or_create(
+                credit=crd,
+                company=cmp,
+                item=item,
+                defaults={
+                    'qty': qty[i],
+                    'total': total[i],
+                    'discount': discount[i],
+                    'hsn': hsn[i],
+                    'tax': tax[i],
+                    'price': price[i],
+                    'staff': staff
+                }
+            ) 
           
 
         CreditnoteHistory.objects.create(credit=crd,company=cmp,staff=staff,action='Updated')

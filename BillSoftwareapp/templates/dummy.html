@@ -14803,3 +14803,27 @@ document.querySelector('[name="balance"]').addEventListener('input', toggleRadio
 </body>
 
 {% endblock %}   
+
+{% comment %} old creditnote default page {% endcomment %}
+<div class="container" style='background-color:white;'>
+    <br><br><br><br><br><br>
+    <div class="container col-10 mr-3">
+        <div class="container col -10" style='background-color:white;  box-shadow: 5px 5px 5px gray; border-radius:10px;'>
+            <div class="row">
+                
+                <div class="col">
+                    <img style="mix-blend-mode: multiply;" src="{% static 'images/credit/11.webp' %}" width="400" height="400" alt="">
+                </div>
+
+                <div class="col m-2">
+                    <br><br><br>
+                    <center><h3><img src="static/img/logo/logo3.png" alt="billing-software">MultiUser Billing Software</h3></center><br>
+                    <p>Welcome to MultiUser Billing Software.Our platform offers a range of features.You can manage all your credit actions here.</p>
+                    <center><a href="{% url "credit_add" %}" class="btn btn-primary">Add Your First Creditnote Here</a></center>
+                </div>
+
+            </div>
+        </div>
+        <br><br><br>
+    </div>
+</div>

@@ -148,14 +148,15 @@
 
         #calcdiv{
             visibility: visible;
-            margin-top: -30vh;
+            margin-top: -10vh;
             margin-left: -9vh;
             margin-bottom: 30vh;
         }
 
         #credittable{
-            margin-top: 20vh;
+            margin-top: 10vh;
             margin-bottom: 20vh;
+            margin-left: 9vh;
             width:100% !important;
         }
 
@@ -248,11 +249,11 @@
 
                     <div class="row">
                         <div class="col-md-12" style="margin-left: 2vh;">
-                            <div class="mt-3" style="overflow: hidden;height: 28rem; width: 95%;" id="tablediv">
-                                <table class="table table-bordered tb table-responsive w-100" id="credittable"  style="text-align: center;margin-left:3%; width: 1000px;">
+                            <div class="mt-3"  style="overflow: scroll;height: 28rem; width: 97%;" id="tablediv">
+                                <table class="table tb table-bordered" id="credittable"  style="text-align: center;margin-left:3%;width:95%;">
                                     <thead >
                                         <tr class="fs-2 tb">
-                                            <th class="text-white" style="background-color:rgb(61,68,101);">
+                                            <th class="text-white" style="background-color:rgb(61,68,101);width:16%;">
                                                 DATE 
                                                 <a class="extra text-white" onclick="toggleDropdown(0)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
                                                 <div class="dropdown-content" id="dropdownContent0">
@@ -264,7 +265,7 @@
                                                     </div>
                                                 </div>
                                             </th>
-                                            <th class="w-15 text-white"  style="background-color:rgb(61,68,101);">
+                                            <th class="w-15 text-white"  style="background-color:rgb(61,68,101);width:12%;">
                                                 REF NO 
                                                 <a class="extra text-white" onclick="toggleDropdown(1)">&nbsp;<i class="fa fa-filter" aria-hidden="true"></i></a>
                                                 <div class="dropdown-content" id="dropdownContent1">
@@ -325,7 +326,7 @@
                                                     &nbsp;<a class="btn " style="background-color:rgb(61,68,101);" onclick="filterTable(4)">Apply</a>
                                                 </div>
                                             </th>
-                                            <th class="w-15 text-white extra" style="background-color:rgb(61,68,101);"></th>
+                                            <th class="w-5 text-white extra" style="background-color:rgb(61,68,101);"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -401,26 +402,32 @@
         
 </div>
 {% else %}
-<div class="container" style='background-color:white;'>
-    <br><br><br><br><br><br>
-    <div class="container col-10 mr-3">
-        <div class="container col -10" style='background-color:white;  box-shadow: 5px 5px 5px gray; border-radius:10px;'>
+<br><br><br>
+<div class="body-wrapper " style="margin-top:30px;margin-left:190px;">
+        
+        
+    <div class="p-5 text-center" style="display: flex;justify-content: center;">
+        
+        <div class="card " style="background-color: white;width:50rem;box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.249);">
+           
             <div class="row">
-                
-                <div class="col">
-                    <img style="mix-blend-mode: multiply;" src="{% static 'images/credit/11.webp' %}" width="400" height="400" alt="">
+                <div class="col-sm-12 col-md-6">
+                    <img height="300vw" style="margin-top:35px;" src="{% static 'images/credit/11.webp' %}" class="card-img" alt="no img">
                 </div>
-
-                <div class="col m-2">
-                    <br><br><br>
-                    <center><h3><img src="static/img/logo/logo3.png" alt="billing-software">MultiUser Billing Software</h3></center><br>
-                    <p>Welcome to MultiUser Billing Software.Our platform offers a range of features.You can manage all your credit actions here.</p>
-                    <center><a href="{% url "credit_add" %}" class="btn btn-primary">Add Your First Creditnote Here</a></center>
+                <div class="col-sm-12 col-md-6 ps-4 pe-4">
+                    <div class="p-1 rounded" style="border: 1px solid rgba(0, 0, 0, 0);border-bottom: none;">
+                        <p style="margin-bottom: 4rem;"></p>
+                        <p><img src="static/img/logo/logo3.png" alt="billing-software"></p>
+                        <h1 style="font-weight:900;color:rgb(61, 68, 101);font-size: 1.5rem;">BILLING SOFTWARE</h1>
+                        <p style="margin-bottom: 1.5rem;"></p>
+                        <p class="card-text" style="color:black;font-weight:bold;">Welcome to MultiUser Billing Software.Our platform offers a range of features.You can manage all your credit actions here.</p>
+                        <p class="mt-4"></p>
+                        <a class="btn btn-lg " style="background-color:rgb(61, 68, 101);font-weight:bold;" href="{% url "credit_add" %}">Add Your First Creditnote Here</a>
+                        <p style="margin-bottom: 4rem;"></p>
+                    </div>
                 </div>
-
             </div>
         </div>
-        <br><br><br>
     </div>
 </div>
 {% endif %}
@@ -457,7 +464,7 @@
     }
 </script>
 
-<script>
+{% comment %} <script>
     calculatetotal()
 
     function calculatetotal(){
@@ -483,7 +490,7 @@
         document.getElementById('unpaidval').textContent = tunpaid
         document.getElementById('totalval').textContent = ttotal
     }
-</script>
+</script> {% endcomment %}
 
 <script>
     function cleardropdown(index){
