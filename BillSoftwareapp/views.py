@@ -582,15 +582,14 @@ def item_save(request):
   
 
 def itemdetails(request):
-  itmid = request.GET['id']
-  itm = ItemModel.objects.get(id=itmid)
-  hsn = itm.item_hsn
-  gst = itm.item_gst
-  igst = itm.item_igst
-  price = itm.item_sale_price
-  qty = itm.item_current_stock
-  return JsonResponse({'hsn':hsn, 'gst':gst, 'igst':igst, 'price':price, 'qty':qty})
-
+    itmid = request.GET['id']
+    itm = ItemModel.objects.get(id=itmid)
+    hsn = itm.item_hsn
+    gst = itm.item_gst
+    igst = itm.item_igst
+    price = itm.item_sale_price
+    qty = itm.item_current_stock
+    return JsonResponse({'hsn': hsn, 'gst': gst, 'igst': igst, 'price': price, 'qty': qty})
 # def saveparty(request):
 #     if request.method == 'POST':
 #         # Retrieve session and company information
@@ -1112,6 +1111,7 @@ def edit_credit(request,pk):
   item = ItemModel.objects.filter(company=cmp)
   crd = Creditnote.objects.get(id=pk,company=cmp)
   crditem = CreditnoteItem.objects.filter(credit=crd,company=cmp)
+  item_units = ItemUnitModel.objects.filter(company=cmp)
   cdate = crd.date.strftime("%Y-%m-%d")
   print(crd.idate)
   context = {
@@ -1121,10 +1121,12 @@ def edit_credit(request,pk):
     'party':party, 
     'item':item,
     'tod':tod,
-    'cdate':cdate
+    'cdate':cdate,
+    'item_units':item_units
     }
+  print(item)
   
-  return render(request,'creditnote_edit.html',context)
+  return render(request,'edit_credit.html',context)
 
 
 # def update_creditnote(request, pk):
