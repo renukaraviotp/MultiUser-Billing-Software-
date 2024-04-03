@@ -1583,7 +1583,159 @@ def check_itmname(request):
     if ItemModel.objects.filter(item_name=item_name,company=cmp).exists():
         return JsonResponse({'exists': True})
     return JsonResponse({'exists':False})
+  
+def check_hsnc(request):
+    sid = request.session.get('staff_id')
+    staff =  staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    hsn= request.POST.get('hsn')
+    print(hsn)
+    
+    if ItemModel.objects.filter(item_hsn=hsn,company=cmp).exists():
+        return JsonResponse({'exists': True})
+    return JsonResponse({'exists':False})
+  
+def saveitemcr(request):
+    sid = request.session.get('staff_id')
+    staff =  staff_details.objects.get(id=sid)
+    company_obj = staff.company
+
+    name = request.POST['name']
+    print(name)
+    unit = request.POST['unit']
+    print(unit)
+    hsn = request.POST['hsn']
+    print(hsn)
+    taxref = request.POST['taxref']
+    print(taxref)
+    sell_price = request.POST['sell_price']
+    print(sell_price)
+    cost_price = request.POST['cost_price']
+    print(cost_price)
+    intra_st = request.POST['intra_st']
+    print(intra_st)
+    inter_st = request.POST['inter_st']
+    print(inter_st)
+
+    if taxref != 'Taxable':
+        intra_st = 'GST0[0%]'
+        print(intra_st)
+        inter_st = 'IGST0[0%]'
+        print(inter_st)
+
+    itmdate = request.POST.get('itmdate')
+    print(itmdate)
+    stock = request.POST.get('stock')
+    print(stock)
+    itmprice = request.POST.get('itmprice')
+    print(itmprice)
+    minstock = request.POST.get('minstock')
+    print(minstock)
+
+    if not hsn:
+        hsn = None
+
+    # Check if HSN exists for the given company
+    if ItemModel.objects.filter(company=company_obj, item_hsn=hsn).exists():
+        return JsonResponse({'success': False, 'message': 'HSN already exists for this company'})
+
+    itm = ItemModel(
+        item_name=name, item_hsn=hsn, item_unit=unit, item_taxable=taxref, item_gst=intra_st, item_igst=inter_st,
+        item_sale_price=sell_price, item_purchase_price=cost_price, item_current_stock=stock, item_at_price=itmprice,
+        item_date=itmdate, company=company_obj, user=company_obj.user
+    )
+    itm.save()
+    print(itm)
+
+    return JsonResponse({'success': True})
+
+
+def item_dropdowncr(request):
+  sid = request.session.get('staff_id')
+  staff =  staff_details.objects.get(id=sid)
+  cmp = company.objects.get(id=staff.company.id)
+  product = ItemModel.objects.filter(company=cmp,user=cmp.user)
+
+  id_list = []
+  product_list = []
+  items = {}
+  for p in product:
+    id_list.append(p.id)
+    product_list.append(p.item_name)
+    items[p.id] = [p.id, p.item_name]
+  return JsonResponse(items)
+
+def check_unitc(request):
+    newUnit = request.GET.get('newUnit', '').upper()
+    sid = request.session.get('staff_id')
+    staff =  staff_details.objects.get(id=sid)
+    cmp = company.objects.get(id=staff.company.id)
+    exists = ItemUnitModel.objects.filter(unit_name=newUnit,company=cmp).exists()
+    return JsonResponse({'exists': exists})
+    
+def allunits(request):
+    try:
+        sid = request.session.get('staff_id')
+        staff = staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
+        itmunits = ItemUnitModel.objects.filter(company=cmp)
+        
+        # Fetch all units from ItemUnitModel
+        units = itmunits.values_list('unit_name', flat=True)
+        
+        # Convert the QuerySet to a list
+        units_list = list(units)
+        
+        # Return the list as JSON response
+        return JsonResponse({'units': units_list})
+    except Exception as e:
+        # Handle exceptions if any
+        return JsonResponse({'error': str(e)})
       
+def allunitsc(request):
+    try:
+        sid = request.session.get('staff_id')
+        staff = staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
+        itmunits = ItemUnitModel.objects.filter(company=cmp)
+        
+        # Fetch all units from ItemUnitModel
+        units = itmunits.values_list('unit_name', flat=True)
+        
+        # Convert the QuerySet to a list
+        units_list = list(units)
+        
+        # Return the list as JSON response
+        return JsonResponse({'units': units_list})
+    except Exception as e:
+        # Handle exceptions if any
+        return JsonResponse({'error': str(e)})
+      
+def addunitc(request):
+    if request.method == 'POST':
+        sid = request.session.get('staff_id')
+        staff =  staff_details.objects.get(id=sid)
+        cmp = company.objects.get(id=staff.company.id)
+        new_unit_name = request.POST.get('newUnit')
+
+        if new_unit_name:
+           
+            new_unit_name = new_unit_name.upper()
+
+            
+            if not ItemUnitModel.objects.filter(unit_name=new_unit_name,company=cmp).exists():
+                
+                new_unit = ItemUnitModel(user=cmp.user,company=cmp,unit_name=new_unit_name)
+                new_unit.save()
+
+                
+                return JsonResponse({'status': 'success', 'message': 'Unit added successfully'})
+            else:
+                
+                return JsonResponse({'status': 'error', 'message': 'Unit already exists'})
+        else:
+            
+            return JsonResponse({'status': 'error', 'message': 'Unit name cannot be empty'})
       
       
       

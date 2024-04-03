@@ -223,6 +223,7 @@
                             </select>
                             <input id="bdt-input" type="date" name="billDate" value="{{crd.idate|date:'Y-m-d'}}" class="form-control" placeholder="Bill Date" style="display: none;">
                         </div>
+                    </div>
                         <div class="row form-group">
                             <div class="col"><label for="">Date</label><input id="bdt1" value="{{crd.date|date:'Y-m-d'}}" type="date" name="date1" class="form-control"></div>
                             <div class="col-md">
@@ -234,7 +235,6 @@
                                 </select> 
                             </div>
                         </div>
-                    </div>
                 </div> 
             </div>
             <div class="container table-responsive col-md-12" style="margin-left: 5vh;">
@@ -860,7 +860,7 @@
                     </td>
                 </tr>`
             );
-            //reloadItem();
+            reloadItem();
             productsearch(roinc);
             
         });
