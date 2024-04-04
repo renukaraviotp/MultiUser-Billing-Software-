@@ -430,6 +430,30 @@
         </div>
     </div>
 </div>
+
+
+{% comment %} <div class="container" style='background-color:white;'>
+    <br><br><br><br><br><br>
+    <div class="container col-10 mr-3">
+        <div class="container col -10" style='background-color:white;  box-shadow: 5px 5px 5px gray; border-radius:10px;'>
+            <div class="row">
+                
+                <div class="col">
+                    <img style="mix-blend-mode: multiply;" src="{% static 'images/credit/11.webp' %}" width="400" height="400" alt="">
+                </div>
+
+                <div class="col m-2">
+                    <br><br><br>
+                    <center><h3><img src="static/img/logo/logo3.png" alt="billing-software">MultiUser Billing Software</h3></center><br>
+                    <p>Welcome to MultiUser Billing Software.Our platform offers a range of features.You can manage all your credit actions here.</p>
+                    <center><a href="{% url "credit_add" %}" class="btn btn-primary">Add Your First Creditnote Here</a></center>
+                </div>
+
+            </div>
+        </div>
+        <br><br><br>
+    </div>
+</div> {% endcomment %}
 {% endif %}
 
 <script>
@@ -694,15 +718,56 @@
     });
 </script>
 
+
 <script>
     function ExportToExcel(){
-        const table = document.querySelector('#excelcredittable');
+        print4 = document.getElementById('tablediv')
+        if (print4.style.display !== 'none'){
+            var printContents = document.getElementById("tablediv").innerHTML;
+        }else{
+            var printContents = document.getElementById("whatToPrint").innerHTML;
+        }
+        var $printerDiv = $('<div class="printContainer" id=printContainer></div>');
+        $printerDiv.html(printContents); 
+        $('body').append($printerDiv).addClass("printingContent"); 
+        var h1Element = document.createElement("h1");
+        h1Element.textContent = "Credit Notes";
+        var head = document.getElementById("printContainer");
+        head.insertBefore(h1Element, head.firstChild);
         const ws = XLSX.utils.table_to_sheet(table);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
         XLSX.writeFile(wb, 'CreditNote.xlsx');
+        $printerDiv.remove();
+        $('body').removeClass("printingContent");
     }
 </script>
+
+
+
+<script>
+    function printfunction(){
+        print4 = document.getElementById('tablediv')
+        if (print4.style.display !== 'none'){
+            var printContents = document.getElementById("tablediv").innerHTML;
+        }else{
+            var printContents = document.getElementById("whatToPrint").innerHTML;
+        }
+        var $printerDiv = $('<div class="printContainer" id=printContainer></div>');
+        $printerDiv.html(printContents); 
+        $('body').append($printerDiv).addClass("printingContent"); 
+        var h1Element = document.createElement("h1");
+        h1Element.textContent = "Credit Notes";
+        var head = document.getElementById("printContainer");
+        head.insertBefore(h1Element, head.firstChild);
+        window.print();
+        $printerDiv.remove();
+        $('body').removeClass("printingContent");
+    }
+</script>
+
+
+
 
 
 
